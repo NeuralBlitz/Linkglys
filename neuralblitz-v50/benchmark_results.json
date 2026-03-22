@@ -1,0 +1,53 @@
+{
+  "timestamp": "2026-03-02T04:03:38.771341",
+  "results": [
+    {
+      "name": "cpp_agent",
+      "language": "cpp",
+      "duration_ms": 2.712726593017578,
+      "memory_mb": 0,
+      "items_processed": 0,
+      "throughput": 0.0,
+      "success": true,
+      "error": null,
+      "metadata": null
+    },
+    {
+      "name": "cpp_scale",
+      "language": "cpp",
+      "duration_ms": 975.8131504058838,
+      "memory_mb": 0,
+      "items_processed": 150000,
+      "throughput": 153717.95300935264,
+      "success": true,
+      "error": null,
+      "metadata": {
+        "output": ")\n2026-03-02 04:03:32.478 [DEBUG] Added stage: Stage49998 (ID: 49999)\n2026-03-02 04:03:32.478 [DEBUG] Added stage: Stage49999 (ID: 50000)\nCreated DAG with 50000 stages in 311ms\nDAG Valid: Yes\nHas Cycle: No\n\n=== MASSIVE SCALE SUMMARY ===\nTotal Agents: 100000\nTotal Stages: 50000\nTotal Time: 872ms\nMemory efficient STL-based implementation\n\n============================================================\n  NeuralBlitz v50.0 C++ Demo Complete\n============================================================\n\n"
+      }
+    },
+    {
+      "name": "bash_agent",
+      "language": "bash",
+      "duration_ms": 10.19906997680664,
+      "memory_mb": 0,
+      "items_processed": 0,
+      "throughput": 0.0,
+      "success": true,
+      "error": null,
+      "metadata": null
+    },
+    {
+      "name": "bash_scale",
+      "language": "bash",
+      "duration_ms": 6155.929327011108,
+      "memory_mb": 0,
+      "items_processed": 150000,
+      "throughput": 24366.751473547145,
+      "success": true,
+      "error": null,
+      "metadata": {
+        "output": "nts in 4106ms\n\nCreating task pipeline with 50000 stages...\n  Created 10000 stages...\n  Created 20000 stages...\n  Created 30000 stages...\n  Created 40000 stages...\nCreated 50000 stages in 2025ms\nDAG Valid: true\n\n=== MASSIVE SCALE SUMMARY ===\nTotal Agents: 100000\nTotal Stages: 50000\nTotal Time: 6140ms\nMemory efficient Bash implementation\n\n============================================================\n  NeuralBlitz v50.0 Bash Demo Complete\n============================================================\n"
+      }
+    }
+  ]
+}

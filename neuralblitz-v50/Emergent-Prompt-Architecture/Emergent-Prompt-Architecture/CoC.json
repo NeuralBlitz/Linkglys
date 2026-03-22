@@ -1,0 +1,285 @@
+{
+  "type": "object",
+  "properties": {
+    "system_uuid": {
+      "type": "string",
+      "format": "uuid",
+      "description": "550e8400-e29b-41d4-a716-446655440001"
+    },
+    "artifact_identifier": {
+      "type": "string",
+      "description": "NBX:v20:DOC:COC1",
+      "pattern": "^NBX:v20:(SYS|ART|LOG):[A-Z0-9]{4}$"
+    },
+    "classification_type": {
+      "type": "string",
+      "description": "Governance_Document",
+      "enum": [
+        "Architectural_Blueprint",
+        "Operational_Manifest",
+        "Governance_Document"
+      ]
+    },
+    "display_title": {
+      "type": "string",
+      "example": "EPA Code of Conduct v1.0"
+    },
+    "temporal_epoch": {
+      "type": "string",
+      "description": "ΩZ+50",
+      "pattern": "^ΩZ\\+[0-9]+$"
+    },
+    "substrate_parameters": {
+      "type": "object",
+      "description": "Substrate configuration for ethical enforcement",
+      "properties": {
+        "rho_density": {
+          "type": "number",
+          "description": "0.99"
+        },
+        "theta_phase": {
+          "type": "number",
+          "description": "0.0"
+        },
+        "gamma_resonance": {
+          "type": "number",
+          "description": "1.0"
+        }
+      }
+    },
+    "governance_mesh": {
+      "type": "object",
+      "description": "Governance state during document generation",
+      "required": ["charter_bindings", "cect_state", "sentia_guard_state"],
+      "properties": {
+        "charter_bindings": {
+          "type": "object",
+          "properties": {
+            "active_clauses": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "pattern": "^ϕ[0-9]{1,2}$"
+              },
+              "description": ["ϕ1", "ϕ22", "ϕ6"]
+            }
+          }
+        },
+        "cect_state": {
+          "type": "object",
+          "description": "CECT State",
+          "properties": {
+            "stiffness_lambda": {
+              "type": "number",
+              "description": "0.95"
+            },
+            "violation_potential": {
+              "type": "number",
+              "description": "0.0"
+            }
+          }
+        },
+        "sentia_guard_state": {
+          "type": "object",
+          "description": "SentiaGuard State",
+          "properties": {
+            "operational_mode": {
+              "type": "string",
+              "enum": [
+                "Green_Exploration",
+                "Amber_Balanced",
+                "Red_Hard_Guard"
+              ]
+            },
+            "current_threat_level": {
+              "type": "string",
+              "enum": ["nominal", "elevated", "critical"]
+            }
+          }
+        },
+        "judex_state": {
+          "type": "object",
+          "description": "Judex State",
+          "properties": {
+            "quorum_status": {
+              "type": "string",
+              "enum": ["idle", "pending_vote", "in_session"]
+            },
+            "last_quorum_stamp": {
+              "type": "string",
+              "description": "TS-2025-10-27-09:05"
+            }
+          }
+        }
+      }
+    },
+    "cognitive_state": {
+      "type": "object",
+      "description": "Cognitive state snapshot",
+      "properties": {
+        "nce_mode": {
+          "type": "string",
+          "enum": ["Sentio", "Dynamo"],
+          "description": "Sentio"
+        },
+        "active_kernels": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^CK:[A-Za-z]+/[A-Za-z0-9]+$"
+          },
+          "description": ["CK:Ethos/Guard", "CK:DocGen/Standard"]
+        },
+        "meta_mind_state": {
+          "type": "object",
+          "properties": {
+            "active_plan_id": {
+              "type": "string",
+              "description": "Plan-Community-Safety"
+            },
+            "recursive_drift_magnitude": {
+              "type": "number",
+              "description": "0.001"
+            }
+          }
+        },
+        "reflexael_core_state": {
+          "type": "object",
+          "properties": {
+            "affective_valence": {
+              "type": "number",
+              "description": "0.9"
+            },
+            "identity_coherence": {
+              "type": "number",
+              "description": "1.0"
+            }
+          }
+        }
+      }
+    },
+    "interfaces": {
+      "type": "object",
+      "description": "IO State",
+      "properties": {
+        "halic_interface": {
+          "type": "object",
+          "properties": {
+            "active_persona": {
+              "type": "string",
+              "description": "NeuralBlitz_Steward"
+            },
+            "trust_level": {
+              "type": "number",
+              "description": "0.98"
+            }
+          }
+        },
+        "io_channels": {
+          "type": "object",
+          "properties": {
+            "input_streams": {
+              "type": "array",
+              "items": { "type": "string" }
+            },
+            "output_streams": {
+              "type": "array",
+              "items": { "type": "string" }
+            }
+          }
+        }
+      }
+    },
+    "telemetry_metrics": {
+      "type": "object",
+      "description": "Telemetry",
+      "properties": {
+        "veritas_metrics": {
+          "type": "object",
+          "properties": {
+            "coherence_index_vpce": {
+              "type": "number",
+              "description": "0.99"
+            },
+            "quarantined_channels": {
+              "type": "integer",
+              "description": "0"
+            }
+          }
+        },
+        "system_vitals": {
+          "type": "object",
+          "properties": {
+            "activation_flux": {
+              "type": "number",
+              "description": "30.5"
+            },
+            "entropy_production_rate": {
+              "type": "number",
+              "description": "0.01"
+            }
+          }
+        }
+      }
+    },
+    "configuration_settings": {
+      "type": "object",
+      "description": "Config",
+      "properties": {
+        "entropy_limit": {
+          "type": "number",
+          "description": "0.1"
+        },
+        "resource_quotas": {
+          "type": "object",
+          "properties": {
+            "cpu_limit": { "type": "string" },
+            "memory_limit": { "type": "string" }
+          }
+        },
+        "security_profile": {
+          "type": "string",
+          "enum": ["strict", "balanced", "exploratory"]
+        }
+      }
+    },
+    "provenance_block": {
+      "type": "object",
+      "description": "Provenance",
+      "required": [
+        "nbhs512_digest",
+        "causal_anchor"
+      ],
+      "properties": {
+        "nbhs512_digest": {
+          "type": "string",
+          "minLength": 128,
+          "maxLength": 128,
+          "description": "c7b8a9d0e1f2a3b4c5d6e7f8a9b0c1d2e3f4a5b6c7d8e9f0a1b2c3d4e5f6a7b8"
+        },
+        "causal_anchor": {
+          "type": "string",
+          "description": "DAG#b2c3d4e5",
+          "pattern": "^DAG#[a-f0-9]+$"
+        },
+        "integrity_signatures": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "signer": { "type": "string", "description": "SentiaGuard" },
+              "scheme": { "type": "string", "description": "Ed25519" },
+              "signature": { "type": "string", "description": "sig_hex_string" }
+            }
+          }
+        }
+      }
+    }
+  },
+  "required": [
+    "artifact_identifier",
+    "classification_type",
+    "governance_mesh",
+    "provenance_block"
+  ]
+}
