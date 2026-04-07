@@ -46,8 +46,8 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 # Import existing cognitive and AI systems
 try:
-    from lrs_agents.lrs.cognitive.cognitive_integration_demo import CognitiveAnalyzer
-    from lrs_agents.lrs.cognitive.multi_agent_coordination import MultiAgentCoordinator
+    from lrs.cognitive.cognitive_integration_demo import CognitiveAnalyzer
+    from lrs.cognitive.multi_agent_coordination import MultiAgentCoordinator
 
     COGNITIVE_AVAILABLE = True
 except ImportError:
@@ -236,9 +236,7 @@ class CodeGenerator:
             },
         }
 
-    def generate_application(
-        self, requirements: ApplicationRequirements
-    ) -> GeneratedApplication:
+    def generate_application(self, requirements: ApplicationRequirements) -> GeneratedApplication:
         """Generate complete application based on requirements."""
         files = {}
         tests = {}
@@ -1062,16 +1060,12 @@ CMD ["npm", "start"]
         return "// Routes for Express.js application\\n// TODO: Implement routes"
 
     def _generate_js_database(self, req: ApplicationRequirements) -> str:
-        return (
-            "// Database layer for JavaScript application\\n// TODO: Implement database"
-        )
+        return "// Database layer for JavaScript application\\n// TODO: Implement database"
 
     def _generate_python_tests(self, req: ApplicationRequirements) -> Dict[str, str]:
         return {}
 
-    def _generate_javascript_tests(
-        self, req: ApplicationRequirements
-    ) -> Dict[str, str]:
+    def _generate_javascript_tests(self, req: ApplicationRequirements) -> Dict[str, str]:
         return {}
 
 
@@ -1103,16 +1097,12 @@ class QualityAssurance:
                     results["checks_passed"] += 1
                 else:
                     results["issues"].extend(check_result.get("issues", []))
-                results["recommendations"].extend(
-                    check_result.get("recommendations", [])
-                )
+                results["recommendations"].extend(check_result.get("recommendations", []))
             except Exception as e:
                 results["issues"].append(f"Check failed with error: {str(e)}")
 
         # Calculate overall score
-        results["overall_score"] = (
-            results["checks_passed"] / results["total_checks"]
-        ) * 100
+        results["overall_score"] = (results["checks_passed"] / results["total_checks"]) * 100
 
         return results
 
@@ -1136,9 +1126,7 @@ class QualityAssurance:
         recommendations = []
 
         # Check for main entry point
-        has_main = any(
-            'if __name__ == "__main__"' in content for content in app.files.values()
-        )
+        has_main = any('if __name__ == "__main__"' in content for content in app.files.values())
         if not has_main and app.language == ProgrammingLanguage.PYTHON:
             recommendations.append("Add main entry point for script execution")
 
@@ -1163,9 +1151,7 @@ class QualityAssurance:
             if filename.endswith(".py"):
                 lines = content.split("\\n")
                 imports = [
-                    line.strip()
-                    for line in lines
-                    if line.strip().startswith(("import ", "from "))
+                    line.strip() for line in lines if line.strip().startswith(("import ", "from "))
                 ]
 
                 for imp in imports:
@@ -1216,9 +1202,7 @@ class AutonomousCodeGenerator:
 
         # Step 2: Enhance requirements with cognitive analysis if available
         if self.cognitive_coordinator and COGNITIVE_AVAILABLE:
-            requirements = await self._enhance_requirements_cognitively(
-                requirements, description
-            )
+            requirements = await self._enhance_requirements_cognitively(requirements, description)
 
         # Step 3: Generate application
         application = self.code_generator.generate_application(requirements)
@@ -1250,9 +1234,7 @@ class AutonomousCodeGenerator:
         # For now, return as-is
         return requirements
 
-    def _create_deployment_package(
-        self, application: GeneratedApplication
-    ) -> Dict[str, Any]:
+    def _create_deployment_package(self, application: GeneratedApplication) -> Dict[str, Any]:
         """Create deployment package with all necessary files."""
         package = {
             "application": application,
@@ -1326,9 +1308,7 @@ async def demo_autonomous_generation():
             app = result["application"]
             quality = result["quality_report"]
 
-            print(
-                f"✅ Generated {req.language.value.capitalize()} application: {req.name}"
-            )
+            print(f"✅ Generated {req.language.value.capitalize()} application: {req.name}")
             print(f"🏗️  Framework: {req.framework or 'None'}")
             print(f"📊 Complexity: {req.complexity.capitalize()}")
             print(f"📁 Files: {len(app.files)}")
@@ -1341,9 +1321,7 @@ async def demo_autonomous_generation():
             print(f"❌ Generation failed: {str(e)}")
 
     print("\\n🎉 Autonomous code generation demo complete!")
-    print(
-        "💡 The AI can now create complete applications from natural language descriptions!"
-    )
+    print("💡 The AI can now create complete applications from natural language descriptions!")
 
 
 if __name__ == "__main__":

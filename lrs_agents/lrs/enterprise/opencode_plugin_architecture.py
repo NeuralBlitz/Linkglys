@@ -131,7 +131,7 @@ class LRSPlugin(PluginInterface):
         """Initialize with LRS context."""
         try:
             # Import lightweight LRS if available
-            from lrs_agents.lrs.opencode.lightweight_lrs import LightweightHierarchicalPrecision
+            from lrs.opencode.lightweight_lrs import LightweightHierarchicalPrecision
 
             self.precision_tracker = LightweightHierarchicalPrecision()
             self._initialized = True
@@ -327,18 +327,14 @@ class PluginRegistry:
         if "hooks" in capabilities:
             for hook_name, hook_func in capabilities["hooks"].items():
                 if hook_name in self.hooks:
-                    self.hooks[hook_name] = [
-                        h for h in self.hooks[hook_name] if h != hook_func
-                    ]
+                    self.hooks[hook_name] = [h for h in self.hooks[hook_name] if h != hook_func]
 
         # Remove event listeners
         if "events" in capabilities:
             for event_name, listener_func in capabilities["events"].items():
                 if event_name in self.event_listeners:
                     self.event_listeners[event_name] = [
-                        l
-                        for l in self.event_listeners[event_name]
-                        if l != listener_func
+                        l for l in self.event_listeners[event_name] if l != listener_func
                     ]
 
     def execute_hook(self, hook_name: str, *args, **kwargs) -> List[Any]:
@@ -417,9 +413,7 @@ class PluginRegistry:
                 validation_result["metadata"] = metadata
                 validation_result["valid"] = True
             except Exception as e:
-                validation_result["errors"].append(
-                    f"Plugin instantiation failed: {str(e)}"
-                )
+                validation_result["errors"].append(f"Plugin instantiation failed: {str(e)}")
 
         except Exception as e:
             validation_result["errors"].append(f"Plugin validation error: {str(e)}")
@@ -485,9 +479,7 @@ class PluginRegistry:
             print(f"Could not load plugin registry: {e}")
 
 
-def create_plugin_template(
-    plugin_type: str = "tool", plugin_name: str = "MyPlugin"
-) -> str:
+def create_plugin_template(plugin_type: str = "tool", plugin_name: str = "MyPlugin") -> str:
     """Create a plugin template string."""
 
     if plugin_type == "tool":
@@ -499,7 +491,7 @@ A custom tool plugin for the OpenCode ↔ LRS-Agents platform.
 
 from sys import path
 path.insert(0, '.')
-from lrs_agents.lrs.enterprise.opencode_plugin_architecture import ToolPlugin, PluginMetadata
+from lrs.enterprise.opencode_plugin_architecture import ToolPlugin, PluginMetadata
 from typing import Dict, List, Any
 
 
@@ -612,7 +604,7 @@ class {plugin_name}(ToolPlugin):
 An Active Inference enhanced plugin for the OpenCode ↔ LRS-Agents platform.
 """
 
-from lrs_agents.lrs.enterprise.opencode_plugin_architecture import LRSPlugin, PluginMetadata
+from lrs.enterprise.opencode_plugin_architecture import LRSPlugin, PluginMetadata
 from typing import Dict, List, Any
 
 

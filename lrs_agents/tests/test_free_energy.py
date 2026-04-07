@@ -7,7 +7,7 @@ from lrs.core.free_energy import (
     calculate_epistemic_value,
     calculate_pragmatic_value,
     calculate_expected_free_energy,
-    # evaluate_policy,  # REMOVE THIS LINE
+    evaluate_policy,
     precision_weighted_selection,
     PolicyEvaluation,
 )

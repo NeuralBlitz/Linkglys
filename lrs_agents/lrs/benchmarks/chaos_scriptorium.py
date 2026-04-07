@@ -129,15 +129,18 @@ class ChaosEnvironment:
             self._set_permissions(readable=True)
 
     def _set_permissions(self, readable: bool):
-        """Set file permissions"""
-        if readable:
-            # Make readable
-            os.chmod(self.vault_dir, 0o755)
-            os.chmod(self.key_path, 0o644)
-        else:
-            # Make locked (no read permission)
-            os.chmod(self.vault_dir, 0o000)
-            os.chmod(self.key_path, 0o000)
+        """Set file permissions (ignore failures in restricted environments)"""
+        modes = [
+            (self.vault_dir, 0o755 if readable else 0o000),
+            (self.key_path, 0o644 if readable else 0o000),
+        ]
+        for path, mode in modes:
+            try:
+                os.chmod(path, mode)
+            except (PermissionError, OSError):
+                # In sandboxed environments, chmod may not be permitted.
+                # The logical state (self.locked) is still updated; we ignore permission errors.
+                pass
 
     def is_locked(self) -> bool:
         """Check if files are currently locked"""
@@ -147,11 +150,7 @@ class ChaosEnvironment:
         """Reset environment state"""
         self.step_count = 0
         self.locked = False
-        try:
-            self._set_permissions(readable=True)
-        except PermissionError:
-            # If locked, can't chmod - just reset internal state
-            pass
+        self._set_permissions(readable=True)
 
     def cleanup(self):
         """Remove temporary directory"""

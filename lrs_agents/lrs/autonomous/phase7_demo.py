@@ -35,7 +35,7 @@ from typing import Dict, Any
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 # Import the autonomous code generation system
-from lrs_agents.lrs.autonomous.phase7_autonomous_code_generation import AutonomousCodeGenerator
+from lrs.autonomous.phase7_autonomous_code_generation import AutonomousCodeGenerator
 
 
 class AutonomousCodeGenerationDemo:
@@ -93,9 +93,7 @@ class AutonomousCodeGenerationDemo:
 
             try:
                 # Generate application
-                result = await self.generator.generate_from_description(
-                    scenario["description"]
-                )
+                result = await self.generator.generate_from_description(scenario["description"])
 
                 generation_time = asyncio.get_event_loop().time() - start_time
 
@@ -168,9 +166,7 @@ class AutonomousCodeGenerationDemo:
 
         # Show sample code
         main_files = [
-            f
-            for f in app.files.keys()
-            if f.endswith((".py", ".js")) and "test" not in f.lower()
+            f for f in app.files.keys() if f.endswith((".py", ".js")) and "test" not in f.lower()
         ]
         if main_files:
             main_file = main_files[0]
@@ -179,9 +175,7 @@ class AutonomousCodeGenerationDemo:
             for i, line in enumerate(code_lines, 1):
                 print("2d")
             if len(app.files[main_file].split("\n")) > 15:
-                print(
-                    f"  ... ({len(app.files[main_file].split(chr(10))) - 15} more lines)"
-                )
+                print(f"  ... ({len(app.files[main_file].split(chr(10))) - 15} more lines)")
             print()
 
     async def display_demo_summary(self):
@@ -195,9 +189,7 @@ class AutonomousCodeGenerationDemo:
         print("📊 Demo Statistics:")
         print(f"  • Total Scenarios: {total_scenarios}")
         print(f"  • Successful Generations: {successful_generations}")
-        print(
-            f"  • Success Rate: {(successful_generations / total_scenarios) * 100:.1f}%"
-        )
+        print(f"  • Success Rate: {(successful_generations / total_scenarios) * 100:.1f}%")
 
         if self.demo_results:
             avg_quality = (
@@ -208,10 +200,7 @@ class AutonomousCodeGenerationDemo:
                 )
                 / successful_generations
             )
-            avg_time = (
-                sum(r["generation_time"] for r in self.demo_results)
-                / successful_generations
-            )
+            avg_time = sum(r["generation_time"] for r in self.demo_results) / successful_generations
 
             print(f"  • Average Quality Score: {avg_quality:.1f}%")
             print(f"  • Average Generation Time: {avg_time:.2f} seconds")
@@ -259,9 +248,7 @@ class AutonomousCodeGenerationDemo:
         results_data = {
             "demo_timestamp": datetime.now().isoformat(),
             "total_scenarios": len(self.demo_results),
-            "successful_generations": len(
-                [r for r in self.demo_results if "result" in r]
-            ),
+            "successful_generations": len([r for r in self.demo_results if "result" in r]),
             "results": [],
         }
 
@@ -334,16 +321,10 @@ async def main():
     """Main demo entry point."""
     import argparse
 
-    parser = argparse.ArgumentParser(
-        description="Phase 7: Autonomous Code Generation Demo"
-    )
-    parser.add_argument(
-        "--full", action="store_true", help="Run full comprehensive demo"
-    )
+    parser = argparse.ArgumentParser(description="Phase 7: Autonomous Code Generation Demo")
+    parser.add_argument("--full", action="store_true", help="Run full comprehensive demo")
     parser.add_argument("--quick", action="store_true", help="Run quick demo")
-    parser.add_argument(
-        "--description", type=str, help="Custom description to generate"
-    )
+    parser.add_argument("--description", type=str, help="Custom description to generate")
 
     args = parser.parse_args()
 

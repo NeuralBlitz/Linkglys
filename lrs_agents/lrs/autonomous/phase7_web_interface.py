@@ -35,7 +35,7 @@ import secrets
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 # Import the autonomous code generation system
-from lrs_agents.lrs.autonomous.phase7_autonomous_code_generation import AutonomousCodeGenerator
+from lrs.autonomous.phase7_autonomous_code_generation import AutonomousCodeGenerator
 
 # Initialize the generator
 generator = AutonomousCodeGenerator()

@@ -374,6 +374,26 @@ class SharedStateManager:
 _state_manager = SharedStateManager()
 
 
+class SharedWorldState:
+    """Compatibility class - wraps SharedStateManager for legacy code."""
+
+    def __init__(self):
+        self._manager = SharedStateManager()
+
+    def update(self, agent_id: str, updates: dict):
+        import asyncio
+
+        asyncio.create_task(self._manager.set_state(agent_id, updates, StateType.LRS_AGENT_STATE))
+
+    def get_agent_state(self, agent_id: str):
+        import asyncio
+
+        return asyncio.run(self._manager.get_state(agent_id, {}))
+
+    def get_all_states(self):
+        return self._manager.state.lrs_agent_states
+
+
 def get_state_manager() -> SharedStateManager:
     """Get the global state manager instance."""
     return _state_manager

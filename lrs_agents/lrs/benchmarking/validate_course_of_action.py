@@ -65,7 +65,7 @@ def test_lrs_opencode_integration():
     print("-" * 40)
 
     try:
-        from lrs_agents.lrs.opencode.lrs_opencode_integration import (
+        from lrs.opencode.lrs_opencode_integration import (
             ActiveInferenceAnalyzer,
             PolicyEvaluator,
         )
@@ -94,7 +94,7 @@ def test_lrs_opencode_integration():
     print("-" * 44)
 
     try:
-        from lrs_agents.lrs.opencode.lrs_opencode_integration import opencode_lrs_command
+        from lrs.opencode.lrs_opencode_integration import opencode_lrs_command
 
         # Test help command
         help_result = opencode_lrs_command([])

@@ -21,9 +21,9 @@ import logging
 import numpy as np
 
 # Import LRS components
-from lrs_agents.lrs.multi_agent.shared_state import SharedWorldState
-from lrs_agents.lrs.neuralblitz_integration.shared_state import UnifiedState
-from lrs_agents.lrs.enterprise.agent_lifecycle_manager import EnterpriseAgentManager, AgentStatus
+from lrs.multi_agent.shared_state import SharedWorldState
+from lrs.neuralblitz_integration.shared_state import UnifiedState
+from lrs.enterprise.agent_lifecycle_manager import EnterpriseAgentManager, AgentStatus
 
 
 class PromptComplexity(Enum):

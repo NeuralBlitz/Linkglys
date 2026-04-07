@@ -15,7 +15,7 @@ from pathlib import Path
 from concurrent.futures import ThreadPoolExecutor, as_completed
 
 # Import our components
-from lrs_agents.lrs.opencode.lrs_opencode_integration import ActiveInferenceAnalyzer
+from lrs.opencode.lrs_opencode_integration import ActiveInferenceAnalyzer
 
 
 class LRSCache:
@@ -245,9 +245,7 @@ class OptimizedActiveInferenceAnalyzer(ActiveInferenceAnalyzer):
 
         return files
 
-    def _parallel_complexity_analysis(
-        self, files: List[Dict[str, Any]]
-    ) -> List[Dict[str, Any]]:
+    def _parallel_complexity_analysis(self, files: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
         """Parallel complexity analysis of files."""
 
         def analyze_file_complexity(file_data: Dict[str, Any]) -> Dict[str, Any]:
@@ -263,10 +261,7 @@ class OptimizedActiveInferenceAnalyzer(ActiveInferenceAnalyzer):
             }
 
         # Submit complexity analysis tasks
-        futures = [
-            self.executor.submit(analyze_file_complexity, file_data)
-            for file_data in files
-        ]
+        futures = [self.executor.submit(analyze_file_complexity, file_data) for file_data in files]
 
         # Collect results
         results = []
@@ -360,14 +355,10 @@ class OptimizedActiveInferenceAnalyzer(ActiveInferenceAnalyzer):
         if avg_complexity > 7.0:
             recommendations.append("High complexity detected - consider modularization")
         elif avg_complexity < 2.0:
-            recommendations.append(
-                "Code appears straightforward - good for rapid development"
-            )
+            recommendations.append("Code appears straightforward - good for rapid development")
 
         if total_files > 100:
-            recommendations.append(
-                "Large codebase - consider introducing architectural patterns"
-            )
+            recommendations.append("Large codebase - consider introducing architectural patterns")
 
         if len(languages) > 4:
             recommendations.append("Multi-language project - ensure consistent tooling")
@@ -376,9 +367,7 @@ class OptimizedActiveInferenceAnalyzer(ActiveInferenceAnalyzer):
         if ".py" in languages:
             py_files = languages.get(".py", 0)
             if py_files > 50:
-                recommendations.append(
-                    "Large Python codebase - consider type hints and testing"
-                )
+                recommendations.append("Large Python codebase - consider type hints and testing")
 
         return recommendations[:5]  # Limit recommendations
 

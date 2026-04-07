@@ -104,16 +104,21 @@ def calculate_pragmatic_value(
     step_cost = preferences.get("step_cost", -0.1)
 
     pragmatic = 0.0
-    discount_factor = 1.0
+    step_discount = 1.0
 
     for tool in policy:
-        p_success = tool.success_rate if hasattr(tool, "success_rate") else 0.5
+        # Get success rate from historical_stats if available
+        tool_name = tool.name if hasattr(tool, "name") else str(tool)
+        if historical_stats and tool_name in historical_stats:
+            p_success = historical_stats[tool_name].get("success_rate", 0.5)
+        else:
+            p_success = tool.success_rate if hasattr(tool, "success_rate") else 0.5
 
         # Expected reward for this step
         expected_reward = p_success * reward_success + (1 - p_success) * reward_error + step_cost
 
-        pragmatic += discount_factor * expected_reward
-        discount_factor *= discount_factor
+        pragmatic += step_discount * expected_reward
+        step_discount *= discount_factor
 
     return pragmatic
 
@@ -207,7 +212,12 @@ def evaluate_policy(
         pragmatic_value=pragmatic,
         total_G=total_G,
         expected_success_prob=expected_success_prob,
-        components={"epistemic": epistemic, "pragmatic": pragmatic, "policy_length": len(policy)},
+        components={
+            "epistemic": epistemic,
+            "pragmatic": pragmatic,
+            "policy_length": len(policy),
+            "tool_names": [tool.name if hasattr(tool, "name") else str(tool) for tool in policy],
+        },
     )
 
 
