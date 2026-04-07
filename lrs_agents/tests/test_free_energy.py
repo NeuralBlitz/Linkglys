@@ -139,17 +139,19 @@ class TestExpectedFreeEnergy:
     """Test full G calculation"""
 
     def test_G_calculation(self):
-        """G = Epistemic - Pragmatic"""
+        """G = weighted epistemic - pragmatic"""
         policy = [MockTool("tool")]
         preferences = {"success": 5.0}
 
         epistemic = calculate_epistemic_value(policy, {}, None)
         pragmatic = calculate_pragmatic_value(policy, {}, preferences, None)
 
-        G = calculate_expected_free_energy(policy, {}, preferences, None)
+        G = calculate_expected_free_energy(policy, {}, preferences, precision=0.5)
 
-        # Should equal epistemic - pragmatic
-        assert abs(G - (epistemic - pragmatic)) < 0.01
+        # G = (1-precision) * epistemic - pragmatic
+        # With precision=0.5: G = 0.5 * epistemic - pragmatic
+        expected_G = 0.5 * epistemic - pragmatic
+        assert abs(G - expected_G) < 0.01
 
     def test_lower_G_is_better(self):
         """Lower G should indicate better policy"""

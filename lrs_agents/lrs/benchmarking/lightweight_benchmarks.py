@@ -19,8 +19,7 @@ from typing import List, Dict, Any, Optional
 # Import our lightweight LRS implementation
 from lrs.opencode.lightweight_lrs import (
     LightweightHierarchicalPrecision,
-    LightweightOpencodeTool,
-    LightweightSimplifiedLRSAgent,
+    create_lightweight_lrs_agent,
 )
 
 
