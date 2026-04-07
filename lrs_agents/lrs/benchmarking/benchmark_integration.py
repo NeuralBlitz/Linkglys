@@ -12,7 +12,7 @@ from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
 
 # Import our lightweight benchmarks
-from lrs_agents.lrs.benchmarking.lightweight_benchmarks import (
+from .lightweight_benchmarks import (
     LightweightChaosBenchmark,
     LightweightGAIABenchmark,
     run_lightweight_benchmarks,

@@ -12,8 +12,8 @@ import statistics
 from typing import Dict, Any
 
 # Import our optimized and calibrated components
-from lrs_agents.lrs.benchmarking.lightweight_benchmarks import LightweightChaosBenchmark, LightweightGAIABenchmark
-from lrs_agents.lrs.enterprise.performance_optimization import run_optimized_analysis
+from .lightweight_benchmarks import LightweightChaosBenchmark, LightweightGAIABenchmark
+from lrs.enterprise.performance_optimization import run_optimized_analysis
 
 
 def run_comprehensive_benchmark_suite(num_trials: int = 50) -> Dict[str, Any]:
@@ -112,12 +112,8 @@ def run_comprehensive_benchmark_suite(num_trials: int = 50) -> Dict[str, Any]:
     print("🎯 Key Performance Indicators:")
     print(f"   Overall Success Rate: {overall_analysis['overall_success_rate']:.1%}")
     print(f"   Average Precision: {overall_analysis['avg_precision']:.3f}")
-    print(
-        f"   Adaptation Effectiveness: {overall_analysis['adaptation_effectiveness']:.3f}"
-    )
-    print(
-        f"   Benchmark Efficiency: {overall_analysis['benchmark_efficiency']:.2f}x baseline"
-    )
+    print(f"   Adaptation Effectiveness: {overall_analysis['adaptation_effectiveness']:.3f}")
+    print(f"   Benchmark Efficiency: {overall_analysis['benchmark_efficiency']:.2f}x baseline")
     print()
 
     # Precision Calibration Effectiveness
@@ -130,12 +126,8 @@ def run_comprehensive_benchmark_suite(num_trials: int = 50) -> Dict[str, Any]:
 
     print("📈 Calibration Effectiveness:")
     print(f"   Domains Calibrated: {calibration_analysis['calibrated_domains']}")
-    print(
-        f"   Performance Improvement: {calibration_analysis['performance_improvement']:.1%}"
-    )
-    print(
-        f"   Adaptation Optimization: {calibration_analysis['adaptation_efficiency']:.1%}"
-    )
+    print(f"   Performance Improvement: {calibration_analysis['performance_improvement']:.1%}")
+    print(f"   Adaptation Optimization: {calibration_analysis['adaptation_efficiency']:.1%}")
     print()
 
     # Save comprehensive results
@@ -215,9 +207,7 @@ def analyze_gaia_performance(gaia_results: Dict[str, Any]) -> Dict[str, Any]:
 
     metrics = {
         "reasoning_complexity_score": gaia_results["success_rate"],
-        "avg_precision_update": statistics.mean(precision_updates)
-        if precision_updates
-        else 0,
+        "avg_precision_update": statistics.mean(precision_updates) if precision_updates else 0,
         "execution_time_variance": statistics.stdev(execution_times)
         if len(execution_times) > 1
         else 0,
@@ -259,14 +249,11 @@ def run_code_analysis_performance_test() -> Dict[str, Any]:
         "avg_analysis_time": statistics.mean(analysis_times),
         "min_analysis_time": min(analysis_times),
         "max_analysis_time": max(analysis_times),
-        "analysis_time_std": statistics.stdev(analysis_times)
-        if len(analysis_times) > 1
-        else 0,
+        "analysis_time_std": statistics.stdev(analysis_times) if len(analysis_times) > 1 else 0,
         "cache_performance": {
             "hits": cache_hits,
             "hit_rate": cache_hit_rate,
-            "efficiency": cache_hit_rate * 0.9
-            + (1 - cache_hit_rate) * 0.1,  # Weighted efficiency
+            "efficiency": cache_hit_rate * 0.9 + (1 - cache_hit_rate) * 0.1,  # Weighted efficiency
         },
         "target_achievement": all(t < 5.0 for t in analysis_times),  # All runs under 5s
     }
@@ -279,9 +266,7 @@ def analyze_overall_performance(results: Dict[str, Any]) -> Dict[str, Any]:
     gaia_success = results["gaia"]["results"]["success_rate"]
 
     # Weighted overall success rate
-    overall_success = (chaos_success * 0.6) + (
-        gaia_success * 0.4
-    )  # Weight chaos more heavily
+    overall_success = (chaos_success * 0.6) + (gaia_success * 0.4)  # Weight chaos more heavily
 
     # Performance efficiency (compared to baseline)
     baseline_analysis_time = 24.11  # From our earlier measurement
@@ -292,9 +277,7 @@ def analyze_overall_performance(results: Dict[str, Any]) -> Dict[str, Any]:
     chaos_precision = results["chaos_scriptorium"]["performance_metrics"].get(
         "precision_stability", 0.5
     )
-    gaia_precision = results["gaia"]["performance_metrics"].get(
-        "avg_precision_update", 0.5
-    )
+    gaia_precision = results["gaia"]["performance_metrics"].get("avg_precision_update", 0.5)
 
     avg_precision = (chaos_precision + gaia_precision) / 2
 
@@ -316,8 +299,7 @@ def analyze_overall_performance(results: Dict[str, Any]) -> Dict[str, Any]:
             "success_rate_target": overall_success > 0.7,  # >70% overall success
             "precision_target": avg_precision > 0.6,  # >0.6 average precision
             "efficiency_target": efficiency_gain > 10,  # >10x speedup
-            "adaptation_target": adaptation_score
-            > 0.4,  # >0.4 adaptation effectiveness
+            "adaptation_target": adaptation_score > 0.4,  # >0.4 adaptation effectiveness
         },
     }
 
@@ -333,9 +315,7 @@ def analyze_calibration_effectiveness() -> Dict[str, Any]:
     # In real implementation, this would compare calibrated vs uncalibrated performance
     base_performance = 0.65  # Baseline success rate
     calibrated_performance = 0.78  # With calibration
-    performance_improvement = (
-        calibrated_performance - base_performance
-    ) / base_performance
+    performance_improvement = (calibrated_performance - base_performance) / base_performance
 
     # Adaptation efficiency (how well system adapts to different domains)
     adaptation_efficiency = 0.82  # Based on domain-specific parameter tuning
@@ -344,8 +324,7 @@ def analyze_calibration_effectiveness() -> Dict[str, Any]:
         "calibrated_domains": calibrated_domains,
         "performance_improvement": performance_improvement,
         "adaptation_efficiency": adaptation_efficiency,
-        "calibration_coverage": calibrated_domains
-        / 10,  # Assuming 10 total possible domains
+        "calibration_coverage": calibrated_domains / 10,  # Assuming 10 total possible domains
         "optimization_score": (performance_improvement + adaptation_efficiency) / 2,
     }
 
@@ -408,9 +387,7 @@ def analyze_gaia_performance(gaia_results: Dict[str, Any]) -> Dict[str, Any]:
 
     metrics = {
         "reasoning_complexity_score": gaia_results["success_rate"],
-        "avg_precision_update": statistics.mean(precision_updates)
-        if precision_updates
-        else 0,
+        "avg_precision_update": statistics.mean(precision_updates) if precision_updates else 0,
         "execution_time_variance": statistics.stdev(execution_times)
         if len(execution_times) > 1
         else 0,
@@ -450,9 +427,7 @@ def run_code_analysis_performance_test() -> Dict[str, Any]:
         "avg_analysis_time": statistics.mean(analysis_times),
         "min_analysis_time": min(analysis_times),
         "max_analysis_time": max(analysis_times),
-        "analysis_time_std": statistics.stdev(analysis_times)
-        if len(analysis_times) > 1
-        else 0,
+        "analysis_time_std": statistics.stdev(analysis_times) if len(analysis_times) > 1 else 0,
         "cache_performance": {
             "hits": cache_hits,
             "hit_rate": cache_hit_rate,
@@ -472,17 +447,13 @@ def analyze_overall_performance(results: Dict[str, Any]) -> Dict[str, Any]:
     baseline_analysis_time = 24.11
     actual_analysis_time = results["code_analysis_performance"]["avg_analysis_time"]
     efficiency_gain = (
-        baseline_analysis_time / actual_analysis_time
-        if actual_analysis_time > 0
-        else 1.0
+        baseline_analysis_time / actual_analysis_time if actual_analysis_time > 0 else 1.0
     )
 
     chaos_precision = results["chaos_scriptorium"]["performance_metrics"].get(
         "precision_stability", 0.5
     )
-    gaia_precision = results["gaia"]["performance_metrics"].get(
-        "avg_precision_update", 0.5
-    )
+    gaia_precision = results["gaia"]["performance_metrics"].get("avg_precision_update", 0.5)
     avg_precision = (chaos_precision + gaia_precision) / 2
 
     chaos_adaptation = results["chaos_scriptorium"]["performance_metrics"].get(
@@ -513,9 +484,7 @@ def analyze_calibration_effectiveness() -> Dict[str, Any]:
 
     base_performance = 0.65
     calibrated_performance = 0.78
-    performance_improvement = (
-        calibrated_performance - base_performance
-    ) / base_performance
+    performance_improvement = (calibrated_performance - base_performance) / base_performance
 
     adaptation_efficiency = 0.82
 

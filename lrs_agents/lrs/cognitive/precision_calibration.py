@@ -14,7 +14,7 @@ from typing import Dict, Any, List, Optional
 from dataclasses import dataclass, field
 
 # Import our lightweight LRS components
-from lrs_agents.lrs.opencode.lightweight_lrs import LightweightHierarchicalPrecision
+from lrs.opencode.lightweight_lrs import LightweightHierarchicalPrecision
 
 
 @dataclass
@@ -167,9 +167,7 @@ class PrecisionCalibrator:
 
             # Adapt based on task context
             if task_context:
-                calibration = self._adapt_calibration_for_context(
-                    calibration, task_context
-                )
+                calibration = self._adapt_calibration_for_context(calibration, task_context)
 
         # Create and calibrate precision system
         precision = LightweightHierarchicalPrecision()
@@ -261,9 +259,7 @@ class PrecisionCalibrator:
 
         return adapted
 
-    def record_performance(
-        self, domain: str, task_id: str, performance: Dict[str, Any]
-    ):
+    def record_performance(self, domain: str, task_id: str, performance: Dict[str, Any]):
         """Record performance data for calibration improvement."""
 
         if domain not in self.performance_history:
@@ -287,10 +283,7 @@ class PrecisionCalibrator:
     def analyze_performance_trends(self, domain: str) -> Dict[str, Any]:
         """Analyze performance trends to suggest calibration improvements."""
 
-        if (
-            domain not in self.performance_history
-            or not self.performance_history[domain]
-        ):
+        if domain not in self.performance_history or not self.performance_history[domain]:
             return {"status": "insufficient_data"}
 
         history = self.performance_history[domain]
@@ -304,9 +297,7 @@ class PrecisionCalibrator:
 
         for entry in recent_entries:
             perf = entry["performance"]
-            precision_trends.append(
-                perf.get("final_precision", {}).get("execution", 0.5)
-            )
+            precision_trends.append(perf.get("final_precision", {}).get("execution", 0.5))
             adaptation_frequencies.append(perf.get("adaptation_count", 0))
             success_rates.append(1.0 if perf.get("success", False) else 0.0)
 
@@ -319,20 +310,14 @@ class PrecisionCalibrator:
         recommendations = []
 
         if avg_precision < 0.4:
-            recommendations.append(
-                "Increase initial precision or reduce adaptation threshold"
-            )
+            recommendations.append("Increase initial precision or reduce adaptation threshold")
         elif avg_precision > 0.8:
             recommendations.append("Consider more conservative learning rates")
 
         if avg_adaptations > 3:
-            recommendations.append(
-                "Increase adaptation threshold to reduce over-adaptation"
-            )
+            recommendations.append("Increase adaptation threshold to reduce over-adaptation")
         elif avg_adaptations < 1:
-            recommendations.append(
-                "Decrease adaptation threshold for more responsiveness"
-            )
+            recommendations.append("Decrease adaptation threshold for more responsiveness")
 
         if avg_success < 0.6:
             recommendations.append("Review task characteristics and domain calibration")
@@ -344,9 +329,7 @@ class PrecisionCalibrator:
             "avg_adaptations": avg_adaptations,
             "avg_success_rate": avg_success,
             "recommendations": recommendations,
-            "trend_analysis": self._calculate_trends(
-                precision_trends, adaptation_frequencies
-            ),
+            "trend_analysis": self._calculate_trends(precision_trends, adaptation_frequencies),
         }
 
     def _calculate_trends(
@@ -416,8 +399,7 @@ class PrecisionCalibrator:
             "version": "1.0",
             "timestamp": time.time(),
             "domain_calibrations": {
-                domain: calib.__dict__
-                for domain, calib in self.domain_calibrations.items()
+                domain: calib.__dict__ for domain, calib in self.domain_calibrations.items()
             },
             "performance_history_summary": {
                 domain: {
@@ -443,9 +425,7 @@ class PrecisionCalibrator:
         for domain, calib_data in profile.get("domain_calibrations", {}).items():
             self.domain_calibrations[domain] = DomainCalibration(**calib_data)
 
-        print(
-            f"Imported {len(self.domain_calibrations)} domain calibrations from {filepath}"
-        )
+        print(f"Imported {len(self.domain_calibrations)} domain calibrations from {filepath}")
 
 
 # Global calibrator instance

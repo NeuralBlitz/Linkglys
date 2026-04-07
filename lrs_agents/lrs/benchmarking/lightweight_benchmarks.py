@@ -17,11 +17,10 @@ from pathlib import Path
 from typing import List, Dict, Any, Optional
 
 # Import our lightweight LRS implementation
-from lrs_agents.lrs.opencode.lightweight_lrs import (
+from lrs.opencode.lightweight_lrs import (
     LightweightHierarchicalPrecision,
-    LightweightFreeEnergyCalculator,
-    LightweightPolicySelector,
-    create_lightweight_lrs_agent,
+    LightweightOpencodeTool,
+    LightweightSimplifiedLRSAgent,
 )
 
 
@@ -273,9 +272,7 @@ class LightweightChaosBenchmark:
         successes = [r for r in results if r["success"]]
         success_rate = len(successes) / len(results)
 
-        avg_steps = (
-            sum(r["steps"] for r in successes) / len(successes) if successes else 0
-        )
+        avg_steps = sum(r["steps"] for r in successes) / len(successes) if successes else 0
         avg_time = sum(r["execution_time"] for r in results) / len(results)
 
         return {
@@ -373,9 +370,7 @@ class LightweightGAIABenchmark:
         results = []
 
         for i, task in enumerate(tasks):
-            print(
-                f"  Task {i + 1}/{len(tasks)}: {task['task_id']} ({task['difficulty']})"
-            )
+            print(f"  Task {i + 1}/{len(tasks)}: {task['task_id']} ({task['difficulty']})")
             result = self.run_task(task)
             results.append(result)
 

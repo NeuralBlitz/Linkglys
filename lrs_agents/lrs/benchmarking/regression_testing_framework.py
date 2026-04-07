@@ -485,10 +485,10 @@ def create_sample_regression_tests(framework: RegressionTestingFramework):
     """Create sample regression tests for the integration."""
 
     # Core functionality tests
-    def test_lrs_integration():
-        """Test basic LRS integration."""
-        try:
-            from lrs_agents.lrs.opencode.lightweight_lrs import LightweightHierarchicalPrecision
+     def test_lrs_integration():
+         """Test basic LRS integration."""
+         try:
+             from lrs.opencode.lightweight_lrs import LightweightHierarchicalPrecision
 
             precision = LightweightHierarchicalPrecision()
             # Simulate some operations
@@ -504,7 +504,7 @@ def create_sample_regression_tests(framework: RegressionTestingFramework):
     def test_multi_agent_coordination():
         """Test multi-agent coordination system."""
         try:
-            from lrs_agents.lrs.cognitive.multi_agent_coordination import (
+            from lrs.cognitive.multi_agent_coordination import (
                 MultiAgentCoordinator,
                 create_specialized_agents,
             )
@@ -528,7 +528,7 @@ def create_sample_regression_tests(framework: RegressionTestingFramework):
     def test_performance_optimization():
         """Test performance optimization systems."""
         try:
-            from lrs_agents.lrs.enterprise.performance_optimization import run_optimized_analysis
+            from lrs.enterprise.performance_optimization import run_optimized_analysis
 
             start = time.time()
             result = run_optimized_analysis(".", use_cache=True)
@@ -546,7 +546,7 @@ def create_sample_regression_tests(framework: RegressionTestingFramework):
     def test_enterprise_security():
         """Test enterprise security features."""
         try:
-            from lrs_agents.lrs.enterprise.enterprise_security_monitoring import EnterpriseSecurityManager
+            from lrs.enterprise.enterprise_security_monitoring import EnterpriseSecurityManager
 
             security = EnterpriseSecurityManager()
 

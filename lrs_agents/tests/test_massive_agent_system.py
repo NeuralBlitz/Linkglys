@@ -21,7 +21,7 @@ import tempfile
 import os
 
 # Import components to test
-from lrs_agents.lrs.enterprise.agent_lifecycle_manager import (
+from lrs.enterprise.agent_lifecycle_manager import (
     EnterpriseAgentManager,
     AgentStatus,
     AgentType,
@@ -30,12 +30,12 @@ from lrs_agents.lrs.enterprise.agent_lifecycle_manager import (
     StageConfiguration,
     FaultToleranceManager,
 )
-from lrs_agents.lrs.enterprise.epa_integration import (
+from lrs.enterprise.epa_integration import (
     EPAIntegrator,
     SemanticDomain,
     PromptComplexity,
 )
-from lrs_agents.lrs.neuralblitz_integration.shared_state import SharedWorldState
+from lrs.neuralblitz_integration.shared_state import SharedWorldState
 
 
 class TestAgentLifecycle:

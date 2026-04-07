@@ -47,6 +47,7 @@ tests/test_integration_langgraph.py
 tests/test_langchain_adapter.py
 tests/test_lens.py
 tests/test_llm_policy_generator.py
+tests/test_massive_agent_system.py
 tests/test_multi_agent_free_energy.py
 tests/test_openai_integration.py
 tests/test_precision.py

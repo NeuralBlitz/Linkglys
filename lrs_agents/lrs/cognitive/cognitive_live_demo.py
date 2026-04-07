@@ -14,7 +14,7 @@ import time
 # Add current directory to path for imports
 sys.path.insert(0, os.path.dirname(__file__))
 
-from lrs_agents.lrs.opencode.lrs_opencode_integration import CognitiveCodeAnalyzer
+from lrs.opencode.lrs_opencode_integration import CognitiveCodeAnalyzer
 import json
 
 
@@ -694,9 +694,7 @@ def run_comprehensive_cognitive_demo():
         print(f"   • Attention patterns: {summary['attention_patterns_found']}")
         print(f"   • Cognitive cycles: {cognitive_state.get('cognitive_cycles', 0)}")
         print(f"   • Patterns learned: {cognitive_state.get('patterns_learned', 0)}")
-        print(
-            f"   • Working memory: {cognitive_state.get('working_memory_items', 0)} items"
-        )
+        print(f"   • Working memory: {cognitive_state.get('working_memory_items', 0)} items")
         print(f"   • Attention focus: {cognitive_state.get('attention_focus', 'None')}")
         print()
 
@@ -704,9 +702,7 @@ def run_comprehensive_cognitive_demo():
         patterns = summary.get("pattern_distribution", {})
         if patterns:
             print("🎨 Code Pattern Recognition:")
-            for pattern, count in sorted(
-                patterns.items(), key=lambda x: x[1], reverse=True
-            )[:5]:
+            for pattern, count in sorted(patterns.items(), key=lambda x: x[1], reverse=True)[:5]:
                 print(f"   • {pattern}: {count} occurrences")
         print()
 
@@ -744,13 +740,9 @@ def run_comprehensive_cognitive_demo():
     print(".0f")
 
     # Calculate effective performance multiplier
-    traditional_estimate = (
-        total_lines_analyzed * 0.1
-    )  # Assume 100ms per line traditionally
+    traditional_estimate = total_lines_analyzed * 0.1  # Assume 100ms per line traditionally
     actual_time = total_analysis_time
-    performance_multiplier = (
-        traditional_estimate / actual_time if actual_time > 0 else 0
-    )
+    performance_multiplier = traditional_estimate / actual_time if actual_time > 0 else 0
 
     if actual_time > 0:
         print(",.0f")
@@ -768,9 +760,7 @@ def run_comprehensive_cognitive_demo():
     print()
 
     # Cognitive effectiveness analysis
-    total_attention_patterns = sum(
-        result["attention_patterns"] for result in all_results.values()
-    )
+    total_attention_patterns = sum(result["attention_patterns"] for result in all_results.values())
     total_patterns_recognized = sum(
         result["patterns_recognized"] for result in all_results.values()
     )
@@ -814,13 +804,9 @@ def run_comprehensive_cognitive_demo():
     print()
 
     print("🎉 LIVE DEMO COMPLETE")
-    print(
-        "The OpenCode ↔ LRS Cognitive AI platform is fully operational and revolutionary!"
-    )
+    print("The OpenCode ↔ LRS Cognitive AI platform is fully operational and revolutionary!")
     print()
-    print(
-        "Ready for Phase 7: Autonomous code generation and interactive web demo... 🚀🧠⚡"
-    )
+    print("Ready for Phase 7: Autonomous code generation and interactive web demo... 🚀🧠⚡")
 
     return {
         "performance_validated": performance_multiplier >= 264447

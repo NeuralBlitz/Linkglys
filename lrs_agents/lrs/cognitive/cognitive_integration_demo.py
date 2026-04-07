@@ -12,7 +12,7 @@ import os
 # Add current directory to path for imports
 sys.path.insert(0, os.path.dirname(__file__))
 
-from lrs_agents.lrs.opencode.lrs_opencode_integration import (
+from lrs.opencode.lrs_opencode_integration import (
     CognitiveCodeAnalyzer,
     COGNITIVE_COMPONENTS_AVAILABLE,
 )
@@ -84,9 +84,7 @@ if __name__ == "__main__":
     print("📊 Analyzing Python Code with Cognitive Architecture...")
     print("-" * 50)
 
-    analysis_result = analyzer.analyze_code_with_cognition(
-        sample_code, "sample_calculator.py"
-    )
+    analysis_result = analyzer.analyze_code_with_cognition(sample_code, "sample_calculator.py")
 
     print(f"📁 File: {analysis_result['file_path']}")
     print(f"📏 Total lines: {analysis_result['total_lines']}")
@@ -115,13 +113,9 @@ if __name__ == "__main__":
     print("🧬 Cognitive System State:")
     cognitive_state = summary["cognitive_state"]
     print(f"   • Cognitive cycles: {cognitive_state.get('cognitive_cycles', 0)}")
-    print(
-        f"   • Working memory: {cognitive_state.get('working_memory_items', 0)} items"
-    )
+    print(f"   • Working memory: {cognitive_state.get('working_memory_items', 0)} items")
     print(f"   • Patterns learned: {cognitive_state.get('patterns_learned', 0)}")
-    print(
-        f"   • Temporal sequences: {cognitive_state.get('temporal_sequences_learned', 0)}"
-    )
+    print(f"   • Temporal sequences: {cognitive_state.get('temporal_sequences_learned', 0)}")
     print(f"   • Attention focus: {cognitive_state.get('attention_focus', 'None')}")
     print()
 
@@ -146,9 +140,7 @@ if __name__ == "__main__":
                 if len(result["cognitive_insight"]) > 60
                 else result["cognitive_insight"]
             )
-            attention = (
-                "🎯" if result["insights"].get("attention_score", 0) > 0.7 else "   "
-            )
+            attention = "🎯" if result["insights"].get("attention_score", 0) > 0.7 else "   "
             print(f"   {attention} {element[:30]:<30} → {insight}")
         else:
             print(f"   ❌ {element[:30]:<30} → Cognitive processing unavailable")

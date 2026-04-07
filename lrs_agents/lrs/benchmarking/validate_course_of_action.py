@@ -22,7 +22,7 @@ def test_lrs_opencode_integration():
     print("-" * 45)
 
     try:
-        from lrs_agents.lrs.opencode.simplified_integration import OpenCodeTool, SimplifiedLRSAgent
+        from lrs.opencode.simplified_integration import OpenCodeTool, SimplifiedLRSAgent
 
         print("✅ Core integration components imported successfully")
 
@@ -65,7 +65,10 @@ def test_lrs_opencode_integration():
     print("-" * 40)
 
     try:
-        from lrs_agents.lrs.opencode.lrs_opencode_integration import ActiveInferenceAnalyzer, PolicyEvaluator
+        from lrs_agents.lrs.opencode.lrs_opencode_integration import (
+            ActiveInferenceAnalyzer,
+            PolicyEvaluator,
+        )
 
         # Test Active Inference Analyzer
         analyzer = ActiveInferenceAnalyzer()
@@ -79,9 +82,7 @@ def test_lrs_opencode_integration():
         strategies = ["Use Agile methodology", "Follow TDD", "Prototype first"]
         evaluation = evaluator.evaluate_strategies("Build a web app", strategies)
         print("✅ Strategy evaluation completed")
-        print(
-            f"   🏆 Best strategy: {evaluation['recommended_strategy']['strategy'][:30]}..."
-        )
+        print(f"   🏆 Best strategy: {evaluation['recommended_strategy']['strategy'][:30]}...")
         print(f"   📈 Confidence: {evaluation['selection_confidence']:.1%}")
 
     except Exception as e:
@@ -249,9 +250,7 @@ def performance_baseline_test():
         if analysis_time < 5.0:  # Should be fast for local analysis
             print("✅ Meets timing requirements (< 5s for codebase analysis)")
         else:
-            print(
-                "⚠️  Timing slightly above target, but acceptable for initial baseline"
-            )
+            print("⚠️  Timing slightly above target, but acceptable for initial baseline")
 
     except Exception as e:
         print(f"❌ Performance baseline test failed: {e}")
@@ -281,9 +280,7 @@ if __name__ == "__main__":
         print("✅ Performance baselines established")
         print("✅ Benchmark integration is feasible")
         print("\n🚀 Proceed with Phase 1: Validation & Testing (Weeks 1-2)")
-        print(
-            "📋 Next: Implement full benchmark integration and performance optimization"
-        )
+        print("📋 Next: Implement full benchmark integration and performance optimization")
     else:
         print("\n❌ FINAL VALIDATION RESULT: ISSUES DETECTED")
         print("=" * 48)

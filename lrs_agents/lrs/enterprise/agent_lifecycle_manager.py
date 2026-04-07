@@ -21,14 +21,14 @@ import json
 import logging
 
 # Import existing LRS components
-from lrs_agents.lrs.multi_agent.shared_state import SharedWorldState
-from lrs_agents.lrs.neuralblitz_integration.shared_state import UnifiedState, SharedStateManager
-from lrs_agents.lrs.cognitive.precision_calibration import PrecisionCalibrator
-from lrs_agents.lrs.multi_agent.communication import Message, CommunicationLens
+from lrs.multi_agent.shared_state import SharedWorldState
+from lrs.neuralblitz_integration.shared_state import UnifiedState, SharedStateManager
+from lrs.cognitive.precision_calibration import PrecisionCalibrator
+from lrs.multi_agent.communication import Message, CommunicationLens
 
 # Try to import MessageType, handle if not available
 try:
-    from lrs_agents.lrs.multi_agent.communication import MessageType
+    from lrs.multi_agent.communication import MessageType
 except ImportError:
     from enum import Enum
 

@@ -37,5 +37,6 @@
   "test_social_precision.py::TestRecursiveBeliefState::test_should_share_uncertainty_when_mismatch": true,
   "test_chaos_scriptorium.py::TestChaosEnvironment::test_reset_environment": true,
   "test_llm_policy_generator.py::TestErrorHandling::test_malformed_json_handled": true,
-  "test_llm_policy_generator.py::TestErrorHandling::test_missing_required_fields_skips_proposal": true
+  "test_llm_policy_generator.py::TestErrorHandling::test_missing_required_fields_skips_proposal": true,
+  "test_massive_agent_system.py": true
 }

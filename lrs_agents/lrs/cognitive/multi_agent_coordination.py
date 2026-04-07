@@ -69,18 +69,9 @@ class AgentCapability:
     def get_task_priority(self, task_domain: str, task_urgency: str) -> float:
         """Calculate task priority for this agent."""
         domain_bonus = 2.0 if task_domain in self.expertise_domains else 1.0
-        urgency_multiplier = {"low": 1.0, "medium": 1.5, "high": 2.0, "critical": 3.0}[
-            task_urgency
-        ]
-        capacity_penalty = max(
-            0.1, 1.0 - (self.active_tasks / self.max_concurrent_tasks)
-        )
-        return (
-            self.performance_score
-            * domain_bonus
-            * urgency_multiplier
-            * capacity_penalty
-        )
+        urgency_multiplier = {"low": 1.0, "medium": 1.5, "high": 2.0, "critical": 3.0}[task_urgency]
+        capacity_penalty = max(0.1, 1.0 - (self.active_tasks / self.max_concurrent_tasks))
+        return self.performance_score * domain_bonus * urgency_multiplier * capacity_penalty
 
 
 @dataclass
@@ -207,9 +198,7 @@ class Agent:
 
         # Cognitive evaluation of task suitability
         cognitive_score = self._evaluate_task_cognitively(task)
-        if (
-            cognitive_score < 0.5
-        ):  # Reject tasks that don't align with cognitive understanding
+        if cognitive_score < 0.5:  # Reject tasks that don't align with cognitive understanding
             return False
 
         task.assigned_agent = self.agent_id
@@ -241,18 +230,12 @@ class Agent:
 
             # Evaluate based on attention and pattern recognition
             attention_score = result.get("attention_score", 0.5)
-            recognition_confidence = result.get("pattern_recognition", {}).get(
-                "confidence", 0.5
-            )
+            recognition_confidence = result.get("pattern_recognition", {}).get("confidence", 0.5)
 
             # Domain alignment bonus
-            domain_match = (
-                1.5 if task.domain in self.capability.expertise_domains else 1.0
-            )
+            domain_match = 1.5 if task.domain in self.capability.expertise_domains else 1.0
 
-            cognitive_score = (
-                (attention_score + recognition_confidence) / 2.0 * domain_match
-            )
+            cognitive_score = (attention_score + recognition_confidence) / 2.0 * domain_match
             return min(1.0, cognitive_score)
 
         except Exception as e:
@@ -321,12 +304,8 @@ class Agent:
             self.attention_patterns.append(
                 {
                     "task_id": task.task_id,
-                    "preprocessing_attention": cognitive_result.get(
-                        "attention_score", 0
-                    ),
-                    "patterns_recognized": cognitive_result.get(
-                        "pattern_recognition", {}
-                    ),
+                    "preprocessing_attention": cognitive_result.get("attention_score", 0),
+                    "patterns_recognized": cognitive_result.get("pattern_recognition", {}),
                     "timestamp": time.time(),
                 }
             )
@@ -350,16 +329,10 @@ class Agent:
             if task.task_id in self.cognitive_memory:
                 self.cognitive_memory[task.task_id].update(
                     {
-                        "execution_attention": cognitive_result.get(
-                            "attention_score", 0
-                        ),
-                        "result_patterns": cognitive_result.get(
-                            "pattern_recognition", {}
-                        ),
+                        "execution_attention": cognitive_result.get("attention_score", 0),
+                        "result_patterns": cognitive_result.get("pattern_recognition", {}),
                         "completed_at": time.time(),
-                        "success_indicator": 1.0
-                        if task.status == TaskStatus.COMPLETED
-                        else 0.0,
+                        "success_indicator": 1.0 if task.status == TaskStatus.COMPLETED else 0.0,
                     }
                 )
 
@@ -369,7 +342,7 @@ class Agent:
     def _analyze_code(self, task: Task) -> Dict[str, Any]:
         """Code analysis task execution."""
         # Use our existing LRS analyzer
-        from lrs_agents.lrs.enterprise.performance_optimization import run_optimized_analysis
+        from lrs.enterprise.performance_optimization import run_optimized_analysis
 
         result = run_optimized_analysis(".", use_cache=True)
         return {
@@ -382,7 +355,7 @@ class Agent:
     def _design_architecture(self, task: Task) -> Dict[str, Any]:
         """Architecture design task execution."""
         # Use our existing LRS planner
-        from lrs_agents.lrs.opencode.lrs_opencode_integration import opencode_lrs_command
+        from lrs.opencode.lrs_opencode_integration import opencode_lrs_command
 
         result = opencode_lrs_command(["plan", task.description])
         return {
@@ -467,9 +440,7 @@ class MultiAgentCoordinator:
             dependencies=dependencies or [],
         )
         self.tasks[task_id] = task
-        self.task_dependencies[task_id] = (
-            dependencies if dependencies is not None else []
-        )
+        self.task_dependencies[task_id] = dependencies if dependencies is not None else []
         self._log_event(
             "task_created",
             {"task_id": task_id, "domain": domain, "complexity": complexity},
@@ -533,9 +504,7 @@ class MultiAgentCoordinator:
                     },
                 )
             else:
-                self._log_event(
-                    "task_failed", {"task_id": task_id, "reason": "no_suitable_agent"}
-                )
+                self._log_event("task_failed", {"task_id": task_id, "reason": "no_suitable_agent"})
 
         execution_time = time.time() - start_time
 
@@ -558,9 +527,7 @@ class MultiAgentCoordinator:
             ready = []
             for task_id in remaining:
                 deps = self.task_dependencies[task_id]
-                if all(
-                    dep in self.completed_tasks or dep not in task_ids for dep in deps
-                ):
+                if all(dep in self.completed_tasks or dep not in task_ids for dep in deps):
                     ready.append(task_id)
 
             if not ready:
@@ -609,9 +576,7 @@ class MultiAgentCoordinator:
 
         # Adjust optimal agent selection based on cognitive scores
         if optimal_agent:
-            optimal_cognitive_score = agent_cognitive_scores.get(
-                optimal_agent.agent_id, 0.7
-            )
+            optimal_cognitive_score = agent_cognitive_scores.get(optimal_agent.agent_id, 0.7)
             if optimal_cognitive_score >= 0.6:  # Cognitive threshold
                 optimal_agent.assign_task(task)
                 return optimal_agent
@@ -622,9 +587,7 @@ class MultiAgentCoordinator:
 
         for agent in available_agents:
             # Combine traditional priority with cognitive evaluation
-            traditional_priority = agent.capability.get_task_priority(
-                task.domain, task.urgency
-            )
+            traditional_priority = agent.capability.get_task_priority(task.domain, task.urgency)
             cognitive_score = agent_cognitive_scores[agent.agent_id]
 
             # Weighted combination: 60% traditional, 40% cognitive
@@ -700,15 +663,9 @@ class MetaLearningCoordinator:
             try:
                 with open(self.learning_file, "r") as f:
                     data = json.load(f)
-                    self.task_performance = defaultdict(
-                        list, data.get("task_performance", {})
-                    )
-                    self.agent_performance = defaultdict(
-                        dict, data.get("agent_performance", {})
-                    )
-                    self.domain_expertise = defaultdict(
-                        dict, data.get("domain_expertise", {})
-                    )
+                    self.task_performance = defaultdict(list, data.get("task_performance", {}))
+                    self.agent_performance = defaultdict(dict, data.get("agent_performance", {}))
+                    self.domain_expertise = defaultdict(dict, data.get("domain_expertise", {}))
                     self.adaptation_rules = data.get("adaptation_rules", {})
             except Exception as e:
                 print(f"Warning: Could not load learning data: {e}")
@@ -764,23 +721,18 @@ class MetaLearningCoordinator:
         current = self.agent_performance[agent_key]
         current["tasks_completed"] += 1
         current["success_rate"] = (
-            current["success_rate"] * (current["tasks_completed"] - 1)
-            + (1 if success else 0)
+            current["success_rate"] * (current["tasks_completed"] - 1) + (1 if success else 0)
         ) / current["tasks_completed"]
         current["avg_execution_time"] = (
-            current["avg_execution_time"] * (current["tasks_completed"] - 1)
-            + execution_time
+            current["avg_execution_time"] * (current["tasks_completed"] - 1) + execution_time
         ) / current["tasks_completed"]
         current["avg_quality_score"] = (
-            current["avg_quality_score"] * (current["tasks_completed"] - 1)
-            + quality_score
+            current["avg_quality_score"] * (current["tasks_completed"] - 1) + quality_score
         ) / current["tasks_completed"]
 
         # Update domain expertise
         domain_key = f"{agent.agent_id}_{task.domain}"
-        self.domain_expertise[domain_key] = (
-            current["success_rate"] * current["avg_quality_score"]
-        )
+        self.domain_expertise[domain_key] = current["success_rate"] * current["avg_quality_score"]
 
         # Apply learning adaptations
         self._apply_learning_adaptations(task, agent)
@@ -801,14 +753,10 @@ class MetaLearningCoordinator:
 
             # Calculate comprehensive performance metrics
             efficiency_score = 1.0 / (1.0 + avg_time / 10.0)  # Normalize execution time
-            overall_performance = (
-                success_rate * 0.4 + avg_quality * 0.4 + efficiency_score * 0.2
-            )
+            overall_performance = success_rate * 0.4 + avg_quality * 0.4 + efficiency_score * 0.2
 
             # Adaptive performance scoring with multiple factors
-            experience_multiplier = min(
-                2.0, 1 + performance.get("tasks_completed", 0) * 0.05
-            )
+            experience_multiplier = min(2.0, 1 + performance.get("tasks_completed", 0) * 0.05)
             adaptive_score = overall_performance * experience_multiplier
             agent.capability.performance_score = min(2.0, max(0.1, adaptive_score))
 
@@ -880,9 +828,7 @@ class MetaLearningCoordinator:
     def get_performance_analytics(self) -> Dict[str, Any]:
         """Get comprehensive performance analytics."""
         analytics = {
-            "total_tasks_learned": sum(
-                len(tasks) for tasks in self.task_performance.values()
-            ),
+            "total_tasks_learned": sum(len(tasks) for tasks in self.task_performance.values()),
             "domains_covered": list(self.task_performance.keys()),
             "agent_performance_summary": {},
             "domain_expertise_matrix": dict(self.domain_expertise),
@@ -911,7 +857,7 @@ class MetaLearningCoordinator:
 
 def create_specialized_agents(coordinator: MultiAgentCoordinator):
     """Create a team of specialized agents."""
-    from lrs_agents.lrs.opencode.lightweight_lrs import LightweightHierarchicalPrecision
+    from lrs.opencode.lightweight_lrs import LightweightHierarchicalPrecision
 
     # Analyst Agent
     analyst_precision = LightweightHierarchicalPrecision()
@@ -921,9 +867,7 @@ def create_specialized_agents(coordinator: MultiAgentCoordinator):
         max_concurrent_tasks=2,
         performance_score=0.9,
     )
-    analyst = Agent(
-        "analyst_001", "Code Analyst", analyst_capability, analyst_precision
-    )
+    analyst = Agent("analyst_001", "Code Analyst", analyst_capability, analyst_precision)
     coordinator.add_agent(analyst)
 
     # Architect Agent
@@ -970,9 +914,7 @@ def create_specialized_agents(coordinator: MultiAgentCoordinator):
         max_concurrent_tasks=2,
         performance_score=0.9,
     )
-    tester = Agent(
-        "tester_001", "Quality Assurance", tester_capability, tester_precision
-    )
+    tester = Agent("tester_001", "Quality Assurance", tester_capability, tester_precision)
     coordinator.add_agent(tester)
 
     # Deployer Agent
@@ -983,9 +925,7 @@ def create_specialized_agents(coordinator: MultiAgentCoordinator):
         max_concurrent_tasks=1,
         performance_score=0.95,
     )
-    deployer = Agent(
-        "deployer_001", "DevOps Engineer", deployer_capability, deployer_precision
-    )
+    deployer = Agent("deployer_001", "DevOps Engineer", deployer_capability, deployer_precision)
     coordinator.add_agent(deployer)
 
 

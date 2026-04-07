@@ -26,9 +26,7 @@ try:
 
     COGNITIVE_COMPONENTS_AVAILABLE = True
 except ImportError:
-    print(
-        "Warning: Cognitive components not available, running without neuromorphic enhancements"
-    )
+    print("Warning: Cognitive components not available, running without neuromorphic enhancements")
     COGNITIVE_COMPONENTS_AVAILABLE = False
 
 # Add LRS directory to path for imports
@@ -138,9 +136,7 @@ class LRSExecutionContext:
                 }
             )
 
-        lrs_registry.record_precision_update(
-            level, old_precision, new_precision, reason
-        )
+        lrs_registry.record_precision_update(level, old_precision, new_precision, reason)
         self.prediction_errors.append(prediction_error)
 
     def calculate_free_energy(
@@ -188,18 +184,14 @@ class LRSExecutionContext:
             self.cognitive_enabled = False
             return False
 
-    def process_with_cognition(
-        self, code_element: str, context: str = "general"
-    ) -> Dict[str, Any]:
+    def process_with_cognition(self, code_element: str, context: str = "general") -> Dict[str, Any]:
         """Process code element through cognitive architecture."""
         if not self.cognitive_architecture or not self.cognitive_enabled:
             return {"cognitive_processing": False, "insights": []}
 
         try:
             # Process through cognitive system
-            result = self.cognitive_architecture.process_code_element(
-                code_element, context
-            )
+            result = self.cognitive_architecture.process_code_element(code_element, context)
 
             # Store cognitive insights
             self.cognitive_insights.append(
@@ -251,17 +243,14 @@ class LRSExecutionContext:
             "patterns_learned": self.memory_state.get("patterns_learned", 0),
             "working_memory_items": self.memory_state.get("working_memory_items", 0),
             "attention_focus": self.memory_state.get("attention_focus"),
-            "temporal_sequences_learned": self.memory_state.get(
-                "temporal_sequences_learned", 0
-            ),
+            "temporal_sequences_learned": self.memory_state.get("temporal_sequences_learned", 0),
         }
 
     def get_precision_stats(self) -> Dict[str, Any]:
         """Get comprehensive precision statistics."""
         return {
             "current_levels": self.precision_levels,
-            "avg_prediction_error": sum(self.prediction_errors)
-            / len(self.prediction_errors)
+            "avg_prediction_error": sum(self.prediction_errors) / len(self.prediction_errors)
             if self.prediction_errors
             else 0.5,
             "total_adaptations": len(self.adaptation_events),
@@ -278,9 +267,7 @@ class LRSExecutionContext:
 
         changes = []
         for i in range(1, len(self.prediction_errors)):
-            changes.append(
-                abs(self.prediction_errors[i] - self.prediction_errors[i - 1])
-            )
+            changes.append(abs(self.prediction_errors[i] - self.prediction_errors[i - 1]))
 
         return sum(changes) / len(changes) if changes else 0.0
 
@@ -311,9 +298,7 @@ class ActiveInferenceAnalyzer(OpenCodeTool):
                     ):
                         filepath = os.path.join(root, filename)
                         try:
-                            with open(
-                                filepath, "r", encoding="utf-8", errors="ignore"
-                            ) as f:
+                            with open(filepath, "r", encoding="utf-8", errors="ignore") as f:
                                 lines = f.readlines()
                                 total_lines += len(lines)
 
@@ -326,26 +311,18 @@ class ActiveInferenceAnalyzer(OpenCodeTool):
                                         "path": filepath,
                                         "lines": len(lines),
                                         "extension": ext,
-                                        "complexity_score": self._estimate_complexity(
-                                            lines
-                                        ),
+                                        "complexity_score": self._estimate_complexity(lines),
                                     }
                                 )
                         except Exception:
                             continue
 
             # Calculate epistemic value (information gain from analysis)
-            epistemic_value = min(
-                1.0, len(files) / 100.0
-            )  # More files = more information
+            epistemic_value = min(1.0, len(files) / 100.0)  # More files = more information
 
             # Calculate pragmatic value (usefulness for development)
-            avg_complexity = (
-                sum(f["complexity_score"] for f in files) / len(files) if files else 0
-            )
-            pragmatic_value = 1.0 - (
-                avg_complexity / 10.0
-            )  # Lower complexity = more pragmatic
+            avg_complexity = sum(f["complexity_score"] for f in files) / len(files) if files else 0
+            pragmatic_value = 1.0 - (avg_complexity / 10.0)  # Lower complexity = more pragmatic
 
             # Calculate free energy
             precision = self.context.precision_levels["planning"]
@@ -362,9 +339,7 @@ class ActiveInferenceAnalyzer(OpenCodeTool):
                 "pragmatic_value": pragmatic_value,
                 "free_energy": free_energy,
                 "precision": precision,
-                "recommendations": self._generate_recommendations(
-                    avg_complexity, languages
-                ),
+                "recommendations": self._generate_recommendations(avg_complexity, languages),
             }
 
         except Exception as e:
@@ -390,9 +365,7 @@ class ActiveInferenceAnalyzer(OpenCodeTool):
 
         return min(10.0, complexity / len(lines) * 100) if lines else 0
 
-    def _generate_recommendations(
-        self, complexity: float, languages: Dict[str, int]
-    ) -> List[str]:
+    def _generate_recommendations(self, complexity: float, languages: Dict[str, int]) -> List[str]:
         """Generate Active Inference-based recommendations."""
         recommendations = []
 
@@ -404,15 +377,11 @@ class ActiveInferenceAnalyzer(OpenCodeTool):
             recommendations.append("Low complexity - good for exploration and learning")
 
         if len(languages) > 3:
-            recommendations.append(
-                "Multi-language codebase - precision may vary across domains"
-            )
+            recommendations.append("Multi-language codebase - precision may vary across domains")
 
         total_files = sum(languages.values())
         if total_files > 50:
-            recommendations.append(
-                "Large codebase - hierarchical precision tracking recommended"
-            )
+            recommendations.append("Large codebase - hierarchical precision tracking recommended")
 
         return recommendations
 
@@ -441,12 +410,10 @@ class PrecisionGuidedRefactor(OpenCodeTool):
             }
 
             # Calculate overall refactor priority using free energy
-            epistemic_value = sum(
-                metrics[k]["information_gain"] for k in metrics
-            ) / len(metrics)
-            pragmatic_value = sum(
-                metrics[k]["effort_benefit_ratio"] for k in metrics
-            ) / len(metrics)
+            epistemic_value = sum(metrics[k]["information_gain"] for k in metrics) / len(metrics)
+            pragmatic_value = sum(metrics[k]["effort_benefit_ratio"] for k in metrics) / len(
+                metrics
+            )
 
             precision = self.context.precision_levels["execution"]
             free_energy = self.context.calculate_free_energy(
@@ -547,8 +514,7 @@ class PrecisionGuidedRefactor(OpenCodeTool):
             "||",
         ]
         complexity_count = sum(
-            sum(1 for indicator in complexity_indicators if indicator in line)
-            for line in lines
+            sum(1 for indicator in complexity_indicators if indicator in line) for line in lines
         )
 
         complexity_score = complexity_count / len(lines) if lines else 0
@@ -570,9 +536,7 @@ class PrecisionGuidedRefactor(OpenCodeTool):
             # Look for variable/function definitions
             if "=" in line or "def " in line or "function " in line:
                 # Count uppercase in identifiers (potential naming issues)
-                words = (
-                    line.replace("=", " ").replace("(", " ").replace(")", " ").split()
-                )
+                words = line.replace("=", " ").replace("(", " ").replace(")", " ").split()
                 for word in words:
                     if len(word) > 2 and word.isupper():
                         naming_issues += 1
@@ -615,9 +579,7 @@ class HierarchicalPlanner(OpenCodeTool):
         epistemic_value = self._calculate_plan_epistemic_value(
             abstract_goals, planning_tasks, execution_steps
         )
-        pragmatic_value = self._calculate_plan_pragmatic_value(
-            execution_steps, constraints or {}
-        )
+        pragmatic_value = self._calculate_plan_pragmatic_value(execution_steps, constraints or {})
 
         precision = self.context.precision_levels["abstract"]
         free_energy = self.context.calculate_free_energy(
@@ -740,9 +702,7 @@ class HierarchicalPlanner(OpenCodeTool):
 
         return tasks
 
-    def _plan_execution_level(
-        self, planning_tasks: List[Dict[str, Any]]
-    ) -> List[Dict[str, Any]]:
+    def _plan_execution_level(self, planning_tasks: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
         """Detailed execution planning."""
         steps = []
 
@@ -781,8 +741,7 @@ class HierarchicalPlanner(OpenCodeTool):
                     "order": i + 1,
                     "estimated_time": "2-4 hours",
                     "success_criteria": f"Step {i + 1} completed and tested",
-                    "precision_requirement": 0.7
-                    + (i * 0.05),  # Increasing precision requirements
+                    "precision_requirement": 0.7 + (i * 0.05),  # Increasing precision requirements
                 }
             )
 
@@ -806,15 +765,11 @@ class HierarchicalPlanner(OpenCodeTool):
         # Shorter plans with clear dependencies are more pragmatic
         step_count = len(steps)
         dependency_complexity = sum(
-            len(step.get("dependencies", []))
-            for step in steps
-            if isinstance(step, dict)
+            len(step.get("dependencies", [])) for step in steps if isinstance(step, dict)
         )
 
         # Penalty for complexity
-        complexity_penalty = (
-            dependency_complexity / (step_count * 2) if step_count > 0 else 0
-        )
+        complexity_penalty = dependency_complexity / (step_count * 2) if step_count > 0 else 0
 
         base_value = 1.0 - (step_count / 100.0)  # Prefer shorter plans
         pragmatic_value = max(0.1, base_value - complexity_penalty)
@@ -872,9 +827,7 @@ class CognitiveEnhancedTool(OpenCodeTool):
         self.context = LRSExecutionContext()
         self.cognitive_initialized = self.context.initialize_cognitive_system()
 
-    def process_with_cognition(
-        self, code_element: str, context: str = "general"
-    ) -> Dict[str, Any]:
+    def process_with_cognition(self, code_element: str, context: str = "general") -> Dict[str, Any]:
         """Process code element through cognitive architecture."""
         return self.context.process_with_cognition(code_element, context)
 
@@ -889,9 +842,7 @@ class CognitiveCodeAnalyzer(CognitiveEnhancedTool):
     def __init__(self):
         super().__init__("cognitive_code_analyzer")
 
-    def analyze_code_with_cognition(
-        self, code_content: str, file_path: str = ""
-    ) -> Dict[str, Any]:
+    def analyze_code_with_cognition(self, code_content: str, file_path: str = "") -> Dict[str, Any]:
         """Analyze code using cognitive architecture for enhanced insights."""
 
         lines = code_content.split("\n")
@@ -923,9 +874,7 @@ class CognitiveCodeAnalyzer(CognitiveEnhancedTool):
                             "context": context,
                             "attention_score": insight.get("attention_score", 0),
                             "cognitive_insight": insight.get("cognitive_insight", ""),
-                            "pattern_recognition": insight.get(
-                                "pattern_recognition", {}
-                            ),
+                            "pattern_recognition": insight.get("pattern_recognition", {}),
                             "attention_focus": insight.get("attention_focus"),
                         }
                     )
@@ -942,9 +891,7 @@ class CognitiveCodeAnalyzer(CognitiveEnhancedTool):
                         )
 
         # Generate processing summary
-        analysis_results["processing_summary"] = self._generate_analysis_summary(
-            analysis_results
-        )
+        analysis_results["processing_summary"] = self._generate_analysis_summary(analysis_results)
 
         return analysis_results
 
@@ -962,9 +909,7 @@ class CognitiveCodeAnalyzer(CognitiveEnhancedTool):
             return "conditional_statement"
         elif "for " in line_lower or "while " in line_lower:
             return "loop_statement"
-        elif (
-            "try:" in line_lower or "except " in line_lower or "finally:" in line_lower
-        ):
+        elif "try:" in line_lower or "except " in line_lower or "finally:" in line_lower:
             return "exception_handling"
         elif "return " in line_lower or line_lower.startswith("return"):
             return "return_statement"
@@ -987,9 +932,7 @@ class CognitiveCodeAnalyzer(CognitiveEnhancedTool):
         # Count pattern types
         pattern_counts = {}
         for insight in insights:
-            pattern = insight["pattern_recognition"].get(
-                "recognized_pattern", "unknown"
-            )
+            pattern = insight["pattern_recognition"].get("recognized_pattern", "unknown")
             pattern_counts[pattern] = pattern_counts.get(pattern, 0) + 1
 
         return {
@@ -1009,9 +952,7 @@ class PolicyEvaluator(OpenCodeTool):
         self.name = "policy_evaluator"
         self.context = LRSExecutionContext()
 
-    def evaluate_strategies(
-        self, task_description: str, strategies: List[str]
-    ) -> Dict[str, Any]:
+    def evaluate_strategies(self, task_description: str, strategies: List[str]) -> Dict[str, Any]:
         """Evaluate multiple development strategies using free energy minimization."""
 
         evaluations = []
@@ -1134,9 +1075,7 @@ class PolicyEvaluator(OpenCodeTool):
 
         return 0  # Fallback
 
-    def _calculate_selection_confidence(
-        self, evaluations: List[Dict[str, Any]]
-    ) -> float:
+    def _calculate_selection_confidence(self, evaluations: List[Dict[str, Any]]) -> float:
         """Calculate confidence in strategy selection."""
         if len(evaluations) < 2:
             return 1.0
@@ -1183,7 +1122,7 @@ def opencode_lrs_command(args: List[str]) -> str:
     try:
         if command == "analyze" and len(args) > 1:
             # Use optimized analyzer for better performance
-            from lrs_agents.lrs.enterprise.performance_optimization import OptimizedActiveInferenceAnalyzer
+            from lrs.enterprise.performance_optimization import OptimizedActiveInferenceAnalyzer
 
             analyzer = OptimizedActiveInferenceAnalyzer()
             result = analyzer.analyze_codebase(args[1])
@@ -1204,7 +1143,7 @@ def opencode_lrs_command(args: List[str]) -> str:
 
         elif command == "optimize" and len(args) > 1:
             # Dedicated optimized analysis command
-            from lrs_agents.lrs.enterprise.performance_optimization import run_optimized_analysis
+            from lrs.enterprise.performance_optimization import run_optimized_analysis
 
             result = run_optimized_analysis(args[1], use_cache=True)
 
@@ -1249,9 +1188,7 @@ def opencode_lrs_command(args: List[str]) -> str:
             output += f"🔍 Epistemic Value: {result['epistemic_value']:.3f}\n"
             output += f"🎯 Pragmatic Value: {result['pragmatic_value']:.3f}\n"
             output += f"⚡ Free Energy G: {result['free_energy']:.3f}\n"
-            output += (
-                f"🎚️  Precision Confidence: {result['precision_confidence']:.3f}\n\n"
-            )
+            output += f"🎚️  Precision Confidence: {result['precision_confidence']:.3f}\n\n"
             output += f"🚨 Refactor Priority: {result['refactor_priority']}\n"
             output += f"💡 Reason: {result['reason']}\n"
 
@@ -1279,9 +1216,7 @@ def opencode_lrs_command(args: List[str]) -> str:
                 output += f"   {step['order']}. {step['step']}\n"
                 output += f"      ⏱️  Estimated: {step['estimated_time']}\n"
                 output += f"      ✅ Criteria: {step['success_criteria']}\n"
-                output += (
-                    f"      🎚️  Precision Req: {step['precision_requirement']:.2f}\n\n"
-                )
+                output += f"      🎚️  Precision Req: {step['precision_requirement']:.2f}\n\n"
 
             output += f"🔍 Epistemic Value: {result['epistemic_value']:.3f}\n"
             output += f"🎯 Pragmatic Value: {result['pragmatic_value']:.3f}\n"
@@ -1289,9 +1224,7 @@ def opencode_lrs_command(args: List[str]) -> str:
             output += f"📊 Plan Quality: {result['plan_quality']}\n"
             output += f"🎚️  Precision Confidence: {result['precision_confidence']:.3f}\n"
             output += f"⏱️  Estimated Effort: {result['estimated_effort']} steps\n"
-            output += (
-                f"⚠️  Risk Level: {result['risk_assessment']['overall_risk_level']}\n"
-            )
+            output += f"⚠️  Risk Level: {result['risk_assessment']['overall_risk_level']}\n"
 
             if result["risk_assessment"]["risks"]:
                 output += "\n🚨 Identified Risks:\n"
@@ -1391,23 +1324,17 @@ if __name__ == "__main__":
     # Test basic functionality
     analyzer = ActiveInferenceAnalyzer()
     result = analyzer.analyze_codebase(".")
-    print(
-        f"✅ Active Inference Analyzer: {result.get('total_files', 0)} files analyzed"
-    )
+    print(f"✅ Active Inference Analyzer: {result.get('total_files', 0)} files analyzed")
 
     # Test hierarchical planner
     planner = HierarchicalPlanner()
     plan = planner.create_development_plan("Build a web API for task management")
-    print(
-        f"✅ Hierarchical Planner: {len(plan['execution_steps'])} execution steps created"
-    )
+    print(f"✅ Hierarchical Planner: {len(plan['execution_steps'])} execution steps created")
 
     # Test policy evaluator
     evaluator = PolicyEvaluator()
     strategies = ["Use Agile methodology", "Follow TDD approach", "Build MVP first"]
-    evaluation = evaluator.evaluate_strategies(
-        "Implement user authentication", strategies
-    )
+    evaluation = evaluator.evaluate_strategies("Implement user authentication", strategies)
     print(f"✅ Policy Evaluator: {len(evaluation['evaluations'])} strategies evaluated")
 
     print("\n🎉 All LRS tools integrated successfully!")
@@ -1419,6 +1346,4 @@ if __name__ == "__main__":
         lrs_registry.register_tool("cognitive_analyzer", CognitiveCodeAnalyzer)
         print("✅ Cognitive-enhanced tools registered in LRS registry")
     else:
-        print(
-            "⚠️  Cognitive components not available - running with standard LRS tools only"
-        )
+        print("⚠️  Cognitive components not available - running with standard LRS tools only")
