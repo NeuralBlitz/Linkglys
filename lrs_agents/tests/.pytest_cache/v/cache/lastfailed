@@ -18,18 +18,5 @@
   "test_llm_policy_generator.py::TestErrorHandling::test_empty_proposals_handled": true,
   "test_llm_policy_generator.py::TestIntegration::test_complete_generation_flow": true,
   "test_llm_policy_generator.py::TestErrorHandling::test_malformed_json_handled": true,
-  "test_llm_policy_generator.py::TestErrorHandling::test_missing_required_fields_skips_proposal": true,
-  "test_massive_agent_system.py::TestAgentLifecycle::test_agent_registration": true,
-  "test_massive_agent_system.py::TestAgentLifecycle::test_stage_configuration": true,
-  "test_massive_agent_system.py::TestAgentLifecycle::test_load_balancing": true,
-  "test_massive_agent_system.py::TestAgentLifecycle::test_quantum_resource_management": true,
-  "test_massive_agent_system.py::TestEPAIntegration::test_prompt_template_generation": true,
-  "test_massive_agent_system.py::TestEPAIntegration::test_semantic_coherence_optimization": true,
-  "test_massive_agent_system.py::TestEPAIntegration::test_epa_lrs_integration": true,
-  "test_massive_agent_system.py::TestPerformanceAndScalability::test_scalability_limits": true,
-  "test_massive_agent_system.py::TestPerformanceAndScalability::test_performance_monitoring": true,
-  "test_massive_agent_system.py::TestPerformanceAndScalability::test_fault_tolerance": true,
-  "test_massive_agent_system.py::TestBenchmarks::test_large_scale_agent_registration": true,
-  "test_massive_agent_system.py::TestBenchmarks::test_quantum_circuit_allocation_performance": true,
-  "test_massive_agent_system.py::TestSystemIntegration::test_full_system_integration": true
+  "test_llm_policy_generator.py::TestErrorHandling::test_missing_required_fields_skips_proposal": true
 }

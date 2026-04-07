@@ -344,7 +344,15 @@ class FaultToleranceManager:
     def __init__(self):
         self.fault_history: Dict[str, List[Dict[str, Any]]] = {}
         self.recovery_patterns: Dict[str, Any] = {}
-        self.circuit_breakers = Dict[str, Any] = {}
+        self.circuit_breakers: Dict[str, Any] = {}
+
+    async def _update_shared_state(
+        self, shared_state: SharedWorldState, agent_id: str, updates: Dict[str, Any]
+    ) -> None:
+        """Support both sync and async shared-state implementations."""
+        result = shared_state.update(agent_id, updates)
+        if asyncio.iscoroutine(result):
+            await result
 
     async def detect_agent_fault(self, agent_metrics: AgentMetrics) -> Optional[Dict[str, Any]]:
         """Detect faults in agent metrics."""
@@ -428,14 +436,17 @@ class FaultToleranceManager:
 
         if action == "immediate_restart":
             # Signal agent to restart
-            await shared_state.update(
-                agent_id, {"recovery_action": "restart", "timestamp": datetime.now().isoformat()}
+            await self._update_shared_state(
+                shared_state,
+                agent_id,
+                {"recovery_action": "restart", "timestamp": datetime.now().isoformat()},
             )
             success = True
 
         elif action == "quantum_circuit_recalibration":
             # Reallocate quantum circuits with higher fidelity
-            await shared_state.update(
+            await self._update_shared_state(
+                shared_state,
                 agent_id,
                 {
                     "recovery_action": "quantum_recalibration",
@@ -446,7 +457,8 @@ class FaultToleranceManager:
 
         elif action == "stage_migration":
             # Move agent to less loaded stage
-            await shared_state.update(
+            await self._update_shared_state(
+                shared_state,
                 agent_id,
                 {"recovery_action": "stage_migration", "timestamp": datetime.now().isoformat()},
             )
@@ -454,7 +466,8 @@ class FaultToleranceManager:
 
         elif action == "graceful_degradation":
             # Reduce agent load
-            await shared_state.update(
+            await self._update_shared_state(
+                shared_state,
                 agent_id,
                 {"recovery_action": "load_reduction", "timestamp": datetime.now().isoformat()},
             )
@@ -576,9 +589,9 @@ class EnterpriseAgentManager:
         )
 
         if optimal_stage is not None:
-            await self.shared_state.update(
-                agent_id, {"assigned_stage": optimal_stage, "status": "stage_assigned"}
-            )
+            self.shared_state.update(agent_id, {"assigned_stage": optimal_stage, "status": "stage_assigned"})
+            self.agents[agent_id]["status"] = AgentStatus.ACTIVE
+            self.agent_metrics[agent_id].status = AgentStatus.ACTIVE
 
             self.logger.info(f"Agent {agent_id} assigned to stage {optimal_stage}")
 
@@ -647,6 +660,9 @@ class EnterpriseAgentManager:
                 # Wait before next cycle
                 await asyncio.sleep(30)  # 30-second monitoring cycle
 
+            except asyncio.CancelledError:
+                self.logger.info("Performance monitoring cancelled")
+                break
             except Exception as e:
                 self.logger.error(f"Error in performance monitoring: {e}")
                 await asyncio.sleep(5)
@@ -761,9 +777,7 @@ class EnterpriseAgentManager:
 
         # Retire agents
         for agent_id in retired_agents:
-            await self.shared_state.update(
-                agent_id, {"status": "retiring", "timestamp": datetime.now().isoformat()}
-            )
+            self.shared_state.update(agent_id, {"status": "retiring", "timestamp": datetime.now().isoformat()})
 
             self.agent_metrics[agent_id].status = AgentStatus.RETIRING
             self.logger.info(f"Retiring agent {agent_id}")
