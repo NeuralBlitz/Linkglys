@@ -138,7 +138,7 @@ class TestChaosTools:
             # Should succeed most of the time when unlocked
             assert successes >= 7
     
-    def test_shell_tool_often_fails_when_locked(self):
+    def test_shell_tool_often_fails_when_locked(self, monkeypatch):
         """Test ShellTool often fails when locked"""
         with tempfile.TemporaryDirectory() as tmpdir:
             env = ChaosEnvironment(root_dir=tmpdir)
@@ -147,6 +147,9 @@ class TestChaosTools:
             
             tool = ShellTool(env)
             
+            # Make failure deterministic when locked
+            monkeypatch.setattr("lrs.benchmarks.chaos_scriptorium.random.random", lambda: 0.0)
+
             # Run multiple times
             failures = 0
             for _ in range(10):

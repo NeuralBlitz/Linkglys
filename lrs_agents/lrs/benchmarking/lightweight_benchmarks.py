@@ -18,7 +18,9 @@ from typing import List, Dict, Any, Optional
 
 # Import our lightweight LRS implementation
 from lrs.opencode.lightweight_lrs import (
+    LightweightFreeEnergyCalculator,
     LightweightHierarchicalPrecision,
+    LightweightPolicySelector,
     create_lightweight_lrs_agent,
 )
 
