@@ -163,6 +163,10 @@ class LLMPolicyGenerator:
             print(f"Warning: Failed to parse LLM response: {e}")
             return self._create_fallback_proposals(num_proposals)
 
+        # Handle empty proposals list - return fallback
+        if not proposal_set.proposals:
+            return self._create_fallback_proposals(num_proposals)
+
         # Convert to policy dictionaries
         policies = []
         for proposal in proposal_set.proposals:
