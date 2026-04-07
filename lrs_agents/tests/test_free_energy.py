@@ -165,8 +165,12 @@ class TestExpectedFreeEnergy:
             "bad_tool": {"success_rate": 0.3, "error_variance": 0.5},
         }
 
-        G_good = calculate_expected_free_energy(good_policy, {}, preferences, historical_stats)
-        G_bad = calculate_expected_free_energy(bad_policy, {}, preferences, historical_stats)
+        G_good = calculate_expected_free_energy(
+            good_policy, {}, preferences, historical_stats, precision=0.5
+        )
+        G_bad = calculate_expected_free_energy(
+            bad_policy, {}, preferences, historical_stats, precision=0.5
+        )
 
         assert G_good < G_bad
 
