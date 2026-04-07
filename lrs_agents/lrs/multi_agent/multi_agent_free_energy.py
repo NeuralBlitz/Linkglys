@@ -125,7 +125,7 @@ def should_communicate_based_on_G(
         True
     """
     # Deterministic: choose lower G
-    if precision > 0.9:
+    if precision >= 0.9:
         return G_communicate < G_no_communicate
 
     # Stochastic: softmax selection

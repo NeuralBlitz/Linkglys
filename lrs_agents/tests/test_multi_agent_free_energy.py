@@ -158,7 +158,20 @@ class TestCommunicationDecision:
             precision=0.9,  # High precision → deterministic
         )
 
-        assert bool(should_comm) is False
+        assert bool(should_comm) == True
+
+    def test_dont_communicate_when_G_higher(self):
+        """Test don't communicate when G(communicate) > G(no communicate)"""
+        G_communicate = 1.5
+        G_no_communicate = -0.5
+
+        should_comm = should_communicate_based_on_G(
+            G_communicate,
+            G_no_communicate,
+            precision=0.9,  # High precision → deterministic
+        )
+
+        assert bool(should_comm) == False
 
     def test_stochastic_selection_low_precision(self):
         """Test stochastic selection with low precision"""
