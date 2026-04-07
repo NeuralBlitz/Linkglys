@@ -195,11 +195,14 @@ class LRSGraphBuilder:
 
     def _generate_policies(self, state: LRSState) -> LRSState:
         """
-        Generate optimized candidate policies using intelligent generation.
+        Generate optimized candidate policies using exhaustive generation.
         """
         state["current_hbn_level"] = "planning"
-        max_depth = 2 if state["precision"]["planning"] > 0.6 else 3
-        candidates = self._generate_intelligent_candidates(max_depth=max_depth, state=state)
+        precision = state.get("precision") or self.hp.get_all()
+        state["precision"] = precision
+
+        max_depth = 2 if precision.get("planning", 0.5) > 0.6 else 3
+        candidates = self._generate_policy_candidates(max_depth=max_depth)
 
         state["candidate_policies"] = candidates
 
@@ -233,12 +236,21 @@ class LRSGraphBuilder:
 
         Core active inference calculation: G = Epistemic - Pragmatic
         """
-        evaluations = []
+        preferences = state.get("preferences") or self.preferences
+        state["preferences"] = preferences
 
-        for policy in state["candidate_policies"]:
-            eval_result = calculate_expected_free_energy(
-                policy=policy, registry=self.registry, preferences=state["preferences"]
+        evaluations = []
+        g_values = {}
+
+        for idx, policy_entry in enumerate(state.get("candidate_policies", [])):
+            # Older tests sometimes pass {"policy": [...]} wrapper objects.
+            policy = (
+                policy_entry.get("policy", []) if isinstance(policy_entry, dict) else policy_entry
             )
+            eval_result = calculate_expected_free_energy(
+                policy=policy, registry=self.registry, preferences=preferences
+            )
+            g_values[idx] = eval_result
             evaluations.append(
                 PolicyEvaluation(
                     epistemic_value=0.0,
@@ -250,6 +262,7 @@ class LRSGraphBuilder:
             )
 
         state["policy_evaluations"] = evaluations
+        state["G_values"] = g_values
 
         return state
 
@@ -260,11 +273,17 @@ class LRSGraphBuilder:
         High precision → exploit (choose lowest G)
         Low precision → explore (flatten distribution)
         """
+        precision = state.get("precision") or self.hp.get_all()
+        state["precision"] = precision
+
         selected_idx = precision_weighted_selection(
-            evaluations=state["policy_evaluations"], precision=state["precision"]["planning"]
+            evaluations=state["policy_evaluations"],
+            precision=precision.get("planning", 0.5),
         )
 
         selected_policy = state["candidate_policies"][selected_idx]
+        if isinstance(selected_policy, dict):
+            selected_policy = selected_policy.get("policy", [])
         state["selected_policy"] = selected_policy
         state["current_policy_index"] = 0  # Reset for execution
 
@@ -325,22 +344,25 @@ class LRSGraphBuilder:
         prediction_error = latest_execution["prediction_error"]
 
         # Update hierarchical precision
-        updated_precisions = self.hp.update(level="execution", prediction_error=prediction_error)
+        self.hp.update(level="execution", prediction_error=prediction_error)
+        updated_precisions = self.hp.get_all()
 
         # Sync to state
-        state["precision"].update(updated_precisions)
-        state["precision_history"].append(self.hp.get_all())
+        state["precision"] = updated_precisions
+        precision_history = state.setdefault("precision_history", [])
+        precision_history.append(updated_precisions)
 
         # Record adaptation events
         if prediction_error > 0.7:
-            state["adaptation_count"] += 1
-            state["adaptation_events"].append(
+            state["adaptation_count"] = state.get("adaptation_count", 0) + 1
+            adaptation_events = state.setdefault("adaptation_events", [])
+            adaptation_events.append(
                 {
                     "timestamp": datetime.now().isoformat(),
                     "tool": latest_execution["tool"],
                     "error": prediction_error,
-                    "precision_before": state["precision_history"][-2]["planning"]
-                    if len(state["precision_history"]) > 1
+                    "precision_before": precision_history[-2]["planning"]
+                    if len(precision_history) > 1
                     else None,
                     "precision_after": state["precision"]["planning"],
                 }
@@ -375,6 +397,9 @@ class LRSGraphBuilder:
             "replan": Precision dropped, generate new policies
             "fail": Systemic failure, cannot proceed
         """
+        precision = state.get("precision") or self.hp.get_all()
+        state["precision"] = precision
+
         # Check for goal satisfaction
         if state["belief_state"].get("goal_satisfied", False):
             return "success"
@@ -384,7 +409,8 @@ class LRSGraphBuilder:
             return "fail"
 
         # Check if current policy is exhausted
-        if state["current_policy_index"] >= len(state.get("selected_policy", [])):
+        current_policy_index = state.get("current_policy_index", 0)
+        if current_policy_index >= len(state.get("selected_policy", [])):
             # Policy done but goal not satisfied → replan
             return "replan"
 
@@ -394,6 +420,26 @@ class LRSGraphBuilder:
 
         # Continue with current policy
         return "continue"
+
+    def _precision_gate(self, state: LRSState) -> str:
+        """
+        Backward-compatible precision gate used by older tests.
+
+        Historically this returned "end" once max_iterations had been exceeded.
+        The graph now uses _decision_gate, but this compatibility shim keeps the
+        older test contract intact.
+        """
+        max_iterations = state.get("max_iterations")
+        tool_history = state.get("tool_history", [])
+
+        if max_iterations is not None and len(tool_history) >= max_iterations:
+            return "end"
+
+        return self._decision_gate(state)
+
+    # Aliases for backward compatibility with tests
+    _initialize = _initialize_state
+    _evaluate_G = _evaluate_free_energy
 
 
 # ============================================================================

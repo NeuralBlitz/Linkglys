@@ -115,12 +115,17 @@ class TestLRSGraphBuilder:
 
         builder = LRSGraphBuilder(mock_llm, registry, use_llm_proposals=False)
 
-        state = {"candidate_policies": [{"policy": [tool], "strategy": "test"}], "belief_state": {}}
+        state = {
+            "candidate_policies": [[tool]],
+            "belief_state": {},
+            "preferences": {"success": 1.0, "error": -1.0},
+            "precision": {"planning": 0.5, "execution": 0.5},
+        }
 
         result = builder._evaluate_G(state)
 
-        assert "G_values" in result
-        assert 0 in result["G_values"]  # First policy
+        assert "policy_evaluations" in result
+        assert len(result["policy_evaluations"]) == 1
 
     def test_select_policy_node(self):
         """Test policy selection node"""
@@ -245,6 +250,8 @@ class TestLRSGraphBuilder:
             "belief_state": {"goal_satisfied": False},
             "tool_history": [],
             "selected_policy": [MockTool("test")],
+            "precision": {"planning": 0.5, "execution": 0.5},
+            "current_policy_index": 0,
         }
 
         next_node = builder._decision_gate(state)

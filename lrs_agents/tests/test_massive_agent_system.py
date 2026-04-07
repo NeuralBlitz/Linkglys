@@ -179,7 +179,9 @@ class TestEPAIntegration:
             "time_pressure": "high",
         }
 
-        template = await epa_integrator._select_optimal_template("quantum_agent", quantum_context)
+        template = await epa_integrator._select_optimal_template(
+            "quantum_agent", quantum_context, {}
+        )
 
         # Should select quantum template
         assert template.domain == SemanticDomain.QUANTUM_PROCESSING

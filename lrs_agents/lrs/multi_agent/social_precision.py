@@ -338,8 +338,10 @@ class RecursiveBeliefState:
         my_actual = self.my_precision
         other_thinks = self.belief_about_other_belief.get(other_agent_id, 0.5)
 
-        # Share if: I'm uncertain but other thinks I'm confident
-        return my_actual < threshold and other_thinks > 0.7
+        # Share if: I'm uncertain but other thinks I'm confident.
+        # Treat precision exactly at the threshold as uncertain so callers
+        # don't have to guess which side of the boundary 0.3 belongs to.
+        return my_actual <= threshold and other_thinks > 0.7
 
     def should_seek_help(
         self, other_agent_id: str, my_threshold: float = 0.4, other_threshold: float = 0.6

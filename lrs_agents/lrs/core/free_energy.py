@@ -222,7 +222,7 @@ def evaluate_policy(
 
 
 def precision_weighted_selection(
-    policy_evaluations: List[PolicyEvaluation],
+    policy_evaluations: Optional[List[PolicyEvaluation]] = None,
     precision: float = 0.5,
     temperature: float = 1.0,
     evaluations: Optional[List[PolicyEvaluation]] = None,  # For backward compatibility
@@ -238,6 +238,7 @@ def precision_weighted_selection(
         policy_evaluations: Evaluated policies
         precision: Current precision γ ∈ [0,1]
         temperature: Additional temperature parameter
+        evaluations: Alias for policy_evaluations (backward compatibility)
 
     Returns:
         Index of selected policy
@@ -252,13 +253,16 @@ def precision_weighted_selection(
     import random
 
     # Use evaluations parameter if provided (for backward compatibility)
-    evaluations = evaluations or policy_evaluations
+    evals = evaluations if evaluations is not None else policy_evaluations
 
-    if not evaluations:
+    if evals is None:
+        evals = []
+
+    if not evals:
         raise ValueError("Cannot select from empty evaluations")
 
     # Extract G values
-    G_values = [eval.total_G for eval in evaluations]
+    G_values = [eval.total_G for eval in evals]
 
     # Softmax with precision as inverse temperature
     beta = precision / temperature

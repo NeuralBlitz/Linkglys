@@ -144,7 +144,7 @@ class TestExpectedFreeEnergy:
         preferences = {"success": 5.0}
 
         epistemic = calculate_epistemic_value(policy, {}, None)
-        pragmatic = calculate_pragmatic_value(policy, {}, preferences, None)
+        pragmatic = calculate_pragmatic_value(policy, preferences, {}, None)
 
         G = calculate_expected_free_energy(policy, {}, preferences, precision=0.5)
 
@@ -166,11 +166,9 @@ class TestExpectedFreeEnergy:
         }
 
         G_good = calculate_expected_free_energy(
-            good_policy, {}, preferences, historical_stats, precision=0.5
+            good_policy, None, preferences, 0.5, historical_stats
         )
-        G_bad = calculate_expected_free_energy(
-            bad_policy, {}, preferences, historical_stats, precision=0.5
-        )
+        G_bad = calculate_expected_free_energy(bad_policy, None, preferences, 0.5, historical_stats)
 
         assert G_good < G_bad
 
