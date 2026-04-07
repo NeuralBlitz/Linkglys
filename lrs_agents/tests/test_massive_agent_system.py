@@ -14,11 +14,13 @@ NOTE: Some tests are skipped due to complex enterprise system issues.
 """
 
 import asyncio
+from contextlib import suppress
 import pytest
+import pytest_asyncio
 import time
 import json
 from typing import Dict, List, Any
-from unittest.mock import Mock, patch
+from unittest.mock import AsyncMock, Mock, patch
 import tempfile
 import os
 
@@ -40,6 +42,29 @@ from lrs.enterprise.epa_integration import (
     PromptComplexity,
 )
 from lrs.neuralblitz_integration.shared_state import SharedWorldState
+
+
+class MockMetrics:
+    """Lightweight metrics stub for enterprise integration tests."""
+
+    def __init__(self, agent_type):
+        self.agent_id = f"mock_{agent_type.value}"
+        self.agent_type = agent_type
+        self.status = AgentStatus.ACTIVE
+        self.quantum_fidelity = 0.9 if agent_type == AgentType.QUANTUM else 0.0
+        self.task_completion_rate = 0.9
+        self.current_load = 0.2
+        self.error_rate = 0.0
+        self.uptime = 1.0
+        self.fault_count = 0
+
+
+@pytest_asyncio.fixture
+async def agent_manager():
+    """Create a ready-to-monitor enterprise agent manager."""
+    manager = EnterpriseAgentManager(max_agents=1000, max_stages=100)
+    await manager.register_agent(AgentType.WORKER, {"fixture": True})
+    return manager
 
 
 class TestAgentLifecycle:
@@ -166,8 +191,10 @@ class TestEPAIntegration:
     @pytest.fixture
     def epa_integrator(self):
         """Create EPA integrator for testing."""
-        shared_state = SharedWorldState()
-        return EPAIntegrator(Mock())
+        mock_manager = Mock()
+        mock_manager.agent_metrics = {}
+        mock_manager.agents = {}
+        return EPAIntegrator(mock_manager)
 
     @pytest.mark.asyncio
     async def test_prompt_template_generation(self, epa_integrator):
@@ -175,6 +202,10 @@ class TestEPAIntegration:
         # Test template selection logic
         agent_metrics = Mock()
         agent_metrics.agent_type = AgentType.QUANTUM
+        agent_metrics.quantum_fidelity = 0.95
+        agent_metrics.task_completion_rate = 0.9
+        agent_metrics.current_load = 0.2
+        epa_integrator.agent_manager.agent_metrics["quantum_agent"] = agent_metrics
 
         # Test quantum task context
         quantum_context = {
@@ -258,11 +289,13 @@ class TestEPAIntegration:
                 "primary_concept": "test_optimization",
             }
         )
+        mock_shared_state.update = AsyncMock()
+        epa_integrator.agent_manager = mock_agent_manager
 
         # Test integration loop
-        with patch("asyncio.sleep", return_value=None):
-            # Run integration for a short time
-            await epa_integrator.integrate_with_lrs(mock_shared_state)
+        with patch("asyncio.sleep", side_effect=asyncio.CancelledError):
+            with pytest.raises(asyncio.CancelledError):
+                await epa_integrator.integrate_with_lrs(mock_shared_state)
 
             # Verify EPA statistics updated
             final_stats = epa_integrator.prompt_generation_stats
@@ -317,7 +350,8 @@ class TestPerformanceAndScalability:
 
         # Cancel monitoring
         monitor_task.cancel()
-        await monitor_task
+        with suppress(asyncio.CancelledError):
+            await monitor_task
 
     @pytest.mark.asyncio
     async def test_fault_tolerance(self, agent_manager):
@@ -422,11 +456,27 @@ class TestSystemIntegration:
         agent_manager = EnterpriseAgentManager(max_agents=1000, max_stages=100)
         epa_integrator = EPAIntegrator(agent_manager)
         shared_state = SharedWorldState()
+        quantum_manager = agent_manager.quantum_manager
 
         # Deploy diverse agent types
         worker_agents = await agent_manager.deploy_agent_batch(50, AgentType.WORKER)
         quantum_agents = await agent_manager.deploy_agent_batch(20, AgentType.QUANTUM)
         coordinators = await agent_manager.deploy_agent_batch(5, AgentType.COORDINATOR)
+
+        for agent_id in worker_agents[:5] + quantum_agents[:5] + coordinators[:2]:
+            shared_state.update(
+                agent_id,
+                {
+                    "current_task": {
+                        "task_type": "quantum_process" if agent_id in quantum_agents else "execute",
+                        "task_description": "integration test task",
+                        "requirements": ["superposition", "entanglement"]
+                        if agent_id in quantum_agents
+                        else ["basic_task_execution"],
+                        "time_pressure": "high",
+                    }
+                },
+            )
 
         # Start integrated system
         integration_task = asyncio.create_task(epa_integrator.integrate_with_lrs(shared_state))
@@ -445,6 +495,10 @@ class TestSystemIntegration:
         # Cleanup
         integration_task.cancel()
         monitor_task.cancel()
+        with suppress(asyncio.CancelledError):
+            await integration_task
+        with suppress(asyncio.CancelledError):
+            await monitor_task
 
 
 # Configuration and test utilities

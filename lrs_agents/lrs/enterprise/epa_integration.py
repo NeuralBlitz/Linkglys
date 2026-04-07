@@ -131,9 +131,7 @@ class OntologyLattice:
 
     def __init__(self):
         self.concepts: Dict[str, Dict[str, Any]] = {}
-        self.relations: Dict[
-            str, List[Tuple[str, str, float]]
-        ] = []  # (source, relation, target, weight)
+        self.relations: Dict[str, List[Tuple[str, str, float]]] = {}
         self.coherence_scores: Dict[str, float] = {}
         self.lattice_depth = 0
 
@@ -144,6 +142,8 @@ class OntologyLattice:
 
     def add_relation(self, source: str, target: str, relation_type: str, weight: float = 1.0):
         """Add a semantic relation."""
+        if source not in self.relations:
+            self.relations[source] = []
         self.relations[source].append((target, relation_type, weight))
         self._update_coherence(source)
         self._update_coherence(target)
@@ -154,8 +154,8 @@ class OntologyLattice:
         related_concepts = set()
 
         # Find all related concepts
-        for relations in self.relations.values():
-            for source_id, target_id, relation, weight in relations:
+        for source_id, relations in self.relations.items():
+            for target_id, relation, weight in relations:
                 if source_id == concept_id or target_id == concept_id:
                     related_concepts.add(source_id)
                     related_concepts.add(target_id)
@@ -168,7 +168,7 @@ class OntologyLattice:
             contradictions = 0
             for related in related_concepts:
                 if related != concept_id:
-                    for _, target_id, relation, weight in self.relations[related]:
+                    for target_id, relation, weight in self.relations.get(related, []):
                         if target_id == concept_id and relation in ["contradicts", "incompatible"]:
                             contradictions += weight
 
@@ -235,6 +235,12 @@ class EPAIntegrator:
         # Configure logging
         self.logger = logging.getLogger("EPA_Integrator")
         self.logger.setLevel(logging.INFO)
+
+    async def _maybe_await(self, value: Any) -> Any:
+        """Await coroutine results while allowing sync compatibility shims."""
+        if asyncio.iscoroutine(value):
+            return await value
+        return value
 
     def _initialize_prompt_templates(self) -> Dict[str, PromptTemplate]:
         """Initialize comprehensive prompt templates."""
@@ -412,40 +418,63 @@ class EPAIntegrator:
         system_load = self._calculate_system_load()
         time_pressure = task_context.get("time_pressure", "normal")
 
-        if agent_metrics.agent_type.value == "quantum" and "quantum" in task_context.get(
-            "requirements", []
-        ):
-            if agent_metrics.quantum_fidelity > 0.8 and system_load < 0.5:
+        quantum_fidelity = getattr(agent_metrics, "quantum_fidelity", 0.0)
+        if not isinstance(quantum_fidelity, (int, float)):
+            quantum_fidelity = 0.0
+
+        task_completion_rate = getattr(agent_metrics, "task_completion_rate", 0.0)
+        if not isinstance(task_completion_rate, (int, float)):
+            task_completion_rate = 0.0
+
+        quantum_requirements = {"quantum", "superposition", "entanglement"}
+        is_quantum_context = domain == SemanticDomain.QUANTUM_PROCESSING or any(
+            requirement in quantum_requirements for requirement in task_context.get("requirements", [])
+        )
+
+        if agent_metrics.agent_type.value == "quantum" and is_quantum_context:
+            if quantum_fidelity > 0.8 and system_load < 0.5:
                 complexity = PromptComplexity.HYPER_COMPLEX
-            elif agent_metrics.quantum_fidelity > 0.6 or time_pressure == "high":
+            elif quantum_fidelity > 0.6 or time_pressure == "high":
                 complexity = PromptComplexity.COMPLEX
             else:
                 complexity = PromptComplexity.MODERATE
         else:
             if system_load > 0.8 or time_pressure == "high":
                 complexity = PromptComplexity.SIMPLE
-            elif system_load > 0.5 and agent_metrics.task_completion_rate > 0.8:
+            elif system_load > 0.5 and task_completion_rate > 0.8:
                 complexity = PromptComplexity.COMPLEX
             else:
                 complexity = PromptComplexity.MODERATE
 
-        template_key = f"{domain.value}_{complexity.value}"
+        if domain == SemanticDomain.QUANTUM_PROCESSING:
+            template_key = (
+                "quantum_entangled"
+                if complexity == PromptComplexity.HYPER_COMPLEX
+                else "quantum_simple"
+            )
+        elif domain == SemanticDomain.TASK_EXECUTION:
+            template_key = "task_complex" if complexity == PromptComplexity.COMPLEX else "task_simple"
+        elif domain == SemanticDomain.COORDINATION:
+            template_key = "coordination"
+        elif domain == SemanticDomain.ANALYSIS:
+            template_key = "analysis"
+        else:
+            template_key = "task_simple"
         return self.prompt_templates.get(template_key, self.prompt_templates["task_simple"])
 
     def _calculate_system_load(self) -> float:
         """Calculate overall system load (0.0 to 1.0)."""
-        if not self.agent_manager.agent_metrics:
+        agent_metrics = getattr(self.agent_manager, "agent_metrics", None)
+        if not isinstance(agent_metrics, dict) or not agent_metrics:
             return 0.5  # Default moderate load
 
         total_load = sum(
             metrics.current_load
-            for metrics in self.agent_manager.agent_metrics.values()
+            for metrics in agent_metrics.values()
             if metrics and hasattr(metrics, "current_load")
         )
 
-        max_load = (
-            len(self.agent_manager.agent_metrics) * 1.0
-        )  # Max load if all agents are fully loaded
+        max_load = len(agent_metrics) * 1.0  # Max load if all agents are fully loaded
 
         return min(total_load / max_load, 1.0) if max_load > 0 else 0.0
 
@@ -493,7 +522,7 @@ class EPAIntegrator:
         # Analyze recent prompt performance
         recent_performances = []
 
-        for template_id in self.prompt_templates.values():
+        for template in self.prompt_templates.values():
             # Simulate performance tracking (in real system, would come from actual execution)
             performance = np.random.normal(0.7, 0.2)  # Simulated performance score
             recent_performances.append(performance)
@@ -502,7 +531,7 @@ class EPAIntegrator:
         if len(recent_performances) > 0:
             avg_performance = np.mean(recent_performances)
 
-            for template_id, template in self.prompt_templates.values():
+            for template_id, template in self.prompt_templates.items():
                 if template.domain == SemanticDomain.TASK_EXECUTION:
                     if avg_performance < 0.5:
                         # Increase simplicity
@@ -535,7 +564,7 @@ class EPAIntegrator:
                 for agent_id, metrics in self.agent_manager.agent_metrics.items():
                     if metrics and metrics.status == AgentStatus.ACTIVE:
                         # Get current task from shared state
-                        agent_state = shared_state.get_agent_state(agent_id)
+                        agent_state = await self._maybe_await(shared_state.get_agent_state(agent_id))
 
                         if agent_state and "current_task" in agent_state:
                             task_context = agent_state["current_task"]
@@ -551,13 +580,15 @@ class EPAIntegrator:
                             )
 
                             # Update agent's prompt in shared state
-                            await shared_state.update(
-                                agent_id,
-                                {
-                                    "current_prompt": prompt,
-                                    "prompt_timestamp": datetime.now().isoformat(),
-                                    "epa_integration": True,
-                                },
+                            await self._maybe_await(
+                                shared_state.update(
+                                    agent_id,
+                                    {
+                                        "current_prompt": prompt,
+                                        "prompt_timestamp": datetime.now().isoformat(),
+                                        "epa_integration": True,
+                                    },
+                                )
                             )
 
                 # Periodic semantic coherence optimization
@@ -572,6 +603,9 @@ class EPAIntegrator:
                 # Wait for next cycle
                 await asyncio.sleep(60)  # 1-minute optimization cycles
 
+            except asyncio.CancelledError:
+                self.logger.info("EPA-LRS integration cancelled")
+                raise
             except Exception as e:
                 self.logger.error(f"Error in EPA-LRS integration: {e}")
                 await asyncio.sleep(10)
