@@ -12,14 +12,9 @@ import sys
 import os
 import subprocess
 
-# Add current directory to Python path
+# Add current directory and lrs_agents to Python path
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-sys.path.insert(
-    0, os.path.dirname(os.path.abspath(__file__))
-)  # Add twice to ensure root is in path
-sys.path.insert(
-    0, os.path.join(os.path.dirname(os.path.abspath(__file__)), "lrs_agents")
-)
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), "lrs_agents"))
 
 # Import our integration components
 from lrs_agents.lrs.opencode.simplified_integration import (
@@ -70,8 +65,9 @@ app = FastAPI(title="OpenCode ↔ LRS-Agents Integration Hub", version="2.0.0")
 
 # Serve React dashboard static assets
 DASHBOARD_BUILD = os.path.join(os.path.dirname(os.path.abspath(__file__)), "neuralblitz-dashboard", "build")
-if os.path.exists(DASHBOARD_BUILD):
-    app.mount("/static", StaticFiles(directory=os.path.join(DASHBOARD_BUILD, "static")), name="static")
+STATIC_PATH = os.path.join(DASHBOARD_BUILD, "static")
+if os.path.exists(STATIC_PATH):
+    app.mount("/static", StaticFiles(directory=STATIC_PATH, html=False), name="static")
 
 # Integrate benchmark endpoints
 integrate_benchmarks_into_main(app)
