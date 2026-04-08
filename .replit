@@ -24,14 +24,6 @@ externalPort = 80
 [[ports]]
 localPort = 8000
 
-[packaging]
-includePackage = "fastapi>=0.100.0"
-includePackage = "uvicorn[standard]>=0.20.0"
-includePackage = "pydantic>=2.0.0"
-includePackage = "PyJWT>=2.0.0"
-includePackage = "python-multipart>=0.0.6"
-includePackage = "cryptography>=41.0.0"
-includePackage = "aiofiles>=23.0.0"
 
 [[ports]]
 localPort = 5000
