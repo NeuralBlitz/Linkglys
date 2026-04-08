@@ -24,7 +24,5 @@
   "test_integration_tui.py::TestTUIModuleImports::test_import_config": true,
   "test_integration_tui.py::TestTUIModuleImports::test_import_precision_mapper": true,
   "test_integration_tui.py::TestTUIModuleImports::test_import_coordinator": true,
-  "test_integration_tui.py::TestConfig::test_initialization": true,
-  "test_integration_tui.py::TestTUIModuleImports::test_tui_package_exists": true,
-  "test_integration_tui.py::TestTUIModuleImports::test_tui_has_init": true
+  "test_integration_tui.py::TestConfig::test_initialization": true
 }

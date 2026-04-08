@@ -10,11 +10,11 @@ from unittest.mock import Mock, AsyncMock
 from datetime import datetime
 
 # Import TUI integration components
-from ..tool import TUIInteractionTool
-from ..state_mirror import TUIStateMirror
-from ..precision_mapper import TUIPrecisionMapper, ConfidenceLevel
-from ..coordinator import TUIMultiAgentCoordinator, TUIAgentConfig
-from ..config import TUIConfigManager, TUIIntegrationConfig
+from .tool import TUIInteractionTool
+from .state_mirror import TUIStateMirror
+from .precision_mapper import TUIPrecisionMapper, ConfidenceLevel
+from .coordinator import TUIMultiAgentCoordinator, TUIAgentConfig
+from .config import TUIConfigManager, TUIIntegrationConfig
 
 
 class TestTUIConfig:

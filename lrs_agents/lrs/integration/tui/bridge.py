@@ -18,9 +18,9 @@ from dataclasses import dataclass
 from fastapi import FastAPI, WebSocket, WebSocketDisconnect
 import uvicorn
 
-from ..core.registry import ToolRegistry
-from ..multi_agent.shared_state import SharedWorldState
-from ..multi_agent.coordinator import MultiAgentCoordinator
+from ...core.registry import ToolRegistry
+from ...multi_agent.shared_state import SharedWorldState
+from ...multi_agent.coordinator import MultiAgentCoordinator
 from .websocket_manager import WebSocketManager
 from .rest_endpoints import RESTEndpoints
 from .state_mirror import TUIStateMirror
