@@ -291,6 +291,7 @@
   "test_precision.py::TestPrecisionStatistics::test_convergence_with_consistent_low_error",
   "test_precision.py::TestPrecisionStatistics::test_oscillation_with_alternating_errors",
   "test_precision.py::TestPrecisionStatistics::test_recovery_from_collapse",
+  "test_prompts.py::TestMetaCognitivePrompterEdgeCases::test_boundary_precision_low",
   "test_registry.py::TestRegistryEdgeCases::test_get_statistics_nonexistent",
   "test_registry.py::TestRegistryEdgeCases::test_register_duplicate_tool",
   "test_registry.py::TestRegistryEdgeCases::test_update_statistics_before_registration",

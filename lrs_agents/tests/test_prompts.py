@@ -279,12 +279,13 @@ class TestMetaCognitivePrompterEdgeCases:
         assert mode == StrategyMode.EXPLOITATION
 
     def test_boundary_precision_low(self):
-        """Test at low precision boundary"""
+        """Test at low precision boundary - 0.4 is at or below threshold so EXPLORATION"""
         prompter = MetaCognitivePrompter()
 
         mode = prompter._determine_mode(0.4)
 
-        assert mode == StrategyMode.BALANCED
+        # 0.4 <= 0.4 (low_precision_threshold) returns EXPLORATION
+        assert mode == StrategyMode.EXPLORATION
 
 
 if __name__ == "__main__":

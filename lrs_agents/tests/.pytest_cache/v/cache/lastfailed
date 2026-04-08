@@ -34,5 +34,6 @@
   "test_opencode_tool.py::TestOpenCodeTool::test_set_updates_state": true,
   "test_opencode_tool.py::TestOpenCodeToolExecution::test_search_task": true,
   "test_opencode_tool.py::TestOpenCodeToolExecution::test_read_task_no_file": true,
-  "test_opencode_tool.py::TestOpenCodeToolExecution::test_edit_task": true
+  "test_opencode_tool.py::TestOpenCodeToolExecution::test_edit_task": true,
+  "test_prompts.py::TestMetaCognitivePrompterEdgeCases::test_boundary_precision_low": true
 }
