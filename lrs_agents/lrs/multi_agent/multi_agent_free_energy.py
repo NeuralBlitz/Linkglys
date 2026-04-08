@@ -4,8 +4,9 @@ Free Energy calculation for multi-agent systems.
 Extends single-agent G to include social uncertainty.
 """
 
+import math
+import random
 from typing import List, Dict, Any
-import numpy as np
 
 from lrs.core.free_energy import calculate_epistemic_value, calculate_pragmatic_value
 from lrs.core.lens import ToolLens
@@ -131,10 +132,10 @@ def should_communicate_based_on_G(
     # Stochastic: softmax selection
     temp = 1.0 / (precision + 0.1)
 
-    prob_communicate = np.exp(-G_communicate / temp)
-    prob_no_communicate = np.exp(-G_no_communicate / temp)
+    prob_communicate = math.exp(-G_communicate / temp)
+    prob_no_communicate = math.exp(-G_no_communicate / temp)
 
     total = prob_communicate + prob_no_communicate
     prob_communicate /= total
 
-    return np.random.random() < prob_communicate
+    return random.random() < prob_communicate

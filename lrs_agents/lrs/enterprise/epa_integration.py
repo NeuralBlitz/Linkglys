@@ -18,7 +18,7 @@ from datetime import datetime
 from enum import Enum
 import json
 import logging
-import numpy as np
+import random as _random
 
 # Import LRS components
 from lrs.multi_agent.shared_state import SharedWorldState
@@ -524,12 +524,12 @@ class EPAIntegrator:
 
         for template in self.prompt_templates.values():
             # Simulate performance tracking (in real system, would come from actual execution)
-            performance = np.random.normal(0.7, 0.2)  # Simulated performance score
+            performance = _random.gauss(0.7, 0.2)  # Simulated performance score
             recent_performances.append(performance)
 
         # Adapt templates based on performance
         if len(recent_performances) > 0:
-            avg_performance = np.mean(recent_performances)
+            avg_performance = sum(recent_performances) / len(recent_performances)
 
             for template_id, template in self.prompt_templates.items():
                 if template.domain == SemanticDomain.TASK_EXECUTION:
@@ -618,7 +618,7 @@ class EPAIntegrator:
             "semantic_coherence": {
                 "total_concepts": len(self.ontology.concepts),
                 "total_relations": len(self.ontology.relations),
-                "average_coherence": np.mean(list(self.ontology.coherence_scores.values()))
+                "average_coherence": (sum(self.ontology.coherence_scores.values()) / len(self.ontology.coherence_scores))
                 if self.ontology.coherence_scores
                 else 0.0,
                 "low_coherence_count": len(
