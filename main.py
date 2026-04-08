@@ -6,7 +6,7 @@ import json
 from typing import Dict, Any, Optional
 from fastapi import FastAPI, WebSocket, WebSocketDisconnect, HTTPException
 from fastapi.staticfiles import StaticFiles
-from fastapi.responses import HTMLResponse
+from fastapi.responses import HTMLResponse, FileResponse
 from pydantic import BaseModel
 import sys
 import os
@@ -68,6 +68,11 @@ except ImportError:
 
 app = FastAPI(title="OpenCode ↔ LRS-Agents Integration Hub", version="2.0.0")
 
+# Serve React dashboard static assets
+DASHBOARD_BUILD = os.path.join(os.path.dirname(os.path.abspath(__file__)), "neuralblitz-dashboard", "build")
+if os.path.exists(DASHBOARD_BUILD):
+    app.mount("/static", StaticFiles(directory=os.path.join(DASHBOARD_BUILD, "static")), name="static")
+
 # Integrate benchmark endpoints
 integrate_benchmarks_into_main(app)
 
@@ -93,119 +98,13 @@ opencode_tool = OpenCodeTool()
 lrs_agent = SimplifiedLRSAgent(tools=[opencode_tool])
 
 
-@app.get("/", response_class=HTMLResponse)
+@app.get("/", response_class=FileResponse)
 async def read_root():
-    """Serve the comprehensive integration web interface."""
-    html_content = """<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>OpenCode ↔ LRS-Agents Integration Hub</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
-    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
-    <style>
-        .gradient-bg { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
-        .card-hover { transition: all 0.3s ease; }
-        .card-hover:hover { transform: translateY(-5px); box-shadow: 0 20px 40px rgba(0,0,0,0.1); }
-        .pulse-ring { animation: pulse-ring 2s cubic-bezier(0.455, 0.03, 0.515, 0.955) infinite; }
-        @keyframes pulse-ring { 0% { transform: scale(0.33); } 40%, 50% { opacity: 1; } 100% { opacity: 0; transform: scale(0.9); } }
-    </style>
-</head>
-<body class="bg-gray-50 min-h-screen">
-    <nav class="bg-white shadow-lg">
-        <div class="max-w-7xl mx-auto px-4">
-            <div class="flex justify-between items-center py-4">
-                <div class="flex items-center space-x-4">
-                    <div class="flex items-center space-x-2">
-                        <div class="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
-                            <span class="text-white font-bold text-sm">OC</span>
-                        </div>
-                        <span class="text-xl font-bold text-gray-800">OpenCode</span>
-                    </div>
-                    <div class="text-2xl text-gray-400">↔</div>
-                    <div class="flex items-center space-x-2">
-                        <div class="w-8 h-8 bg-purple-600 rounded-lg flex items-center justify-center">
-                            <span class="text-white font-bold text-sm">LRS</span>
-                        </div>
-                        <span class="text-xl font-bold text-gray-800">LRS-Agents</span>
-                    </div>
-                </div>
-                <div class="flex items-center space-x-4">
-                    <span class="text-sm text-gray-600">Cognitive AI Hub v3.0</span>
-                    <div class="flex items-center space-x-2">
-                        <div class="w-2 h-2 bg-green-500 rounded-full pulse-ring"></div>
-                        <span class="text-sm text-green-600">🧠 Cognitive AI Active</span>
-                    </div>
-                    <a href="cognitive_demo.html" target="_blank" class="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg text-sm transition duration-200">🚀 Cognitive Demo</a>
-                </div>
-            </div>
-        </div>
-    </nav>"""
-
-    # Add the rest of the HTML content
-    html_content += """
-        <div class="max-w-7xl mx-auto px-4 py-8">
-            <div class="text-center mb-12">
-                <h1 class="text-5xl font-bold text-gray-900 mb-4">OpenCode ↔ LRS-Agents Cognitive AI Hub</h1>
-                <p class="text-xl text-gray-600 mb-6 max-w-3xl mx-auto">Revolutionary AI-assisted development platform with 264,447x performance improvement and cognitive intelligence</p>
-                <div class="flex justify-center space-x-4">
-                    <div class="bg-blue-100 text-blue-800 px-4 py-2 rounded-full text-sm font-medium">Active Inference</div>
-                    <div class="bg-purple-100 text-purple-800 px-4 py-2 rounded-full text-sm font-medium">Cognitive AI</div>
-                    <div class="bg-green-100 text-green-800 px-4 py-2 rounded-full text-sm font-medium">264,447x Faster</div>
-                </div>
-            </div>
-
-            <div class="bg-white rounded-xl shadow-lg p-8 mb-8">
-                <h2 class="text-2xl font-semibold text-gray-900 mb-6">🎯 Revolutionary Capabilities</h2>
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    <div class="p-4 border border-gray-200 rounded-lg">
-                        <h3 class="font-medium text-gray-900 mb-2">🧠 Cognitive Code Analysis</h3>
-                        <p class="text-gray-600 text-sm">Multi-modal AI understanding of code patterns, attention focus, and cognitive insights</p>
-                    </div>
-                    <div class="p-4 border border-gray-200 rounded-lg">
-                        <h3 class="font-medium text-gray-900 mb-2">⚡ 264,447x Performance</h3>
-                        <p class="text-gray-600 text-sm">Revolutionary speed improvements with perfect accuracy and enterprise scalability</p>
-                    </div>
-                    <div class="p-4 border border-gray-200 rounded-lg">
-                        <h3 class="font-medium text-gray-900 mb-2">🤖 Multi-Agent Intelligence</h3>
-                        <p class="text-gray-600 text-sm">Self-optimizing cognitive agents with temporal learning and coordination</p>
-                    </div>
-                    <div class="p-4 border border-gray-200 rounded-lg">
-                        <h3 class="font-medium text-gray-900 mb-2">🏢 Enterprise Security</h3>
-                        <p class="text-gray-600 text-sm">JWT authentication, RBAC, audit logging, and production monitoring</p>
-                    </div>
-                    <div class="p-4 border border-gray-200 rounded-lg">
-                        <h3 class="font-medium text-gray-900 mb-2">🌐 Universal Ecosystem</h3>
-                        <p class="text-gray-600 text-sm">7 deployment platforms, 4 IDE integrations, plugin marketplace</p>
-                    </div>
-                    <div class="p-4 border border-gray-200 rounded-lg">
-                        <h3 class="font-medium text-gray-900 mb-2">🚀 Cognitive Demo</h3>
-                        <p class="text-gray-600 text-sm">Interactive AI code analysis with real-time insights and pattern recognition</p>
-                    </div>
-                </div>
-            </div>
-
-            <div class="text-center">
-                <a href="cognitive_demo.html" target="_blank" class="bg-purple-600 hover:bg-purple-700 text-white px-8 py-4 rounded-lg text-lg font-medium transition duration-200 inline-flex items-center">
-                    <span class="mr-2">🚀</span> Launch Cognitive AI Demo
-                </a>
-                <p class="text-gray-600 mt-4">Experience revolutionary AI-assisted development firsthand</p>
-            </div>
-        </div>
-
-        <script>
-            // Simple enterprise status check
-            function updateStatus() {
-                console.log('Cognitive AI Hub v3.0 - Enterprise Status: Operational');
-            }
-            updateStatus();
-        </script>
-    </body>
-    </html>"""
-
-    return html_content
+    """Serve the React dashboard."""
+    index_path = os.path.join(DASHBOARD_BUILD, "index.html")
+    if os.path.exists(index_path):
+        return FileResponse(index_path)
+    return HTMLResponse("<h1>Dashboard build not found. Run: cd neuralblitz-dashboard && bun run build</h1>", status_code=503)
 
 
 @app.get("/api/integration/status")
@@ -337,7 +236,16 @@ async def execute_multi_agent_workflow(request: dict):
         )
 
 
+@app.get("/{full_path:path}", response_class=FileResponse)
+async def spa_catch_all(full_path: str):
+    """Serve React app for all non-API routes (SPA routing)."""
+    index_path = os.path.join(DASHBOARD_BUILD, "index.html")
+    if os.path.exists(index_path):
+        return FileResponse(index_path)
+    raise HTTPException(status_code=404, detail="Not found")
+
+
 if __name__ == "__main__":
     import uvicorn
 
-    uvicorn.run(app, host="0.0.0.0", port=8000)
+    uvicorn.run(app, host="0.0.0.0", port=5000)
