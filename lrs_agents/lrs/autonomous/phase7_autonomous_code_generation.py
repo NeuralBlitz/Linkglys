@@ -1191,7 +1191,7 @@ class AutonomousCodeGenerator:
         if COGNITIVE_AVAILABLE:
             try:
                 self.cognitive_coordinator = MultiAgentCoordinator()
-            except:
+            except (TypeError, AttributeError):
                 pass
 
     async def generate_from_description(self, description: str) -> Dict[str, Any]:

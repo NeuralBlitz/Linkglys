@@ -395,7 +395,7 @@ class WebSocketBridge:
                 "user_id": "authenticated_user",
                 "permissions": ["read_state", "write_state"],
             }
-        except Exception:
+        except (ValueError, KeyError, jwt.exceptions.PyJWTError):
             raise Exception("Authentication failed")
 
     async def connect_to_lrs_websocket(self):

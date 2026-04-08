@@ -273,7 +273,7 @@ class DistributedMeshNetwork:
             try:
                 writer.close()
                 await writer.wait_closed()
-            except:
+            except RuntimeError:
                 pass
 
         # Cancel background tasks

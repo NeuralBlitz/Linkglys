@@ -326,7 +326,7 @@ class TestPerformanceAndScalability:
                 try:
                     agent_id = await agent_manager.register_agent(AgentType.WORKER, {"excess": i})
                     excess_agents.append(agent_id)
-                except Exception:
+                except (RuntimeError, ValueError):
                     break
 
         final_count = len(agent_manager.agents)

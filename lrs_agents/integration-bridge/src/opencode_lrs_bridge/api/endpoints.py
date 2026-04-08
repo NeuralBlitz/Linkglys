@@ -325,7 +325,7 @@ class ToolExecutor:
                 # Try LRS first, then opencode
                 try:
                     result = await self._execute_on_lrs(execution_id, request)
-                except Exception:
+                except (RuntimeError, httpx.HTTPError):
                     result = await self._execute_on_opencode(execution_id, request)
 
             result.status = ToolExecutionStatus.COMPLETED

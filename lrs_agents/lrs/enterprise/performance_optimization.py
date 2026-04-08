@@ -35,7 +35,7 @@ class LRSCache:
             try:
                 with open(index_file, "rb") as f:
                     self._cache_index = pickle.load(f)
-            except:
+            except (pickle.PickleError, IOError):
                 self._cache_index = {}
 
     def _save_cache_index(self):
@@ -66,7 +66,7 @@ class LRSCache:
                     try:
                         with open(cache_file, "rb") as f:
                             return pickle.load(f)
-                    except:
+                    except (pickle.PickleError, IOError):
                         pass  # Cache corrupted, will be overwritten
 
         return None
@@ -205,7 +205,7 @@ class OptimizedActiveInferenceAnalyzer(ActiveInferenceAnalyzer):
                     "extension": filepath.suffix,
                     "content": content,  # For complexity analysis
                 }
-            except:
+            except (OSError, IOError, UnicodeDecodeError):
                 return None
 
         # Submit all file processing tasks

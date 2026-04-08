@@ -653,7 +653,7 @@ class AdvancedAnalyticsDashboard:
                 activity_score = max(0, 1 - time_since_update / 3600)  # Decay over 1 hour
                 score += activity_score * 0.1
                 factors += 0.1
-            except:
+            except (ValueError, TypeError):
                 pass
 
         # Normalize score

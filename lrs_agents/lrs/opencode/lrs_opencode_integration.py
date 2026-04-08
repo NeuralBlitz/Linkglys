@@ -314,7 +314,7 @@ class ActiveInferenceAnalyzer(OpenCodeTool):
                                         "complexity_score": self._estimate_complexity(lines),
                                     }
                                 )
-                        except Exception:
+                        except (OSError, IOError, UnicodeDecodeError):
                             continue
 
             # Calculate epistemic value (information gain from analysis)

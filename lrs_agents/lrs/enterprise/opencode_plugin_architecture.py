@@ -298,7 +298,7 @@ class PluginRegistry:
                 return True
             else:
                 return False
-        except Exception:
+        except (TypeError, AttributeError, RuntimeError):
             return False
 
     def _register_plugin_hooks(self, plugin: PluginInterface):

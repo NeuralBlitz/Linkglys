@@ -22,6 +22,8 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.middleware.trustedhost import TrustedHostMiddleware
 import jwt
 
+logger = logging.getLogger(__name__)
+
 
 # =============================================================================
 # ENTERPRISE SECURITY SYSTEM
@@ -639,7 +641,8 @@ async def login(request: Request, username: str, password: str):
 
     except HTTPException:
         raise
-    except Exception:
+    except Exception as e:
+        logger.exception("Authentication error: %s", str(e))
         enterprise_monitor.record_request(
             "/enterprise/auth/login", "POST", time.time() - start_time, 500
         )
@@ -681,7 +684,8 @@ async def create_user(
 
     except HTTPException:
         raise
-    except Exception:
+    except Exception as e:
+        logger.exception("User creation error: %s", str(e))
         enterprise_monitor.record_request(
             "/enterprise/auth/create-user",
             "POST",
@@ -710,7 +714,8 @@ async def get_security_status(current_user: Dict = Depends(check_permissions("ad
 
         return status_data
 
-    except Exception:
+    except Exception as e:
+        logger.exception("Security status error: %s", str(e))
         enterprise_monitor.record_request(
             "/enterprise/security/status",
             "GET",
@@ -743,7 +748,8 @@ async def get_audit_log(
 
         return {"audit_entries": audit_data}
 
-    except Exception:
+    except Exception as e:
+        logger.exception("Audit log error: %s", str(e))
         enterprise_monitor.record_request(
             "/enterprise/security/audit",
             "GET",
@@ -768,7 +774,8 @@ async def get_system_health():
 
         return health_data
 
-    except Exception:
+    except Exception as e:
+        logger.exception("Health check error: %s", str(e))
         enterprise_monitor.record_request(
             "/monitoring/health", "GET", time.time() - start_time, 500, "public"
         )
@@ -795,7 +802,8 @@ async def get_performance_report(
 
         return report
 
-    except Exception:
+    except Exception as e:
+        logger.exception("Performance report error: %s", str(e))
         enterprise_monitor.record_request(
             "/monitoring/performance",
             "GET",
@@ -826,7 +834,8 @@ async def get_alerts(current_user: Dict = Depends(check_permissions("operator"))
 
         return {"alerts": alerts, "total_active": len(alerts)}
 
-    except Exception:
+    except Exception as e:
+        logger.exception("Alerts retrieval error: %s", str(e))
         enterprise_monitor.record_request(
             "/monitoring/alerts",
             "GET",
@@ -868,7 +877,8 @@ async def acknowledge_alert(
 
     except HTTPException:
         raise
-    except Exception:
+    except Exception as e:
+        logger.exception("Alert acknowledgment error: %s", str(e))
         enterprise_monitor.record_request(
             f"/monitoring/alerts/{alert_index}/acknowledge",
             "POST",
