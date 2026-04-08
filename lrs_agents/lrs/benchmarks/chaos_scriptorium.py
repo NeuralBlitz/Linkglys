@@ -156,7 +156,7 @@ class ChaosEnvironment:
         """Remove temporary directory"""
         try:
             shutil.rmtree(self.root_dir)
-        except:
+        except OSError:
             pass
 
 
@@ -522,7 +522,7 @@ if __name__ == "__main__":
         from langchain_anthropic import ChatAnthropic
 
         llm = ChatAnthropic(model="claude-sonnet-4-20250514")
-    except:
+    except ImportError:
         print("Error: Install langchain-anthropic to run benchmark")
         sys.exit(1)
 

@@ -472,7 +472,7 @@ class GAIABenchmark:
             # Within 1% tolerance
             if abs(pred_num - exp_num) / abs(exp_num) < 0.01:
                 return True
-        except:
+        except (ValueError, ZeroDivisionError):
             pass
         
         # Substring match (predicted contains expected)
@@ -564,7 +564,7 @@ if __name__ == "__main__":
     try:
         from langchain_anthropic import ChatAnthropic
         llm = ChatAnthropic(model="claude-sonnet-4-20250514")
-    except:
+    except ImportError:
         print("Error: Install langchain-anthropic to run benchmark")
         sys.exit(1)
     
