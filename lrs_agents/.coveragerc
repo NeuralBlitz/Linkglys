@@ -1,0 +1,49 @@
+[run]
+source = lrs
+omit =
+    # Demo files that are not meant for production
+    */cognitive/cognitive_live_demo.py
+    */cognitive/cognitive_integration_demo.py
+    */cognitive/cognitive_multi_agent_demo.py
+    */autonomous/phase7_*.py
+    */benchmarks/gaia_benchmark.py
+    */benchmarks/chaos_scriptorium.py
+    
+    # Integration scripts (entry points, not core logic)
+    */opencode/lrs_integration.py
+    */opencode/lrs_opencode_bridge.py
+    */opencode/opencode_lrs_tool.py
+    */opencode/setup_lrs_integration.py
+    */benchmarking/benchmark_integration.py
+    */benchmarking/validate_course_of_action.py
+    */benchmarking/comprehensive_benchmark_runner.py
+    */benchmarking/comparative_analysis_framework.py
+    */benchmarking/custom_benchmark_generator.py
+    */benchmarking/regression_testing_framework.py
+    
+    # Enterprise modules with complex external deps
+    */enterprise/agent_lifecycle_manager.py
+    */enterprise/enterprise_security_monitoring.py
+    */enterprise/epa_integration.py
+    */enterprise/opencode_plugin_architecture.py
+    */enterprise/performance_optimization.py
+    
+    # Large integration files
+    */opencode/lrs_opencode_integration.py
+    */integration/langgraph.py
+    */integration/openai_assistants.py
+    */integration/langchain_adapter.py
+    
+    # Dashboard requires streamlit
+    */monitoring/dashboard.py
+    
+    # TUI files requiring external deps
+    */integration/tui/ai_assistant.py
+    */integration/tui/analytics.py
+    */integration/tui/mesh_network.py
+    */integration/tui/plugins.py
+
+[report]
+precision = 2
+show_missing = True
+skip_covered = False
