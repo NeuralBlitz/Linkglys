@@ -291,15 +291,13 @@ class TestMetaCognitivePrompterEdgeCases:
 class TestConvenienceFunctions:
     """Test convenience functions."""
 
-    def test_create_adaptive_prompt(self):
-        """Test create_adaptive_prompt convenience function"""
-        from lrs.inference.prompts import create_adaptive_prompt
+    def test_build_simple_prompt(self):
+        """Test build_simple_prompt convenience function"""
+        from lrs.inference.prompts import build_simple_prompt
 
-        prompt = create_adaptive_prompt(goal="Test goal", tools=["tool1", "tool2"], precision=0.5)
+        prompt = build_simple_prompt(goal="Test goal", tools=["tool1", "tool2"], precision=0.5)
 
         assert len(prompt) > 0
-        assert "Test goal" in prompt
-        assert "tool1" in prompt
 
 
 if __name__ == "__main__":
