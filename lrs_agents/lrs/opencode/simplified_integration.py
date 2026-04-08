@@ -38,7 +38,7 @@ class OpenCodeTool(SimplifiedToolLens):
                 )
                 if result.returncode == 0:
                     return candidate
-            except:
+            except (OSError, subprocess.SubprocessError):
                 continue
         return None
 
