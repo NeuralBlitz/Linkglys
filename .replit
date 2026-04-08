@@ -1,5 +1,5 @@
 entrypoint = "index.js"
-modules = ["bun-1.1", "nodejs-20", "nodejs-22", "python-3.11"]
+modules = ["nodejs-22", "python-3.11"]
 hidden = [".config", "package-lock.json"]
 
 [gitHubImport]
@@ -7,7 +7,7 @@ requiredFiles = [".replit", "replit.nix", "package.json", "package-lock.json"]
 
 [nix]
 channel = "stable-24_11"
-packages = ["bottom", "fish", "ksh", "libxcrypt", "nodejs_22", "perl540Packages.AppClusterSSH", "powershell", "python311Packages.pipx", "python312Packages.pip", "zsh"]
+packages = ["libxcrypt"]
 
 [deployment]
 run = ["node", "index.js"]
@@ -18,13 +18,5 @@ ignorePorts = false
 expertMode = true
 
 [[ports]]
-localPort = 5000
-externalPort = 80
-
-[[ports]]
 localPort = 8000
-
-
-[[ports]]
-localPort = 5000
 externalPort = 80
