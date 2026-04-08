@@ -23,10 +23,10 @@ class TestHybridGEvaluator:
         evaluator = HybridGEvaluator()
 
         assert evaluator.epistemic_weight == 1.0
-        # Default lambda: λ = 1 - p
-        assert evaluator.lambda_fn(0.5) == 0.5
-        assert evaluator.lambda_fn(0.2) == 0.8
-        assert evaluator.lambda_fn(0.8) == 0.2
+        # Default lambda: λ = 1 - p (allow for floating point)
+        assert abs(evaluator.lambda_fn(0.5) - 0.5) < 0.01
+        assert abs(evaluator.lambda_fn(0.2) - 0.8) < 0.01
+        assert abs(evaluator.lambda_fn(0.8) - 0.2) < 0.01
 
     def test_initialization_custom_lambda(self):
         """Test initialization with custom lambda function"""
