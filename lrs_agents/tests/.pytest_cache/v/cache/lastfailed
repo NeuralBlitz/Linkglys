@@ -1,11 +1,5 @@
 {
   "test_langchain_adapter.py::TestSchemaExtraction::test_extract_output_schema": true,
   "test_langchain_adapter.py::TestErrorCalculationHeuristics::test_type_mismatch_error": true,
-  "test_langchain_adapter.py::TestErrorCalculationHeuristics::test_empty_result_moderate_error": true,
-  "test_free_energy.py": true,
-  "test_massive_agent_system.py": true,
-  "test_multi_agent_free_energy.py": true,
-  "test_communication.py::TestMessage": true,
-  "test_communication.py::TestCommunicationLens": true,
-  "test_communication.py::TestCommunicationPatterns": true
+  "test_langchain_adapter.py::TestErrorCalculationHeuristics::test_empty_result_moderate_error": true
 }
