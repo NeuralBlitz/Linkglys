@@ -368,6 +368,7 @@
   "tests/test_precision.py::TestPrecisionStatistics::test_convergence_with_consistent_low_error",
   "tests/test_precision.py::TestPrecisionStatistics::test_oscillation_with_alternating_errors",
   "tests/test_precision.py::TestPrecisionStatistics::test_recovery_from_collapse",
+  "tests/test_prompts.py::TestConvenienceFunctions::test_create_adaptive_prompt",
   "tests/test_prompts.py::TestMetaCognitivePrompter::test_build_calibration_instructions",
   "tests/test_prompts.py::TestMetaCognitivePrompter::test_build_diversity_requirements",
   "tests/test_prompts.py::TestMetaCognitivePrompter::test_build_error_analysis",

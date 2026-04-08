@@ -288,5 +288,19 @@ class TestMetaCognitivePrompterEdgeCases:
         assert mode == StrategyMode.EXPLORATION
 
 
+class TestConvenienceFunctions:
+    """Test convenience functions."""
+
+    def test_create_adaptive_prompt(self):
+        """Test create_adaptive_prompt convenience function"""
+        from lrs.inference.prompts import create_adaptive_prompt
+
+        prompt = create_adaptive_prompt(goal="Test goal", tools=["tool1", "tool2"], precision=0.5)
+
+        assert len(prompt) > 0
+        assert "Test goal" in prompt
+        assert "tool1" in prompt
+
+
 if __name__ == "__main__":
     pytest.main([__file__, "-v"])
