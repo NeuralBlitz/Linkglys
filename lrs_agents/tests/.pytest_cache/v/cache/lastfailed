@@ -24,5 +24,15 @@
   "test_integration_tui.py::TestTUIModuleImports::test_import_config": true,
   "test_integration_tui.py::TestTUIModuleImports::test_import_precision_mapper": true,
   "test_integration_tui.py::TestTUIModuleImports::test_import_coordinator": true,
-  "test_integration_tui.py::TestConfig::test_initialization": true
+  "test_integration_tui.py::TestConfig::test_initialization": true,
+  "test_opencode_tool.py::TestOpenCodeTool::test_initialization": true,
+  "test_opencode_tool.py::TestOpenCodeTool::test_initialization_custom_name": true,
+  "test_opencode_tool.py::TestOpenCodeTool::test_find_opencode_not_found": true,
+  "test_opencode_tool.py::TestOpenCodeTool::test_find_opencode_found": true,
+  "test_opencode_tool.py::TestOpenCodeTool::test_get_without_opencode": true,
+  "test_opencode_tool.py::TestOpenCodeTool::test_get_no_task_specified": true,
+  "test_opencode_tool.py::TestOpenCodeTool::test_set_updates_state": true,
+  "test_opencode_tool.py::TestOpenCodeToolExecution::test_search_task": true,
+  "test_opencode_tool.py::TestOpenCodeToolExecution::test_read_task_no_file": true,
+  "test_opencode_tool.py::TestOpenCodeToolExecution::test_edit_task": true
 }

@@ -45,5 +45,16 @@
   "tests/test_monitor_tracker.py::TestLRSStateTracker::test_get_tool_execution_history": true,
   "tests/test_monitor_tracker.py::TestLRSStateTracker::test_get_statistics": true,
   "tests/test_monitor_tracker.py::TestLRSStateTracker::test_clear_history": true,
-  "tests/test_monitor_tracker.py::TestLRSStateTracker::test_export_json": true
+  "tests/test_monitor_tracker.py::TestLRSStateTracker::test_export_json": true,
+  "tests/test_opencode_tool.py::TestOpenCodeTool::test_initialization": true,
+  "tests/test_opencode_tool.py::TestOpenCodeTool::test_initialization_custom_name": true,
+  "tests/test_opencode_tool.py::TestOpenCodeTool::test_find_opencode_not_found": true,
+  "tests/test_opencode_tool.py::TestOpenCodeTool::test_find_opencode_found": true,
+  "tests/test_opencode_tool.py::TestOpenCodeTool::test_get_without_opencode": true,
+  "tests/test_opencode_tool.py::TestOpenCodeTool::test_get_no_task_specified": true,
+  "tests/test_opencode_tool.py::TestOpenCodeTool::test_set_updates_state": true,
+  "tests/test_opencode_tool.py::TestOpenCodeToolExecution::test_search_task": true,
+  "tests/test_opencode_tool.py::TestOpenCodeToolExecution::test_read_task_no_file": true,
+  "tests/test_opencode_tool.py::TestOpenCodeToolExecution::test_edit_task": true,
+  "tests/test_prompts.py::TestMetaCognitivePrompterEdgeCases::test_boundary_precision_low": true
 }
