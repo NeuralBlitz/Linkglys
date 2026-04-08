@@ -7,7 +7,7 @@ requiredFiles = [".replit", "replit.nix", "package.json", "package-lock.json"]
 
 [nix]
 channel = "stable-24_11"
-packages = ["bottom", "fish", "ksh", "libxcrypt", "nodejs_22", "perl540Packages.AppClusterSSH", "powershell", "python311Packages.pipx", "python312Packages.pip", "zsh", "tree"]
+packages = ["bottom", "fish", "ksh", "libxcrypt", "nodejs_22", "perl540Packages.AppClusterSSH", "powershell", "python311Packages.pipx", "python312Packages.pip", "zsh"]
 
 [deployment]
 run = ["node", "index.js"]

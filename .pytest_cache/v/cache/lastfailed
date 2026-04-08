@@ -9,6 +9,8 @@
   "neuralblitz-v50/tests/test_audit.py": true,
   "neuralblitz-v50/tests/test_auth.py": true,
   "neuralblitz-v50/tests/test_chaos.py": true,
-  "neuralblitz-v50/tests/test_dashboard.py": true,
-  "neuralblitz-v50/tests/test_tracing.py": true
+  "neuralblitz-v50/tests/test_tracing.py": true,
+  "lrs/tests": true,
+  "neuralblitz-v50/python/tests/test_neuralblitz.py": true,
+  "neuralblitz_slack_bot/test_bot.py": true
 }
