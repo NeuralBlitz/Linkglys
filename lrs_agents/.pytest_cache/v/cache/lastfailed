@@ -39,5 +39,11 @@
   "integration-bridge/tests/test_websocket.py::TestEventProcessor::test_process_invalid_message_type": true,
   "integration-bridge/tests/test_websocket.py::TestEventProcessor::test_process_message_without_type": true,
   "tests/test_llm_policy_generator.py::TestErrorHandling::test_malformed_json_handled": true,
-  "tests/test_llm_policy_generator.py::TestErrorHandling::test_missing_required_fields_skips_proposal": true
+  "tests/test_llm_policy_generator.py::TestErrorHandling::test_missing_required_fields_skips_proposal": true,
+  "tests/test_monitor_logging.py::TestLRSLoggerEdgeCases::test_empty_policies_list": true,
+  "tests/test_monitor_tracker.py::TestLRSStateTracker::test_get_prediction_error_trajectory": true,
+  "tests/test_monitor_tracker.py::TestLRSStateTracker::test_get_tool_execution_history": true,
+  "tests/test_monitor_tracker.py::TestLRSStateTracker::test_get_statistics": true,
+  "tests/test_monitor_tracker.py::TestLRSStateTracker::test_clear_history": true,
+  "tests/test_monitor_tracker.py::TestLRSStateTracker::test_export_json": true
 }

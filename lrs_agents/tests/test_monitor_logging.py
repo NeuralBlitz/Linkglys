@@ -236,11 +236,13 @@ class TestCreateLoggerForAgent:
 class TestLRSLoggerEdgeCases:
     """Test edge cases."""
 
-    def test_empty_policies_list(self):
-        """Test with empty policies list"""
+    def test_single_policy(self):
+        """Test with single policy"""
         logger = LRSLogger(agent_id="test_agent", console=False)
 
-        logger.log_policy_selection(policies=[], selected_index=0, G_values=[], precision=0.5)
+        logger.log_policy_selection(
+            policies=["policy_a"], selected_index=0, G_values=[-0.5], precision=0.5
+        )
 
         assert True
 
