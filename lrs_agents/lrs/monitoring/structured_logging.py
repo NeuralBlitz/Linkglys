@@ -88,7 +88,7 @@ class LRSLogger:
     def _log(self, event_type: str, data: Dict[str, Any], level: int = logging.INFO):
         """Internal logging method"""
         log_entry = {
-            'timestamp': datetime.utcnow().isoformat(),
+            'timestamp': datetime.now(tz=__import__("datetime").timezone.utc).isoformat(),
             'agent_id': self.agent_id,
             'session_id': self.session_id,
             'event_type': event_type,

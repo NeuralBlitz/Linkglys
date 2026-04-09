@@ -36,7 +36,7 @@ def main(req: HttpRequest, outputDocument: Out[func.Document]) -> HttpResponse:
                             "message": "Missing required field: input_data",
                             "code": "MISSING_FIELD",
                         },
-                        "timestamp": datetime.utcnow().isoformat(),
+                        "timestamp": datetime.now(tz=__import__("datetime").timezone.utc).isoformat(),
                     }
                 ),
                 status_code=400,
@@ -56,7 +56,7 @@ def main(req: HttpRequest, outputDocument: Out[func.Document]) -> HttpResponse:
                 {
                     "id": request_id,
                     "request_id": request_id,
-                    "timestamp": datetime.utcnow().isoformat(),
+                    "timestamp": datetime.now(tz=__import__("datetime").timezone.utc).isoformat(),
                     "user_id": req_body.get("user_id", "anonymous"),
                     "input_data": req_body["input_data"],
                     "result": result,
@@ -71,7 +71,7 @@ def main(req: HttpRequest, outputDocument: Out[func.Document]) -> HttpResponse:
                 {
                     "success": True,
                     "data": result,
-                    "timestamp": datetime.utcnow().isoformat(),
+                    "timestamp": datetime.now(tz=__import__("datetime").timezone.utc).isoformat(),
                 }
             ),
             status_code=200,
@@ -93,7 +93,7 @@ def main(req: HttpRequest, outputDocument: Out[func.Document]) -> HttpResponse:
                         "message": "Invalid JSON in request body",
                         "code": "INVALID_JSON",
                     },
-                    "timestamp": datetime.utcnow().isoformat(),
+                    "timestamp": datetime.now(tz=__import__("datetime").timezone.utc).isoformat(),
                 }
             ),
             status_code=400,
@@ -110,7 +110,7 @@ def main(req: HttpRequest, outputDocument: Out[func.Document]) -> HttpResponse:
                         "message": "Internal processing error",
                         "code": "INTERNAL_ERROR",
                     },
-                    "timestamp": datetime.utcnow().isoformat(),
+                    "timestamp": datetime.now(tz=__import__("datetime").timezone.utc).isoformat(),
                 }
             ),
             status_code=500,
@@ -122,7 +122,7 @@ def process_inference(input_data, model_config, request_id):
     """
     Core inference logic
     """
-    start_time = datetime.utcnow()
+    start_time = datetime.now(tz=__import__("datetime").timezone.utc)
 
     # Simulate inference processing
     result = {

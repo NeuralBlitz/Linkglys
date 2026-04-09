@@ -202,7 +202,7 @@ def setup_influxdb_retention_policies():
     try:
         buckets_api.create_bucket(
             bucket_name="high_freq_metrics",
-            org_id="neuralblitz",
+            org="neuralblitz",
             retention_rules=[
                 {
                     "type": "expire",
@@ -218,7 +218,7 @@ def setup_influxdb_retention_policies():
     try:
         buckets_api.create_bucket(
             bucket_name="aggregated_metrics",
-            org_id="neuralblitz",
+            org="neuralblitz",
             retention_rules=[
                 {
                     "type": "expire",

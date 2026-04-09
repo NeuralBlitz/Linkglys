@@ -292,7 +292,7 @@ class MTLSValidator:
                 else:
                     not_after_dt = not_after
 
-                if datetime.utcnow() > not_after_dt:
+                if datetime.now(tz=__import__("datetime").timezone.utc) > not_after_dt:
                     cert_info["expired"] = True
                     cert_info["validation_errors"].append("Certificate has expired")
 
@@ -463,7 +463,7 @@ class SecurityMiddleware:
         """Check if IP address is blocked."""
         if ip_address in self.blocked_ips:
             block_expiry = self.blocked_ips[ip_address]
-            if datetime.utcnow() < block_expiry:
+            if datetime.now(tz=__import__("datetime").timezone.utc) < block_expiry:
                 return True
             else:
                 # Block expired, remove it
@@ -475,7 +475,7 @@ class SecurityMiddleware:
         self, client_info: ClientInfo, request: Request
     ) -> bool:
         """Detect suspicious activity patterns."""
-        current_time = datetime.utcnow()
+        current_time = datetime.now(tz=__import__("datetime").timezone.utc)
         client_id = client_info.client_id
 
         # Check for rapid requests from same client
@@ -510,7 +510,7 @@ class SecurityMiddleware:
         recent_suspicious = self.suspicious_requests.get(client_id, [])
 
         # Count suspicious requests in last 10 minutes
-        current_time = datetime.utcnow()
+        current_time = datetime.now(tz=__import__("datetime").timezone.utc)
         recent_count = sum(
             1
             for req_time in recent_suspicious
@@ -534,7 +534,7 @@ class SecurityMiddleware:
     ):
         """Log security event."""
         event = {
-            "timestamp": datetime.utcnow().isoformat(),
+            "timestamp": datetime.now(tz=__import__("datetime").timezone.utc).isoformat(),
             "event_type": event_type,
             "client_id": client_info.client_id,
             "ip_address": client_info.ip_address,
@@ -554,7 +554,7 @@ class SecurityMiddleware:
 
     def get_security_status(self) -> Dict[str, Any]:
         """Get current security status and statistics."""
-        current_time = datetime.utcnow()
+        current_time = datetime.now(tz=__import__("datetime").timezone.utc)
 
         # Clean expired IP blocks
         expired_blocks = [
@@ -582,7 +582,7 @@ class SecurityMiddleware:
 
     async def cleanup_old_data(self):
         """Clean up old security data."""
-        current_time = datetime.utcnow()
+        current_time = datetime.now(tz=__import__("datetime").timezone.utc)
 
         # Clean old suspicious request records
         for client_id in list(self.suspicious_requests.keys()):

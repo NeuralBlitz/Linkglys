@@ -44,7 +44,7 @@ class TestDashboardMetrics:
 
         assert len(metrics.coherence_history) == 3
         assert list(metrics.coherence_history) == [0.8, 0.9, 0.7]
-        assert metrics.last_updated > datetime.utcnow() - timedelta(seconds=1)
+        assert metrics.last_updated > datetime.now(tz=__import__("datetime").timezone.utc) - timedelta(seconds=1)
 
     def test_processing_time_updates(self):
         """Test processing time metric updates."""
@@ -94,7 +94,7 @@ class TestDashboardMetrics:
         metrics = DashboardMetrics()
 
         # Add old alert
-        old_time = (datetime.utcnow() - timedelta(hours=2)).isoformat()
+        old_time = (datetime.now(tz=__import__("datetime").timezone.utc) - timedelta(hours=2)).isoformat()
         old_alert = {
             "timestamp": old_time,
             "type": "OLD_ALERT",

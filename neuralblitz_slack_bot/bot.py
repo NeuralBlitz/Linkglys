@@ -638,7 +638,7 @@ class NeuralBlitzSlackBot:
 
     def _get_trigger_id(self) -> str:
         """Get trigger ID for modal operations."""
-        return "trigger_id_placeholder"
+        return event.get("trigger_id", "")
 
     def run(self):
         """Start the bot in Socket Mode."""

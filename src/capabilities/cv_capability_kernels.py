@@ -96,7 +96,7 @@ class BaseCapabilityKernel:
             kernel=kernel_name,
             version=version,
             intent=intent,
-            timestamp=datetime.utcnow().isoformat(),
+            timestamp=datetime.now(tz=__import__("datetime").timezone.utc).isoformat(),
             request_id=self._generate_request_id(),
         )
         self.governance = CKGovernance(
@@ -107,7 +107,7 @@ class BaseCapabilityKernel:
     def _generate_request_id(self) -> str:
         """Generate unique request ID"""
         return hashlib.sha256(
-            f"{datetime.utcnow().isoformat()}{np.random.randint(0, 1000000)}".encode()
+            f"{datetime.now(tz=__import__("datetime").timezone.utc).isoformat()}{np.random.randint(0, 1000000)}".encode()
         ).hexdigest()[:32]
 
     def _compute_nbhs512(self, data: Any) -> str:
@@ -136,7 +136,7 @@ class BaseCapabilityKernel:
             "coverage": 1.0,
             "factors": ["input_validation", "model_inference", "post_processing"],
             "confidence": result.get("confidence", 0.0),
-            "timestamp": datetime.utcnow().isoformat(),
+            "timestamp": datetime.now(tz=__import__("datetime").timezone.utc).isoformat(),
         }
 
 
@@ -289,7 +289,7 @@ class SceneAnalysisObjectDetectionCK(BaseCapabilityKernel):
             "provenance": {...}
         }
         """
-        start_time = datetime.utcnow()
+        start_time = datetime.now(tz=__import__("datetime").timezone.utc)
 
         # Validate payload
         valid, message = self.validate_payload(payload)
@@ -297,7 +297,7 @@ class SceneAnalysisObjectDetectionCK(BaseCapabilityKernel):
             return {
                 "ok": False,
                 "error": {"code": "E-VAL-001", "message": message},
-                "timestamp": datetime.utcnow().isoformat(),
+                "timestamp": datetime.now(tz=__import__("datetime").timezone.utc).isoformat(),
             }
 
         # Extract parameters
@@ -324,7 +324,7 @@ class SceneAnalysisObjectDetectionCK(BaseCapabilityKernel):
         scene_summary = self._generate_scene_summary(detections)
 
         # Calculate metrics
-        end_time = datetime.utcnow()
+        end_time = datetime.now(tz=__import__("datetime").timezone.utc)
         latency_ms = (end_time - start_time).total_seconds() * 1000
 
         # Prepare result
@@ -346,7 +346,7 @@ class SceneAnalysisObjectDetectionCK(BaseCapabilityKernel):
                 "golden_dag_ref": self.metadata.request_id,
                 "kernel_version": self.metadata.version,
             },
-            "timestamp": datetime.utcnow().isoformat(),
+            "timestamp": datetime.now(tz=__import__("datetime").timezone.utc).isoformat(),
         }
 
         if return_viz:
@@ -543,7 +543,7 @@ class FacialRecognitionEmotionCK(BaseCapabilityKernel):
             "privacy_mode": str (optional, default: "strict")  # strict, anonymized, research
         }
         """
-        start_time = datetime.utcnow()
+        start_time = datetime.now(tz=__import__("datetime").timezone.utc)
 
         # Validate payload
         valid, message = self.validate_payload(payload)
@@ -588,7 +588,7 @@ class FacialRecognitionEmotionCK(BaseCapabilityKernel):
             face_analyses.append(analysis)
 
         # Calculate metrics
-        end_time = datetime.utcnow()
+        end_time = datetime.now(tz=__import__("datetime").timezone.utc)
         latency_ms = (end_time - start_time).total_seconds() * 1000
 
         # Prepare result with privacy metadata
@@ -636,7 +636,7 @@ class FacialRecognitionEmotionCK(BaseCapabilityKernel):
                     "message": "Data retention exceeds 24 hours",
                 }
             ],
-            "timestamp": datetime.utcnow().isoformat(),
+            "timestamp": datetime.now(tz=__import__("datetime").timezone.utc).isoformat(),
         }
 
         if return_crop and face_analyses:
@@ -847,7 +847,7 @@ class OpticalCharacterRecognitionCK(BaseCapabilityKernel):
             }
         }
         """
-        start_time = datetime.utcnow()
+        start_time = datetime.now(tz=__import__("datetime").timezone.utc)
 
         # Validate payload
         valid, message = self.validate_payload(payload)
@@ -906,7 +906,7 @@ class OpticalCharacterRecognitionCK(BaseCapabilityKernel):
             orientation = self._detect_orientation(processed_image)
 
         # Calculate metrics
-        end_time = datetime.utcnow()
+        end_time = datetime.now(tz=__import__("datetime").timezone.utc)
         latency_ms = (end_time - start_time).total_seconds() * 1000
 
         # Prepare full text
@@ -942,7 +942,7 @@ class OpticalCharacterRecognitionCK(BaseCapabilityKernel):
                 "golden_dag_ref": self.metadata.request_id,
                 "kernel_version": self.metadata.version,
             },
-            "timestamp": datetime.utcnow().isoformat(),
+            "timestamp": datetime.now(tz=__import__("datetime").timezone.utc).isoformat(),
         }
 
         if orientation:

@@ -61,7 +61,7 @@ class NeuralBlitzResponse:
                 {
                     "success": True,
                     "data": data,
-                    "timestamp": datetime.utcnow().isoformat(),
+                    "timestamp": datetime.now(tz=__import__("datetime").timezone.utc).isoformat(),
                 }
             ),
             status_code,
@@ -78,7 +78,7 @@ class NeuralBlitzResponse:
             {
                 "success": False,
                 "error": {"message": message, "code": error_code},
-                "timestamp": datetime.utcnow().isoformat(),
+                "timestamp": datetime.now(tz=__import__("datetime").timezone.utc).isoformat(),
             }
         ), status_code
 
@@ -114,7 +114,7 @@ def inference():
     request_id = (
         os.environ.get("K_REVISION", "local")
         + "-"
-        + datetime.utcnow().strftime("%Y%m%d%H%M%S%f")
+        + datetime.now(tz=__import__("datetime").timezone.utc).strftime("%Y%m%d%H%M%S%f")
     )
 
     with tracer.start_as_current_span("inference_request") as span:
@@ -148,7 +148,7 @@ def inference():
                 {
                     "request_id": request_id,
                     "user_id": data.get("user_id", "anonymous"),
-                    "timestamp": datetime.utcnow().isoformat(),
+                    "timestamp": datetime.now(tz=__import__("datetime").timezone.utc).isoformat(),
                 },
             )
 
@@ -182,7 +182,7 @@ def governance_check():
     request_id = (
         os.environ.get("K_REVISION", "local")
         + "-"
-        + datetime.utcnow().strftime("%Y%m%d%H%M%S%f")
+        + datetime.now(tz=__import__("datetime").timezone.utc).strftime("%Y%m%d%H%M%S%f")
     )
 
     with tracer.start_as_current_span("governance_check") as span:
@@ -234,7 +234,7 @@ def upload_file():
         user_id = request.form.get("user_id", "anonymous")
 
         # Upload to Cloud Storage
-        blob_name = f"uploads/{datetime.utcnow().strftime('%Y/%m/%d')}/{file.filename}"
+        blob_name = f"uploads/{datetime.now(tz=__import__("datetime").timezone.utc).strftime('%Y/%m/%d')}/{file.filename}"
         blob = bucket.blob(blob_name)
         blob.upload_from_string(file.read(), content_type=file.content_type)
 
@@ -244,7 +244,7 @@ def upload_file():
             {
                 "blob_name": blob_name,
                 "user_id": user_id,
-                "timestamp": datetime.utcnow().isoformat(),
+                "timestamp": datetime.now(tz=__import__("datetime").timezone.utc).isoformat(),
             },
         )
 
@@ -267,7 +267,7 @@ def process_inference(input_data, model_config, request_id):
     """
     Core inference logic
     """
-    start_time = datetime.utcnow()
+    start_time = datetime.now(tz=__import__("datetime").timezone.utc)
 
     result = {
         "request_id": request_id,
@@ -300,7 +300,7 @@ def store_result(result, user_id):
         doc_ref.set(
             {
                 "request_id": result["request_id"],
-                "timestamp": datetime.utcnow(),
+                "timestamp": datetime.now(tz=__import__("datetime").timezone.utc),
                 "user_id": user_id,
                 "result": result,
             }
@@ -372,7 +372,7 @@ def process_uploaded_file(data):
         result = process_inference(
             input_data=content,
             model_config={},
-            request_id=f"gcs-{datetime.utcnow().strftime('%Y%m%d%H%M%S%f')}",
+            request_id=f"gcs-{datetime.now(tz=__import__("datetime").timezone.utc).strftime('%Y%m%d%H%M%S%f')}",
         )
 
         # Store result
@@ -395,7 +395,7 @@ def log_audit_event(data):
     try:
         db.collection("audit_logs").add(
             {
-                "timestamp": datetime.utcnow(),
+                "timestamp": datetime.now(tz=__import__("datetime").timezone.utc),
                 "event_type": data.get("event_type", "unknown"),
                 "request_id": data.get("request_id"),
                 "user_id": data.get("user_id", "unknown"),

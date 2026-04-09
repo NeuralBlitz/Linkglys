@@ -360,9 +360,9 @@ def create_access_token(data: dict, expires_delta: Optional[timedelta] = None):
     """Create JWT access token."""
     to_encode = data.copy()
     if expires_delta:
-        expire = datetime.utcnow() + expires_delta
+        expire = datetime.now(tz=__import__("datetime").timezone.utc) + expires_delta
     else:
-        expire = datetime.utcnow() + timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
+        expire = datetime.now(tz=__import__("datetime").timezone.utc) + timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
 
     to_encode.update({"exp": expire})
     encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
@@ -426,7 +426,7 @@ async def register_user(user: UserCreate):
         "username": user.username,
         "email": user.email,
         "password_hash": hashed_password,
-        "created_at": datetime.utcnow(),
+        "created_at": datetime.now(tz=__import__("datetime").timezone.utc),
         "is_active": True
     }
 
@@ -500,7 +500,7 @@ async def create_post(post: PostCreate, current_user: str = Depends(get_current_
         "content": post.content,
         "author": current_user,
         "tags": post.tags,
-        "created_at": datetime.utcnow(),
+        "created_at": datetime.now(tz=__import__("datetime").timezone.utc),
         "updated_at": None
     }
 
@@ -555,7 +555,7 @@ async def update_post(post_id: int, post_update: PostCreate, current_user: str =
         "title": post_update.title,
         "content": post_update.content,
         "tags": post_update.tags,
-        "updated_at": datetime.utcnow()
+        "updated_at": datetime.now(tz=__import__("datetime").timezone.utc)
     })
 
     logger.info(f"Post updated: {post_id} by {current_user}")
@@ -587,7 +587,7 @@ async def health_check():
     """Health check endpoint."""
     return {
         "status": "healthy",
-        "timestamp": datetime.utcnow(),
+        "timestamp": datetime.now(tz=__import__("datetime").timezone.utc),
         "version": "2.0.0",
         "users_count": len(fake_users_db),
         "posts_count": len(fake_posts_db)

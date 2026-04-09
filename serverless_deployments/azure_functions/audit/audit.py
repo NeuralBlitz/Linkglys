@@ -19,7 +19,7 @@ def main(documents: func.DocumentList, auditBlob: func.Out[str]) -> None:
     for doc in documents:
         try:
             audit_log = {
-                "timestamp": datetime.utcnow().isoformat(),
+                "timestamp": datetime.now(tz=__import__("datetime").timezone.utc).isoformat(),
                 "event_type": "DOCUMENT_INSERT" if doc.get("id") else "DOCUMENT_UPDATE",
                 "request_id": doc.get("request_id", "unknown"),
                 "user_id": doc.get("user_id", "unknown"),

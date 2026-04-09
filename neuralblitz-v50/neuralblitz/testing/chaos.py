@@ -237,7 +237,7 @@ class ChaosMonkey:
             f"Starting chaos test: {duration_seconds}s at {operations_per_second} ops/sec"
         )
 
-        start_time = datetime.utcnow()
+        start_time = datetime.now(tz=__import__("datetime").timezone.utc)
         total_attempts = 0
         errors = 0
         recovered = 0
@@ -274,7 +274,7 @@ class ChaosMonkey:
             # Rate limiting
             time.sleep(1.0 / operations_per_second)
 
-        end_datetime = datetime.utcnow()
+        end_datetime = datetime.now(tz=__import__("datetime").timezone.utc)
 
         # Calculate metrics
         recovery_rate = recovered / total_attempts if total_attempts > 0 else 0

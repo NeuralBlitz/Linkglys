@@ -44,7 +44,7 @@ class VectorRecord:
 
     def __post_init__(self):
         if self.created_at is None:
-            self.created_at = datetime.utcnow().isoformat()
+            self.created_at = datetime.now(tz=__import__("datetime").timezone.utc).isoformat()
 
 
 class PineconeIntegration:
@@ -312,7 +312,7 @@ class PineconeIntegration:
 
         # Add updated timestamp
         for record in records:
-            record.metadata["updated_at"] = datetime.utcnow().isoformat()
+            record.metadata["updated_at"] = datetime.now(tz=__import__("datetime").timezone.utc).isoformat()
 
         return self.create(records, namespace, batch_size)
 

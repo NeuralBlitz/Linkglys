@@ -55,7 +55,7 @@ class ConnectionManager:
                     "type": "connection_established",
                     "data": {
                         "connection_id": connection_id,
-                        "timestamp": datetime.utcnow().isoformat(),
+                        "timestamp": datetime.now(tz=__import__("datetime").timezone.utc).isoformat(),
                     },
                 },
             )
@@ -177,7 +177,7 @@ class ConnectionManager:
                     heartbeat_message = {
                         "type": "heartbeat",
                         "data": {
-                            "timestamp": datetime.utcnow().isoformat(),
+                            "timestamp": datetime.now(tz=__import__("datetime").timezone.utc).isoformat(),
                             "connection_id": connection_id,
                         },
                     }
@@ -325,7 +325,7 @@ class EventProcessor:
         """Handle ping request."""
         await self.connection_manager.send_message(
             connection_id,
-            {"type": "pong", "data": {"timestamp": datetime.utcnow().isoformat()}},
+            {"type": "pong", "data": {"timestamp": datetime.now(tz=__import__("datetime").timezone.utc).isoformat()}},
         )
 
 

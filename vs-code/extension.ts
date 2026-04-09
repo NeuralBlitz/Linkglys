@@ -381,7 +381,7 @@ async function analyzeCommand(lrsClient: LRSClient): Promise<void> {
             const outputChannel = vscode.window.createOutputChannel('LRS Analysis');
             outputChannel.clear();
             outputChannel.appendLine('🤖 OpenCode LRS Analysis Results');
-            outputChannel.appendLine('=' * 40);
+            outputChannel.appendLine('='.repeat(40));
             outputChannel.appendLine(`📊 Execution Time: ${executionTime.toFixed(3)}s`);
             outputChannel.appendLine(`🎯 Precision Used: ${precision.toFixed(3)}`);
             outputChannel.appendLine(`📝 Analysis: ${JSON.stringify(analysisData, null, 2)}`);
@@ -406,7 +406,7 @@ async function analyzeCommand(lrsClient: LRSClient): Promise<void> {
                     const recChannel = vscode.window.createOutputChannel('LRS Recommendations');
                     recChannel.clear();
                     recChannel.appendLine('💡 LRS Analysis Recommendations');
-                    recChannel.appendLine('=' * 35);
+                    recChannel.appendLine('='.repeat(35));
                     recommendations.forEach((rec: string, index: number) => {
                         recChannel.appendLine(`${index + 1}. ${rec}`);
                     });
@@ -481,7 +481,7 @@ async function refactorCommand(lrsClient: LRSClient): Promise<void> {
                 const outputChannel = vscode.window.createOutputChannel('LRS Refactoring Details');
                 outputChannel.clear();
                 outputChannel.appendLine('🔧 LRS Refactoring Details');
-                outputChannel.appendLine('=' * 30);
+                outputChannel.appendLine('='.repeat(30));
                 result.recommendations.forEach((rec: string, index: number) => {
                     outputChannel.appendLine(`${index + 1}. ${rec}`);
                 });
@@ -519,7 +519,7 @@ async function planCommand(lrsClient: LRSClient): Promise<void> {
             const outputChannel = vscode.window.createOutputChannel('LRS Development Plan');
             outputChannel.clear();
             outputChannel.appendLine('📋 LRS Development Plan');
-            outputChannel.appendLine('=' * 25);
+            outputChannel.appendLine('='.repeat(25));
             outputChannel.appendLine(`🎯 Description: ${description}`);
             outputChannel.appendLine('');
 
@@ -609,7 +609,7 @@ async function evaluateCommand(lrsClient: LRSClient): Promise<void> {
             const outputChannel = vscode.window.createOutputChannel('LRS Strategy Evaluation');
             outputChannel.clear();
             outputChannel.appendLine('⚖️ LRS Strategy Evaluation Results');
-            outputChannel.appendLine('=' * 35);
+            outputChannel.appendLine('='.repeat(35));
             outputChannel.appendLine(`🎯 Task: ${task}`);
             outputChannel.appendLine('');
 
@@ -657,7 +657,7 @@ async function statsCommand(lrsClient: LRSClient): Promise<void> {
         const outputChannel = vscode.window.createOutputChannel('LRS System Statistics');
         outputChannel.clear();
         outputChannel.appendLine('📊 LRS System Statistics');
-        outputChannel.appendLine('=' * 25);
+        outputChannel.appendLine('='.repeat(25));
 
         // System info
         if (stats.system) {
@@ -736,7 +736,7 @@ async function benchmarkCommand(lrsClient: LRSClient): Promise<void> {
         const outputChannel = vscode.window.createOutputChannel('LRS Benchmark Results');
         outputChannel.clear();
         outputChannel.appendLine('🧪 LRS Benchmark Results');
-        outputChannel.appendLine('=' * 25);
+        outputChannel.appendLine('='.repeat(25));
         outputChannel.appendLine(`📊 Benchmark: ${runBenchmarks}`);
         outputChannel.appendLine(`⏰ Execution Time: ${benchmarkResults.execution_time?.toFixed(2) || 'N/A'}s`);
         outputChannel.appendLine('');
@@ -871,7 +871,7 @@ async function autoAnalyzeDocument(document: vscode.TextDocument, lrsClient: LRS
                 const outputChannel = vscode.window.createOutputChannel('LRS Auto-Analysis');
                 outputChannel.clear();
                 outputChannel.appendLine(`🤖 LRS Auto-Analysis: ${document.fileName}`);
-                outputChannel.appendLine('=' * 40);
+                outputChannel.appendLine('='.repeat(40));
                 result.recommendations.forEach((rec: string, index: number) => {
                     outputChannel.appendLine(`${index + 1}. ${rec}`);
                 });

@@ -626,7 +626,7 @@ class MultiRealityNeuralNetwork:
     def _calculate_multi_reality_metrics(self):
         """Calculate multi-reality network metrics"""
         # Cross-reality coherence
-        consciousness_levels = [r.consciousness_level for r in self.reality.values()]
+        consciousness_levels = [r.consciousness_level for r in self.realities.values()]
         self.cross_reality_coherence = 1.0 - np.std(consciousness_levels)
 
         # Information flow rate

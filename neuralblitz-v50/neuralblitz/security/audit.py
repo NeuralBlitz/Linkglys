@@ -27,7 +27,7 @@ class AuditEntry:
         self.operation = operation
         self.intent_hash = intent_hash
         self.result_summary = result_summary
-        self.timestamp = timestamp or datetime.utcnow().isoformat()
+        self.timestamp = timestamp or datetime.now(tz=__import__("datetime").timezone.utc).isoformat()
         self.previous_hash = previous_hash
         self.entry_hash = entry_hash or self._calculate_hash()
 
@@ -155,7 +155,7 @@ class AuditLogger:
 
             if line_count > self.max_entries:
                 # Rotate: archive current log
-                timestamp = datetime.utcnow().strftime("%Y%m%d_%H%M%S")
+                timestamp = datetime.now(tz=__import__("datetime").timezone.utc).strftime("%Y%m%d_%H%M%S")
                 archive_name = f"{self.log_file.stem}_{timestamp}{self.log_file.suffix}"
                 archive_path = self.log_file.parent / archive_name
 
@@ -308,7 +308,7 @@ def create_audit_logger(log_dir: str = "./logs") -> AuditLogger:
     Returns:
         Configured AuditLogger
     """
-    timestamp = datetime.utcnow().strftime("%Y%m%d")
+    timestamp = datetime.now(tz=__import__("datetime").timezone.utc).strftime("%Y%m%d")
     log_file = Path(log_dir) / f"audit_{timestamp}.log"
     return AuditLogger(str(log_file))
 

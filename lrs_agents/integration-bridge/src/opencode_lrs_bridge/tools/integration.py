@@ -55,8 +55,8 @@ class LRSToolAdapter(ToolAdapter):
 
     async def execute_tool(self, request: ToolExecutionRequest) -> ToolExecutionResult:
         """Execute tool on LRS-Agents system."""
-        execution_id = f"lrs_{datetime.utcnow().timestamp()}"
-        start_time = datetime.utcnow()
+        execution_id = f"lrs_{datetime.now(tz=__import__("datetime").timezone.utc).timestamp()}"
+        start_time = datetime.now(tz=__import__("datetime").timezone.utc)
 
         try:
             async with httpx.AsyncClient(timeout=self.timeout) as client:
@@ -75,7 +75,7 @@ class LRSToolAdapter(ToolAdapter):
                 response.raise_for_status()
                 result_data = response.json()
 
-                execution_time = (datetime.utcnow() - start_time).total_seconds()
+                execution_time = (datetime.now(tz=__import__("datetime").timezone.utc) - start_time).total_seconds()
 
                 return ToolExecutionResult(
                     execution_id=execution_id,
@@ -84,22 +84,22 @@ class LRSToolAdapter(ToolAdapter):
                     result=result_data.get("result"),
                     prediction_error=result_data.get("prediction_error"),
                     execution_time=execution_time,
-                    timestamp=datetime.utcnow(),
+                    timestamp=datetime.now(tz=__import__("datetime").timezone.utc),
                 )
 
         except httpx.TimeoutException:
-            execution_time = (datetime.utcnow() - start_time).total_seconds()
+            execution_time = (datetime.now(tz=__import__("datetime").timezone.utc) - start_time).total_seconds()
             return ToolExecutionResult(
                 execution_id=execution_id,
                 tool_name=request.tool_name,
                 status=ToolExecutionStatus.TIMEOUT,
                 error="Tool execution timed out",
                 execution_time=execution_time,
-                timestamp=datetime.utcnow(),
+                timestamp=datetime.now(tz=__import__("datetime").timezone.utc),
             )
 
         except httpx.HTTPError as e:
-            execution_time = (datetime.utcnow() - start_time).total_seconds()
+            execution_time = (datetime.now(tz=__import__("datetime").timezone.utc) - start_time).total_seconds()
             logger.error(
                 "LRS tool execution failed", tool_name=request.tool_name, error=str(e)
             )
@@ -110,11 +110,11 @@ class LRSToolAdapter(ToolAdapter):
                 status=ToolExecutionStatus.FAILED,
                 error=f"HTTP error: {str(e)}",
                 execution_time=execution_time,
-                timestamp=datetime.utcnow(),
+                timestamp=datetime.now(tz=__import__("datetime").timezone.utc),
             )
 
         except Exception as e:
-            execution_time = (datetime.utcnow() - start_time).total_seconds()
+            execution_time = (datetime.now(tz=__import__("datetime").timezone.utc) - start_time).total_seconds()
             logger.error(
                 "LRS tool execution error", tool_name=request.tool_name, error=str(e)
             )
@@ -125,7 +125,7 @@ class LRSToolAdapter(ToolAdapter):
                 status=ToolExecutionStatus.FAILED,
                 error=f"Execution error: {str(e)}",
                 execution_time=execution_time,
-                timestamp=datetime.utcnow(),
+                timestamp=datetime.now(tz=__import__("datetime").timezone.utc),
             )
 
     def get_available_tools(self) -> List[Dict[str, Any]]:
@@ -187,8 +187,8 @@ class OpenCodeToolAdapter(ToolAdapter):
 
     async def execute_tool(self, request: ToolExecutionRequest) -> ToolExecutionResult:
         """Execute tool on opencode system."""
-        execution_id = f"opencode_{datetime.utcnow().timestamp()}"
-        start_time = datetime.utcnow()
+        execution_id = f"opencode_{datetime.now(tz=__import__("datetime").timezone.utc).timestamp()}"
+        start_time = datetime.now(tz=__import__("datetime").timezone.utc)
 
         try:
             async with httpx.AsyncClient(timeout=self.timeout) as client:
@@ -207,7 +207,7 @@ class OpenCodeToolAdapter(ToolAdapter):
                 response.raise_for_status()
                 result_data = response.json()
 
-                execution_time = (datetime.utcnow() - start_time).total_seconds()
+                execution_time = (datetime.now(tz=__import__("datetime").timezone.utc) - start_time).total_seconds()
 
                 return ToolExecutionResult(
                     execution_id=execution_id,
@@ -215,22 +215,22 @@ class OpenCodeToolAdapter(ToolAdapter):
                     status=ToolExecutionStatus.COMPLETED,
                     result=result_data.get("result"),
                     execution_time=execution_time,
-                    timestamp=datetime.utcnow(),
+                    timestamp=datetime.now(tz=__import__("datetime").timezone.utc),
                 )
 
         except httpx.TimeoutException:
-            execution_time = (datetime.utcnow() - start_time).total_seconds()
+            execution_time = (datetime.now(tz=__import__("datetime").timezone.utc) - start_time).total_seconds()
             return ToolExecutionResult(
                 execution_id=execution_id,
                 tool_name=request.tool_name,
                 status=ToolExecutionStatus.TIMEOUT,
                 error="Tool execution timed out",
                 execution_time=execution_time,
-                timestamp=datetime.utcnow(),
+                timestamp=datetime.now(tz=__import__("datetime").timezone.utc),
             )
 
         except httpx.HTTPError as e:
-            execution_time = (datetime.utcnow() - start_time).total_seconds()
+            execution_time = (datetime.now(tz=__import__("datetime").timezone.utc) - start_time).total_seconds()
             logger.error(
                 "opencode tool execution failed",
                 tool_name=request.tool_name,
@@ -243,11 +243,11 @@ class OpenCodeToolAdapter(ToolAdapter):
                 status=ToolExecutionStatus.FAILED,
                 error=f"HTTP error: {str(e)}",
                 execution_time=execution_time,
-                timestamp=datetime.utcnow(),
+                timestamp=datetime.now(tz=__import__("datetime").timezone.utc),
             )
 
         except Exception as e:
-            execution_time = (datetime.utcnow() - start_time).total_seconds()
+            execution_time = (datetime.now(tz=__import__("datetime").timezone.utc) - start_time).total_seconds()
             logger.error(
                 "opencode tool execution error",
                 tool_name=request.tool_name,
@@ -260,7 +260,7 @@ class OpenCodeToolAdapter(ToolAdapter):
                 status=ToolExecutionStatus.FAILED,
                 error=f"Execution error: {str(e)}",
                 execution_time=execution_time,
-                timestamp=datetime.utcnow(),
+                timestamp=datetime.now(tz=__import__("datetime").timezone.utc),
             )
 
     def get_available_tools(self) -> List[Dict[str, Any]]:
@@ -346,12 +346,12 @@ class ToolRouter:
 
         if not adapter_name:
             return ToolExecutionResult(
-                execution_id=f"failed_{datetime.utcnow().timestamp()}",
+                execution_id=f"failed_{datetime.now(tz=__import__("datetime").timezone.utc).timestamp()}",
                 tool_name=request.tool_name,
                 status=ToolExecutionStatus.FAILED,
                 error=f"Unknown tool: {request.tool_name}",
                 execution_time=0.0,
-                timestamp=datetime.utcnow(),
+                timestamp=datetime.now(tz=__import__("datetime").timezone.utc),
             )
 
         # Get the appropriate adapter
@@ -362,12 +362,12 @@ class ToolRouter:
             request.tool_name, request.parameters
         ):
             return ToolExecutionResult(
-                execution_id=f"failed_{datetime.utcnow().timestamp()}",
+                execution_id=f"failed_{datetime.now(tz=__import__("datetime").timezone.utc).timestamp()}",
                 tool_name=request.tool_name,
                 status=ToolExecutionStatus.FAILED,
                 error=f"Invalid parameters for tool: {request.tool_name}",
                 execution_time=0.0,
-                timestamp=datetime.utcnow(),
+                timestamp=datetime.now(tz=__import__("datetime").timezone.utc),
             )
 
         # Execute tool
@@ -379,12 +379,12 @@ class ToolRouter:
             )
 
             return ToolExecutionResult(
-                execution_id=f"failed_{datetime.utcnow().timestamp()}",
+                execution_id=f"failed_{datetime.now(tz=__import__("datetime").timezone.utc).timestamp()}",
                 tool_name=request.tool_name,
                 status=ToolExecutionStatus.FAILED,
                 error=f"Tool execution failed: {str(e)}",
                 execution_time=0.0,
-                timestamp=datetime.utcnow(),
+                timestamp=datetime.now(tz=__import__("datetime").timezone.utc),
             )
 
     def _get_adapter_for_tool(self, tool_name: str) -> Optional[str]:

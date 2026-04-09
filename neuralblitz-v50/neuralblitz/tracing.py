@@ -89,7 +89,7 @@ class TraceSpan:
     def add_event(self, name: str, attributes: Optional[Dict[str, Any]] = None):
         """Add event to span."""
         event = SpanEvent(
-            timestamp=datetime.utcnow(), name=name, attributes=attributes or {}
+            timestamp=datetime.now(tz=__import__("datetime").timezone.utc), name=name, attributes=attributes or {}
         )
         self.events.append(event)
 
@@ -102,7 +102,7 @@ class TraceSpan:
 
     def finish(self, status: SpanStatus = SpanStatus.OK):
         """Finish the span."""
-        self.end_time = datetime.utcnow()
+        self.end_time = datetime.now(tz=__import__("datetime").timezone.utc)
         self.status = status
 
     def duration_ms(self) -> Optional[float]:
@@ -203,7 +203,7 @@ class Tracer:
             span_id=str(uuid.uuid4())[:16],
             parent_span_id=parent_span_id,
             operation_name=operation_name,
-            start_time=datetime.utcnow(),
+            start_time=datetime.now(tz=__import__("datetime").timezone.utc),
             end_time=None,
             status=SpanStatus.OK,
             kind=kind,

@@ -161,7 +161,7 @@ class ConsciousnessMonitor:
         current = self.engine.consciousness
 
         snapshot = {
-            "timestamp": datetime.utcnow().isoformat(),
+            "timestamp": datetime.now(tz=__import__("datetime").timezone.utc).isoformat(),
             "level": current.consciousness_level.name,
             "coherence": current.coherence,
             "complexity": current.complexity,

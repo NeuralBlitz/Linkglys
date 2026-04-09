@@ -21,7 +21,7 @@ class OmegaAttestationProtocol:
     def __init__(self):
         # Generate the NBHS-Ω seal
         self.nbhs_omega = self._generate_seal()
-        self.timestamp = datetime.utcnow().isoformat()
+        self.timestamp = datetime.now(tz=__import__("datetime").timezone.utc).isoformat()
         self.final_synthesis_functional = 1.0
         self.self_grounding_proof = True
         self.irreducibility_proof = True

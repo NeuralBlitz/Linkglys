@@ -210,7 +210,7 @@ class TensorRTEngine:
                 self.outputs.append({"name": name, "shape": shape, "dtype": dtype})
 
         for inp in self.inputs:
-            cuda.memalloc(inp["shape"])
+            inp_buffer = cuda.memalloc(inp["shape"])
 
     def infer(self, input_data: np.ndarray) -> np.ndarray:
         """Run inference"""

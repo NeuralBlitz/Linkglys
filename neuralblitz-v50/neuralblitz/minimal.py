@@ -168,7 +168,7 @@ class MinimalCognitiveEngine:
         # Store pattern (keep only last 100)
         pattern = {
             "id": str(uuid.uuid4()),
-            "timestamp": datetime.utcnow(),
+            "timestamp": datetime.now(tz=__import__("datetime").timezone.utc),
             "input_hash": hash(input_vector.tobytes()) % 10000,
             "output_vector": output_vector.copy(),
             "confidence": confidence,
@@ -190,7 +190,7 @@ class MinimalCognitiveEngine:
             "confidence": round(confidence, 3),
             "patterns_stored": len(self.pattern_memory),
             "processing_time_ms": round(processing_time, 2),
-            "timestamp": datetime.utcnow().isoformat(),
+            "timestamp": datetime.now(tz=__import__("datetime").timezone.utc).isoformat(),
         }
 
     def _update_consciousness(self, stimulus_intensity: float):
@@ -218,7 +218,7 @@ class MinimalCognitiveEngine:
         else:
             self.consciousness.consciousness_level = ConsciousnessLevel.SINGULARITY
 
-        self.consciousness.last_updated = datetime.utcnow()
+        self.consciousness.last_updated = datetime.now(tz=__import__("datetime").timezone.utc)
 
     def get_consciousness_report(self) -> Dict[str, Any]:
         """

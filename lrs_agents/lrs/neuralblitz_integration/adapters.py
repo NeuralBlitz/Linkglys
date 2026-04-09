@@ -39,7 +39,7 @@ class AgentState:
             "free_energy": self.free_energy,
             "active_policy": self.active_policy,
             "metadata": self.metadata,
-            "timestamp": datetime.utcnow().isoformat(),
+            "timestamp": datetime.now(tz=__import__("datetime").timezone.utc).isoformat(),
         }
 
 
@@ -63,7 +63,7 @@ class NeuralBlitzState:
             "attestation": self.attestation,
             "verification_status": self.verification_status,
             "metadata": self.metadata,
-            "timestamp": datetime.utcnow().isoformat(),
+            "timestamp": datetime.now(tz=__import__("datetime").timezone.utc).isoformat(),
         }
 
 
@@ -117,7 +117,7 @@ class LRSAdapter:
             precision_record = {
                 "agent_id": agent_id,
                 "precision": precision_data,
-                "timestamp": datetime.utcnow().isoformat(),
+                "timestamp": datetime.now(tz=__import__("datetime").timezone.utc).isoformat(),
             }
             self.precision_history.append(precision_record)
 
@@ -156,7 +156,7 @@ class LRSAdapter:
             free_energy_data = {
                 "agent_id": agent_id,
                 "free_energy": free_energy,
-                "timestamp": datetime.utcnow().isoformat(),
+                "timestamp": datetime.now(tz=__import__("datetime").timezone.utc).isoformat(),
             }
             await self.state_manager.set_state(
                 key=f"lrs_free_energy_{agent_id}",
@@ -315,7 +315,7 @@ class NeuralBlitzAdapter:
             attestation_record = {
                 "system_id": self.system_id,
                 "attestation": attestation,
-                "timestamp": datetime.utcnow().isoformat(),
+                "timestamp": datetime.now(tz=__import__("datetime").timezone.utc).isoformat(),
             }
             self.attestation_history.append(attestation_record)
 

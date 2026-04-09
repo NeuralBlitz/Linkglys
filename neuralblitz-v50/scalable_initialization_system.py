@@ -146,7 +146,7 @@ class ScalableInitializationSystem:
 
         # Real-time monitoring
         self.monitoring_active = False
-        self.last_metrics_update = datetime.utcnow()
+        self.last_metrics_update = datetime.now(tz=__import__("datetime").timezone.utc)
 
         logger.info("🚀 Scalable Initialization System v50.0 Initialized")
         logger.info(
@@ -416,7 +416,7 @@ class ScalableInitializationSystem:
             f"🚀 Initializing {len(stage_configs)} stages with massive parallelization"
         )
 
-        start_time = datetime.utcnow()
+        start_time = datetime.now(tz=__import__("datetime").timezone.utc)
 
         # Create stage initialization tasks
         stage_tasks = []
@@ -430,7 +430,7 @@ class ScalableInitializationSystem:
         results = await asyncio.gather(*stage_tasks, return_exceptions=True)
 
         # Calculate system metrics
-        end_time = datetime.utcnow()
+        end_time = datetime.now(tz=__import__("datetime").timezone.utc)
         successful_stages = sum(1 for r in results if r)
         failed_stages = sum(1 for r in results if not r)
 
@@ -453,7 +453,7 @@ class ScalableInitializationSystem:
             f"🎯 Initializing Stage {stage_config.stage_id} with {stage_config.agent_count} agents"
         )
 
-        stage_config.start_time = datetime.utcnow()
+        stage_config.start_time = datetime.now(tz=__import__("datetime").timezone.utc)
         stage_config.status = "initializing"
 
         try:
@@ -505,7 +505,7 @@ class ScalableInitializationSystem:
                 if successful_agents >= stage_config.agent_count * 0.95
                 else "degraded"
             )
-            stage_config.end_time = datetime.utcnow()
+            stage_config.end_time = datetime.now(tz=__import__("datetime").timezone.utc)
 
             # Update metrics
             stage_config.metrics.update(
@@ -530,7 +530,7 @@ class ScalableInitializationSystem:
 
         except Exception as e:
             stage_config.status = "failed"
-            stage_config.end_time = datetime.utcnow()
+            stage_config.end_time = datetime.now(tz=__import__("datetime").timezone.utc)
             logger.error(f"❌ Stage {stage_config.stage_id} failed: {str(e)}")
 
         return stage_config.status == "active"
@@ -671,7 +671,7 @@ class ScalableInitializationSystem:
                 "memory_usage": 0,
                 "compute_usage": 0.0,
                 "network_activity": 0,
-                "last_heartbeat": datetime.utcnow(),
+                "last_heartbeat": datetime.now(tz=__import__("datetime").timezone.utc),
                 "error_count": 0,
                 "performance_score": 0.0,
             }
@@ -800,7 +800,7 @@ class ScalableInitializationSystem:
         if num_stages is None:
             num_stages = self.architecture.TOTAL_STAGES
 
-        start_time = datetime.utcnow()
+        start_time = datetime.now(tz=__import__("datetime").timezone.utc)
 
         # Create stage configurations
         stage_configs = []
@@ -844,7 +844,7 @@ class ScalableInitializationSystem:
         success = await self.initialize_stages(stage_configs)
 
         # Final system metrics
-        end_time = datetime.utcnow()
+        end_time = datetime.now(tz=__import__("datetime").timezone.utc)
         total_time = (end_time - start_time).total_seconds()
 
         # Calculate system-wide metrics
@@ -982,7 +982,7 @@ class ScalableInitializationSystem:
                 # Update metrics every 5 seconds
                 await asyncio.sleep(5)
 
-                current_time = datetime.utcnow()
+                current_time = datetime.now(tz=__import__("datetime").timezone.utc)
 
                 # Update performance metrics
                 time_since_update = (

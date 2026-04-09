@@ -26,7 +26,7 @@ class ConnectionManager:
         self.active_connections.add(websocket)
         self.connection_metadata[websocket] = {
             "client_id": client_id or str(id(websocket)),
-            "connected_at": datetime.utcnow().isoformat(),
+            "connected_at": datetime.now(tz=__import__("datetime").timezone.utc).isoformat(),
             "intents_processed": 0,
         }
 
@@ -96,7 +96,7 @@ class StreamingEngine:
                     "client_id": client_id,
                     "mode": mode,
                     "engine_seed": self.engine.engine.SEED[:16] + "...",
-                    "timestamp": datetime.utcnow().isoformat(),
+                    "timestamp": datetime.now(tz=__import__("datetime").timezone.utc).isoformat(),
                 }
             )
 
@@ -149,7 +149,7 @@ class StreamingEngine:
                                 "confidence": result["confidence"],
                                 "processing_time_ms": result["processing_time_ms"],
                             },
-                            "timestamp": datetime.utcnow().isoformat(),
+                            "timestamp": datetime.now(tz=__import__("datetime").timezone.utc).isoformat(),
                         }
                     )
 
@@ -189,7 +189,7 @@ class StreamingEngine:
                                 "type": "batch_result",
                                 "data": result,
                                 "batch_size": len(batch),
-                                "timestamp": datetime.utcnow().isoformat(),
+                                "timestamp": datetime.now(tz=__import__("datetime").timezone.utc).isoformat(),
                             }
                         )
 
@@ -204,7 +204,7 @@ class StreamingEngine:
                                 "type": "batch_result",
                                 "data": result,
                                 "batch_size": len(batch),
-                                "timestamp": datetime.utcnow().isoformat(),
+                                "timestamp": datetime.now(tz=__import__("datetime").timezone.utc).isoformat(),
                             }
                         )
                         batch = []
@@ -236,7 +236,7 @@ class StreamingEngine:
                                 "complexity": current.complexity,
                                 "emotional_state": current.emotional_state,
                             },
-                            "timestamp": datetime.utcnow().isoformat(),
+                            "timestamp": datetime.now(tz=__import__("datetime").timezone.utc).isoformat(),
                         }
                     )
                     last_coherence = current.coherence
@@ -257,7 +257,7 @@ class StreamingEngine:
             {
                 "type": "health_broadcast",
                 "data": health.to_dict(),
-                "timestamp": datetime.utcnow().isoformat(),
+                "timestamp": datetime.now(tz=__import__("datetime").timezone.utc).isoformat(),
             }
         )
 

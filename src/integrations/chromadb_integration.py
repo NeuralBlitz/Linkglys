@@ -46,7 +46,7 @@ class Document:
 
     def __post_init__(self):
         if self.created_at is None:
-            self.created_at = datetime.utcnow().isoformat()
+            self.created_at = datetime.now(tz=__import__("datetime").timezone.utc).isoformat()
 
 
 class ChromaDBIntegration:
@@ -138,7 +138,7 @@ class ChromaDBIntegration:
             # Create new collection
             collection_metadata = metadata or {}
             collection_metadata["hnsw:space"] = self.distance_metric
-            collection_metadata["created_at"] = datetime.utcnow().isoformat()
+            collection_metadata["created_at"] = datetime.now(tz=__import__("datetime").timezone.utc).isoformat()
 
             self.active_collection = self.client.create_collection(
                 name=name,
@@ -385,7 +385,7 @@ class ChromaDBIntegration:
                     embeddings.append(doc.embedding)
 
                 metadata = doc.metadata.copy()
-                metadata["updated_at"] = datetime.utcnow().isoformat()
+                metadata["updated_at"] = datetime.now(tz=__import__("datetime").timezone.utc).isoformat()
                 metadatas.append(metadata)
 
                 results["success"] += 1
@@ -610,7 +610,7 @@ class ChromaDBIntegration:
             documents = self.read(limit=10000)  # Export up to 10k docs
             export_data = {
                 "collection_name": self.collection_name,
-                "export_date": datetime.utcnow().isoformat(),
+                "export_date": datetime.now(tz=__import__("datetime").timezone.utc).isoformat(),
                 "documents": [
                     {
                         "id": doc.id,

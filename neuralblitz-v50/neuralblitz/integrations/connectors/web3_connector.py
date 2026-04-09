@@ -1,3 +1,4 @@
+from typing import Optional
 """
 Web3/Ethereum Integration Connector
 Provides decentralized coordination capabilities via blockchain

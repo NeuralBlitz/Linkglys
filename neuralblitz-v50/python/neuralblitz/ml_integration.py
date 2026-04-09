@@ -139,7 +139,7 @@ class RealTimeAnalytics:
                 confidence=min(z_score / 5.0, 1.0),
                 description=f"Critical anomaly: {metric_name}={current_value:.3f} (z-score={z_score:.2f})",
                 affected_metrics=[metric_name],
-                timestamp=datetime.utcnow(),
+                timestamp=datetime.now(tz=__import__("datetime").timezone.utc),
                 recommended_actions=["immediate_investigation", "escalate_team"],
             )
         elif z_score > 3.0:
@@ -149,7 +149,7 @@ class RealTimeAnalytics:
                 confidence=min(z_score / 5.0, 1.0),
                 description=f"High severity anomaly: {metric_name}={current_value:.3f} (z-score={z_score:.2f})",
                 affected_metrics=[metric_name],
-                timestamp=datetime.utcnow(),
+                timestamp=datetime.now(tz=__import__("datetime").timezone.utc),
                 recommended_actions=["investigate_cause", "monitor_closely"],
             )
         elif z_score > 2.0:
@@ -159,7 +159,7 @@ class RealTimeAnalytics:
                 confidence=min(z_score / 5.0, 1.0),
                 description=f"Medium anomaly: {metric_name}={current_value:.3f} (z-score={z_score:.2f})",
                 affected_metrics=[metric_name],
-                timestamp=datetime.utcnow(),
+                timestamp=datetime.now(tz=__import__("datetime").timezone.utc),
                 recommended_actions=["monitor_trend", "check_recent_changes"],
             )
 
@@ -263,7 +263,7 @@ class RealTimeAnalytics:
             else "degraded"
             if health_score > 50
             else "critical",
-            "timestamp": datetime.utcnow().isoformat(),
+            "timestamp": datetime.now(tz=__import__("datetime").timezone.utc).isoformat(),
         }
 
 
@@ -381,7 +381,7 @@ class AdvancedMLIntegration:
             model_id=model_id,
             processing_time_ms=processing_time,
             features_used=list(extracted_features.keys()),
-            timestamp=datetime.utcnow(),
+            timestamp=datetime.now(tz=__import__("datetime").timezone.utc),
             explanation=self._generate_explanation(model_id, extracted_features),
         )
 
@@ -395,7 +395,7 @@ class AdvancedMLIntegration:
         # Update model performance
         self.model_performance[model_id].append(
             {
-                "timestamp": datetime.utcnow(),
+                "timestamp": datetime.now(tz=__import__("datetime").timezone.utc),
                 "confidence": confidence,
                 "processing_time_ms": processing_time,
             }
@@ -570,7 +570,7 @@ class AdvancedMLIntegration:
                 r.processing_time_ms for r in self.prediction_history[-len(model_ids) :]
             ),
             features_used=list(features.keys()),
-            timestamp=datetime.utcnow(),
+            timestamp=datetime.now(tz=__import__("datetime").timezone.utc),
             explanation={
                 "ensemble_members": model_ids,
                 "individual_predictions": list(zip(predictions, confidences)),
@@ -586,7 +586,7 @@ class AdvancedMLIntegration:
         if model_id not in self.model_performance:
             return {"error": "Model not found"}
 
-        cutoff_time = datetime.utcnow() - timedelta(hours=window_hours)
+        cutoff_time = datetime.now(tz=__import__("datetime").timezone.utc) - timedelta(hours=window_hours)
         recent_performance = [
             p for p in self.model_performance[model_id] if p["timestamp"] >= cutoff_time
         ]
@@ -644,7 +644,7 @@ class AdvancedMLIntegration:
                 }
                 for p in list(self.prediction_history)[-10:]  # Last 10 predictions
             ],
-            "timestamp": datetime.utcnow().isoformat(),
+            "timestamp": datetime.now(tz=__import__("datetime").timezone.utc).isoformat(),
         }
 
 

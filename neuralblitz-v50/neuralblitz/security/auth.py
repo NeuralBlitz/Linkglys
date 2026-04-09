@@ -104,7 +104,7 @@ class RBACManager:
                 username=username,
                 role=role,
                 api_key=api_key,
-                created_at=datetime.utcnow(),
+                created_at=datetime.now(tz=__import__("datetime").timezone.utc),
                 rate_limit=rate_limit,
             )
 
@@ -115,8 +115,8 @@ class RBACManager:
                 key=api_key,
                 username=username,
                 permissions=role.value,
-                created_at=datetime.utcnow(),
-                expires_at=datetime.utcnow() + timedelta(days=365),
+                created_at=datetime.now(tz=__import__("datetime").timezone.utc),
+                expires_at=datetime.now(tz=__import__("datetime").timezone.utc) + timedelta(days=365),
             )
             self._api_keys[api_key] = api_key_entry
 
@@ -137,7 +137,7 @@ class RBACManager:
             if not key_data.is_active:
                 return None
 
-            if key_data.expires_at and datetime.utcnow() > key_data.expires_at:
+            if key_data.expires_at and datetime.now(tz=__import__("datetime").timezone.utc) > key_data.expires_at:
                 return None
 
             return key_data
@@ -166,7 +166,7 @@ class RBACManager:
             if not user:
                 return False
 
-            now = datetime.utcnow()
+            now = datetime.now(tz=__import__("datetime").timezone.utc)
             window_start = now - timedelta(minutes=1)
 
             # Get requests in last minute
@@ -198,7 +198,7 @@ class RBACManager:
             if not user:
                 return {"error": "User not found"}
 
-            now = datetime.utcnow()
+            now = datetime.now(tz=__import__("datetime").timezone.utc)
             window_start = now - timedelta(minutes=1)
 
             recent_requests = len(
@@ -227,13 +227,13 @@ class RBACManager:
         if not user:
             raise ValueError(f"User {username} not found")
 
-        expire = datetime.utcnow() + expires_delta
+        expire = datetime.now(tz=__import__("datetime").timezone.utc) + expires_delta
 
         payload = {
             "sub": username,
             "role": user.role.name,
             "exp": expire,
-            "iat": datetime.utcnow(),
+            "iat": datetime.now(tz=__import__("datetime").timezone.utc),
             "permissions": [p.value for p in user.role.value],
         }
 

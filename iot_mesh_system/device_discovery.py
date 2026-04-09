@@ -140,7 +140,7 @@ class mDNSDiscovery:
                     service_type.value,
                     self._get_service_listener(service_type),
                 )
-                self._browsers.add(browser)
+                self._browsers.append(browser)
 
             logger.info(
                 f"mDNS Discovery started for {len(self.service_types)} service types"

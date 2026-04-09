@@ -515,7 +515,7 @@ class InteractiveWorkflowHandler:
                 "type": "section",
                 "text": {
                     "type": "mrkdwn",
-                    "text": f"*Workflow ID:* `{workflow_data['id']}`\n*Completed:* {datetime.utcnow().isoformat()}",
+                    "text": f"*Workflow ID:* `{workflow_data['id']}`\n*Completed:* {datetime.now(tz=__import__("datetime").timezone.utc).isoformat()}",
                 },
             },
         ]

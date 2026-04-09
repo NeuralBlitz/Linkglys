@@ -332,7 +332,7 @@ class NetworkAnomalyDetector:
             }
 
             anomaly = AnomalyDetection(
-                timestamp=datetime.utcnow().isoformat() + "Z",
+                timestamp=datetime.now(tz=__import__("datetime").timezone.utc).isoformat() + "Z",
                 anomaly_type=anomaly_type,
                 confidence=anomaly_score,
                 source_ips=list(set(f.src_ip for f in flows))[:10],
@@ -398,7 +398,7 @@ class NetworkAnomalyDetector:
         return {
             "ok": True,
             "verb": "Security/NetworkAnomalyDetector.execute",
-            "timestamp": datetime.utcnow().isoformat() + "Z",
+            "timestamp": datetime.now(tz=__import__("datetime").timezone.utc).isoformat() + "Z",
             "actor_id": "Principal/SecurityCK",
             "goldendag_ref": self._compute_dag_ref(output_report),
             "trace_id": inputs.get(
@@ -594,7 +594,7 @@ class NetworkAnomalyDetector:
         return {
             "ok": False,
             "verb": "Security/NetworkAnomalyDetector.execute",
-            "timestamp": datetime.utcnow().isoformat() + "Z",
+            "timestamp": datetime.now(tz=__import__("datetime").timezone.utc).isoformat() + "Z",
             "actor_id": "Principal/SecurityCK",
             "status_code": code,
             "error": {

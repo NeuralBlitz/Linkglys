@@ -250,7 +250,7 @@ class SharedStateManager:
         state_map = self._get_state_map(entry.type)
         if state_map is not None:
             state_map[entry.key] = entry.value
-            self.state.last_updated = datetime.utcnow()
+            self.state.last_updated = datetime.now(tz=__import__("datetime").timezone.utc)
             self.state.version += 1
 
     async def _remove_from_unified_state(self, entry: StateEntry) -> None:
@@ -258,7 +258,7 @@ class SharedStateManager:
         state_map = self._get_state_map(entry.type)
         if state_map is not None and entry.key in state_map:
             del state_map[entry.key]
-            self.state.last_updated = datetime.utcnow()
+            self.state.last_updated = datetime.now(tz=__import__("datetime").timezone.utc)
             self.state.version += 1
 
     def _get_state_map(self, state_type: StateType) -> Optional[Dict[str, Any]]:

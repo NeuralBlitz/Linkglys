@@ -46,9 +46,9 @@ class TokenManager:
         """Create JWT access token."""
         to_encode = data.copy()
         if expires_delta:
-            expire = datetime.utcnow() + expires_delta
+            expire = datetime.now(tz=__import__("datetime").timezone.utc) + expires_delta
         else:
-            expire = datetime.utcnow() + timedelta(
+            expire = datetime.now(tz=__import__("datetime").timezone.utc) + timedelta(
                 minutes=self.access_token_expire_minutes
             )
 
@@ -58,7 +58,7 @@ class TokenManager:
     def create_refresh_token(self, data: Dict[str, Any]) -> str:
         """Create JWT refresh token."""
         to_encode = data.copy()
-        expire = datetime.utcnow() + timedelta(days=self.refresh_token_expire_days)
+        expire = datetime.now(tz=__import__("datetime").timezone.utc) + timedelta(days=self.refresh_token_expire_days)
         to_encode.update({"exp": expire, "type": "refresh"})
         return jwt.encode(to_encode, self._get_secret_key(), algorithm=self.algorithm)
 
@@ -231,7 +231,7 @@ class AuthenticationMiddleware:
 
             # Check if token is expired
             exp = payload.get("exp")
-            if exp and datetime.fromtimestamp(exp) < datetime.utcnow():
+            if exp and datetime.fromtimestamp(exp) < datetime.now(tz=__import__("datetime").timezone.utc):
                 raise AuthenticationError("Token expired")
 
             return payload
@@ -321,8 +321,8 @@ class SessionManager:
 
         self.sessions[session_id] = {
             "user_info": user_info,
-            "created_at": datetime.utcnow(),
-            "last_activity": datetime.utcnow(),
+            "created_at": datetime.now(tz=__import__("datetime").timezone.utc),
+            "last_activity": datetime.now(tz=__import__("datetime").timezone.utc),
             "websocket_connections": [],
         }
 
@@ -335,11 +335,11 @@ class SessionManager:
     def update_session_activity(self, session_id: str):
         """Update session last activity."""
         if session_id in self.sessions:
-            self.sessions[session_id]["last_activity"] = datetime.utcnow()
+            self.sessions[session_id]["last_activity"] = datetime.now(tz=__import__("datetime").timezone.utc)
 
     def cleanup_expired_sessions(self):
         """Clean up expired sessions."""
-        current_time = datetime.utcnow()
+        current_time = datetime.now(tz=__import__("datetime").timezone.utc)
         expired_sessions = []
 
         for session_id, session_data in self.sessions.items():

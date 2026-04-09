@@ -293,7 +293,7 @@ class NeuralBlitzDatabase:
     ) -> List[Dict[str, Any]]:
         """Get recent intents within specified time window."""
         try:
-            cutoff_time = datetime.utcnow() - timedelta(hours=hours)
+            cutoff_time = datetime.now(tz=__import__("datetime").timezone.utc) - timedelta(hours=hours)
             sql = """
             SELECT * FROM intents 
             WHERE timestamp >= ? 
@@ -444,7 +444,7 @@ class NeuralBlitzDatabase:
 
             self.connection.execute(
                 sql,
-                (metric_id, metric_name, metric_value, tags_json, datetime.utcnow()),
+                (metric_id, metric_name, metric_value, tags_json, datetime.now(tz=__import__("datetime").timezone.utc)),
             )
 
             self.connection.commit()
@@ -457,7 +457,7 @@ class NeuralBlitzDatabase:
     def get_metrics_summary(self, metric_name: str, hours: int = 1) -> Dict[str, Any]:
         """Get summary statistics for a metric."""
         try:
-            cutoff_time = datetime.utcnow() - timedelta(hours=hours)
+            cutoff_time = datetime.now(tz=__import__("datetime").timezone.utc) - timedelta(hours=hours)
             sql = """
             SELECT 
                 COUNT(*) as count,
@@ -508,7 +508,7 @@ class NeuralBlitzDatabase:
                 stats["database_size_bytes"] = os.path.getsize(self.db_path)
 
             # Get recent activity
-            recent_cutoff = datetime.utcnow() - timedelta(hours=1)
+            recent_cutoff = datetime.now(tz=__import__("datetime").timezone.utc) - timedelta(hours=1)
 
             # Recent intents
             sql = "SELECT COUNT(*) as count FROM intents WHERE timestamp >= ?;"
@@ -538,7 +538,7 @@ class NeuralBlitzDatabase:
 
             self.connection.execute(
                 sql,
-                (log_id, level, component, message, details_json, datetime.utcnow()),
+                (log_id, level, component, message, details_json, datetime.now(tz=__import__("datetime").timezone.utc)),
             )
 
             self.connection.commit()
@@ -557,7 +557,7 @@ class NeuralBlitzDatabase:
     ) -> List[Dict[str, Any]]:
         """Get recent system logs."""
         try:
-            cutoff_time = datetime.utcnow() - timedelta(hours=hours)
+            cutoff_time = datetime.now(tz=__import__("datetime").timezone.utc) - timedelta(hours=hours)
 
             sql = "SELECT * FROM system_logs WHERE timestamp >= ?"
             params = [cutoff_time]
@@ -586,7 +586,7 @@ class NeuralBlitzDatabase:
     def cleanup_old_data(self, days: int = 30) -> bool:
         """Clean up old data to maintain database size."""
         try:
-            cutoff_time = datetime.utcnow() - timedelta(days=days)
+            cutoff_time = datetime.now(tz=__import__("datetime").timezone.utc) - timedelta(days=days)
 
             # Clean up old analytics data (keep only recent metrics)
             sql = "DELETE FROM analytics WHERE timestamp < ?;"

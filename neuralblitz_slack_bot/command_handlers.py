@@ -21,7 +21,7 @@ class AgentCommandHandler:
         self, name: str, agent_type: str, mode: str, purpose: str = ""
     ) -> Dict[str, Any]:
         """Create a new NeuralBlitz agent."""
-        agent_id = f"agent_{datetime.utcnow().strftime('%Y%m%d_%H%M%S')}_{name.lower().replace(' ', '_')}"
+        agent_id = f"agent_{datetime.now(tz=__import__("datetime").timezone.utc).strftime('%Y%m%d_%H%M%S')}_{name.lower().replace(' ', '_')}"
 
         agent_data = {
             "id": agent_id,
@@ -30,7 +30,7 @@ class AgentCommandHandler:
             "mode": mode,
             "purpose": purpose,
             "status": "created",
-            "created": datetime.utcnow().isoformat(),
+            "created": datetime.now(tz=__import__("datetime").timezone.utc).isoformat(),
             "vpce": 0.985,
             "entropy_budget": 0.15 if mode == "sentio" else 0.25,
             "metrics": {
@@ -51,7 +51,7 @@ class AgentCommandHandler:
             return False
 
         self.agent_registry[agent_id]["status"] = "active"
-        self.agent_registry[agent_id]["deployed_at"] = datetime.utcnow().isoformat()
+        self.agent_registry[agent_id]["deployed_at"] = datetime.now(tz=__import__("datetime").timezone.utc).isoformat()
         logger.info(f"Deployed agent: {agent_id}")
         return True
 
@@ -64,7 +64,7 @@ class AgentCommandHandler:
             return False
 
         self.agent_registry[agent_id]["status"] = "paused"
-        self.agent_registry[agent_id]["paused_at"] = datetime.utcnow().isoformat()
+        self.agent_registry[agent_id]["paused_at"] = datetime.now(tz=__import__("datetime").timezone.utc).isoformat()
         logger.info(f"Paused agent: {agent_id}")
         return True
 
@@ -77,7 +77,7 @@ class AgentCommandHandler:
             return False
 
         self.agent_registry[agent_id]["status"] = "active"
-        self.agent_registry[agent_id]["resumed_at"] = datetime.utcnow().isoformat()
+        self.agent_registry[agent_id]["resumed_at"] = datetime.now(tz=__import__("datetime").timezone.utc).isoformat()
         logger.info(f"Resumed agent: {agent_id}")
         return True
 
@@ -88,7 +88,7 @@ class AgentCommandHandler:
 
         agent = self.agent_registry[agent_id]
         agent["status"] = "destroyed"
-        agent["destroyed_at"] = datetime.utcnow().isoformat()
+        agent["destroyed_at"] = datetime.now(tz=__import__("datetime").timezone.utc).isoformat()
 
         # In real implementation, would clean up actual resources
         logger.info(f"Destroyed agent: {agent_id}")
@@ -129,17 +129,17 @@ class DRSCommandHandler:
             "semantic_density": 0.85,
             "phase_coherence": 0.92,
             "entanglement_strength": 0.78,
-            "timestamp": datetime.utcnow().isoformat(),
+            "timestamp": datetime.now(tz=__import__("datetime").timezone.utc).isoformat(),
         }
 
     def manifest_field(self, schema: Dict[str, Any]) -> Dict[str, Any]:
         """Manifest a new DRS field."""
-        field_id = f"drs_field_{datetime.utcnow().strftime('%Y%m%d_%H%M%S')}"
+        field_id = f"drs_field_{datetime.now(tz=__import__("datetime").timezone.utc).strftime('%Y%m%d_%H%M%S')}"
 
         self.drs_fields[field_id] = {
             "id": field_id,
             "schema": schema,
-            "created": datetime.utcnow().isoformat(),
+            "created": datetime.now(tz=__import__("datetime").timezone.utc).isoformat(),
             "status": "active",
             "nodes": [],
             "edges": [],
@@ -154,7 +154,7 @@ class DRSCommandHandler:
             "threshold": 0.03,
             "status": "within_bounds",
             "trend": "stable",
-            "last_correction": datetime.utcnow().isoformat(),
+            "last_correction": datetime.now(tz=__import__("datetime").timezone.utc).isoformat(),
         }
 
     def get_entanglement_status(self) -> Dict[str, Any]:
@@ -192,7 +192,7 @@ class CharterCommandHandler:
     def check_compliance(self, scope: str = "all") -> Dict[str, Any]:
         """Run compliance check against Charter clauses."""
         results = {
-            "timestamp": datetime.utcnow().isoformat(),
+            "timestamp": datetime.now(tz=__import__("datetime").timezone.utc).isoformat(),
             "scope": scope,
             "overall_status": "PASS",
             "clauses_checked": len(self.clauses),
@@ -222,14 +222,14 @@ class CharterCommandHandler:
             "status": "optimal",
             "channels": 8,
             "phase_divergence": 0.008,
-            "last_update": datetime.utcnow().isoformat(),
+            "last_update": datetime.now(tz=__import__("datetime").timezone.utc).isoformat(),
         }
 
     def get_compliance_report(self) -> Dict[str, Any]:
         """Generate comprehensive compliance report."""
         return {
-            "report_id": f"compliance_{datetime.utcnow().strftime('%Y%m%d_%H%M%S')}",
-            "timestamp": datetime.utcnow().isoformat(),
+            "report_id": f"compliance_{datetime.now(tz=__import__("datetime").timezone.utc).strftime('%Y%m%d_%H%M%S')}",
+            "timestamp": datetime.now(tz=__import__("datetime").timezone.utc).isoformat(),
             "system_version": "v20.0 Apical Synthesis",
             "charter_clauses": self.clauses,
             "compliance_score": 0.98,
@@ -296,7 +296,7 @@ class WorkflowManager:
         if workflow_type not in self.WORKFLOWS:
             return None
 
-        workflow_id = f"wf_{datetime.utcnow().strftime('%Y%m%d_%H%M%S')}_{user_id}"
+        workflow_id = f"wf_{datetime.now(tz=__import__("datetime").timezone.utc).strftime('%Y%m%d_%H%M%S')}_{user_id}"
 
         workflow_data = {
             "id": workflow_id,
@@ -305,7 +305,7 @@ class WorkflowManager:
             "user_id": user_id,
             "channel_id": channel_id,
             "status": "running",
-            "started_at": datetime.utcnow().isoformat(),
+            "started_at": datetime.now(tz=__import__("datetime").timezone.utc).isoformat(),
             "current_step": 0,
             "steps": self.WORKFLOWS[workflow_type]["steps"],
             "results": [],
@@ -330,7 +330,7 @@ class WorkflowManager:
 
         if workflow["current_step"] >= len(workflow["steps"]):
             workflow["status"] = "completed"
-            workflow["completed_at"] = datetime.utcnow().isoformat()
+            workflow["completed_at"] = datetime.now(tz=__import__("datetime").timezone.utc).isoformat()
 
         return True
 
@@ -341,7 +341,7 @@ class WorkflowManager:
 
         self.active_workflows[workflow_id]["status"] = "cancelled"
         self.active_workflows[workflow_id]["cancelled_at"] = (
-            datetime.utcnow().isoformat()
+            datetime.now(tz=__import__("datetime").timezone.utc).isoformat()
         )
         return True
 

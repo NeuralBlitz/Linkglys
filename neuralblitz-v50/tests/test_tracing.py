@@ -36,7 +36,7 @@ class TestTraceSpan:
             span_id="test_span",
             parent_span_id=None,
             operation_name="test_operation",
-            start_time=datetime.utcnow(),
+            start_time=datetime.now(tz=__import__("datetime").timezone.utc),
             end_time=None,
             status=SpanStatus.OK,
             kind=SpanKind.INTERNAL,
@@ -58,7 +58,7 @@ class TestTraceSpan:
             span_id="span",
             parent_span_id=None,
             operation_name="test",
-            start_time=datetime.utcnow(),
+            start_time=datetime.now(tz=__import__("datetime").timezone.utc),
             end_time=None,
             status=SpanStatus.OK,
             kind=SpanKind.INTERNAL,
@@ -80,7 +80,7 @@ class TestTraceSpan:
             span_id="span",
             parent_span_id=None,
             operation_name="test",
-            start_time=datetime.utcnow(),
+            start_time=datetime.now(tz=__import__("datetime").timezone.utc),
             end_time=None,
             status=SpanStatus.OK,
             kind=SpanKind.INTERNAL,
@@ -98,8 +98,8 @@ class TestTraceSpan:
 
     def test_span_duration(self):
         """Test span duration calculation."""
-        start_time = datetime.utcnow()
-        end_time = datetime.utcnow()
+        start_time = datetime.now(tz=__import__("datetime").timezone.utc)
+        end_time = datetime.now(tz=__import__("datetime").timezone.utc)
 
         span = TraceSpan(
             trace_id="test",
@@ -137,8 +137,8 @@ class TestTraceSpan:
             span_id="span",
             parent_span_id=None,
             operation_name="test_operation",
-            start_time=datetime.utcnow(),
-            end_time=datetime.utcnow(),
+            start_time=datetime.now(tz=__import__("datetime").timezone.utc),
+            end_time=datetime.now(tz=__import__("datetime").timezone.utc),
             status=SpanStatus.OK,
             kind=SpanKind.INTERNAL,
         )
@@ -163,7 +163,7 @@ class TestTraceSpan:
             span_id="span",
             parent_span_id=None,
             operation_name="test",
-            start_time=datetime.utcnow(),
+            start_time=datetime.now(tz=__import__("datetime").timezone.utc),
             end_time=None,
             status=SpanStatus.OK,
             kind=SpanKind.INTERNAL,
@@ -339,8 +339,8 @@ class TestTraceExporters:
             span_id="span",
             parent_span_id=None,
             operation_name="test_operation",
-            start_time=datetime.utcnow(),
-            end_time=datetime.utcnow(),
+            start_time=datetime.now(tz=__import__("datetime").timezone.utc),
+            end_time=datetime.now(tz=__import__("datetime").timezone.utc),
             status=SpanStatus.OK,
             kind=SpanKind.INTERNAL,
         )
@@ -361,8 +361,8 @@ class TestTraceExporters:
                 span_id="span",
                 parent_span_id=None,
                 operation_name="test_operation",
-                start_time=datetime.utcnow(),
-                end_time=datetime.utcnow(),
+                start_time=datetime.now(tz=__import__("datetime").timezone.utc),
+                end_time=datetime.now(tz=__import__("datetime").timezone.utc),
                 status=SpanStatus.OK,
                 kind=SpanKind.INTERNAL,
             )

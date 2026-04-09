@@ -938,7 +938,7 @@ class FabricIntegration:
             "value": value,
             "ethereum_token_id": ethereum_token_id,
             "did": did,
-            "timestamp": datetime.utcnow().isoformat(),
+            "timestamp": datetime.now(tz=__import__("datetime").timezone.utc).isoformat(),
         }
         merkle_root = self._generate_merkle_root(asset_data)
 
@@ -978,8 +978,8 @@ class FabricIntegration:
             value=500000.0,
             ethereum_token_id="1",
             did="did:ethr:0x123",
-            created_at=datetime.utcnow().isoformat(),
-            updated_at=datetime.utcnow().isoformat(),
+            created_at=datetime.now(tz=__import__("datetime").timezone.utc).isoformat(),
+            updated_at=datetime.now(tz=__import__("datetime").timezone.utc).isoformat(),
             status="ACTIVE",
             merkle_root=self._generate_merkle_root({"id": asset_id}),
         )
@@ -1021,7 +1021,7 @@ class FabricIntegration:
         return [
             {
                 "tx_id": f"tx-history-{i}",
-                "timestamp": datetime.utcnow().isoformat(),
+                "timestamp": datetime.now(tz=__import__("datetime").timezone.utc).isoformat(),
                 "action": "CREATE" if i == 0 else "UPDATE",
                 "actor": f"{self.org_name}MSP",
             }
@@ -1040,8 +1040,8 @@ class FabricIntegration:
                 value=100000.0 * i,
                 ethereum_token_id=str(i),
                 did=f"did:ethr:0x{i:064x}",
-                created_at=datetime.utcnow().isoformat(),
-                updated_at=datetime.utcnow().isoformat(),
+                created_at=datetime.now(tz=__import__("datetime").timezone.utc).isoformat(),
+                updated_at=datetime.now(tz=__import__("datetime").timezone.utc).isoformat(),
                 status="ACTIVE",
                 merkle_root=self._generate_merkle_root({"id": f"asset-{i}"}),
             )
@@ -1242,8 +1242,8 @@ class DIDManager:
             controller=[controller],
             public_keys=public_keys or [],
             services=services or [],
-            created=datetime.utcnow(),
-            updated=datetime.utcnow(),
+            created=datetime.now(tz=__import__("datetime").timezone.utc),
+            updated=datetime.now(tz=__import__("datetime").timezone.utc),
             proof=None,
         )
 
@@ -1335,7 +1335,7 @@ class DIDManager:
         if services:
             doc.services = services
 
-        doc.updated = datetime.utcnow()
+        doc.updated = datetime.now(tz=__import__("datetime").timezone.utc)
         self._did_storage[did] = doc
 
         return True
@@ -1356,7 +1356,7 @@ class DIDManager:
 
         # Mark as deactivated (in production, would add proper proof)
         doc.controller = []
-        doc.updated = datetime.utcnow()
+        doc.updated = datetime.now(tz=__import__("datetime").timezone.utc)
 
         return True
 
@@ -1394,7 +1394,7 @@ class DIDManager:
         cred_id = f"urn:uuid:{uuid.uuid4().hex}"
 
         # Calculate expiration
-        issued_at = datetime.utcnow()
+        issued_at = datetime.now(tz=__import__("datetime").timezone.utc)
         expires_at = (
             issued_at + timedelta(days=expiration_days) if expiration_days else None
         )
@@ -1462,7 +1462,7 @@ class DIDManager:
             return False, "Credential not found"
 
         # Check expiration
-        if credential.expires_at and datetime.utcnow() > credential.expires_at:
+        if credential.expires_at and datetime.now(tz=__import__("datetime").timezone.utc) > credential.expires_at:
             return False, "Credential expired"
 
         # Check issuer
@@ -1490,7 +1490,7 @@ class DIDManager:
             return False
 
         # Mark as revoked (in production, would add revocation proof)
-        credential.expires_at = datetime.utcnow()
+        credential.expires_at = datetime.now(tz=__import__("datetime").timezone.utc)
 
         return True
 
@@ -1558,7 +1558,7 @@ class DIDManager:
             ],
             "proof": {
                 "type": "Ed25519Signature2018",
-                "created": datetime.utcnow().isoformat(),
+                "created": datetime.now(tz=__import__("datetime").timezone.utc).isoformat(),
                 "challenge": challenge,
                 "verificationMethod": f"{holder_did}#keys-1",
             },

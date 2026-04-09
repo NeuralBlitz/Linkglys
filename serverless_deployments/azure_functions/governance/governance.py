@@ -47,7 +47,7 @@ def main(req: HttpRequest, charterDocuments: func.DocumentList) -> HttpResponse:
                 {
                     "success": True,
                     "data": validation_result,
-                    "timestamp": datetime.utcnow().isoformat(),
+                    "timestamp": datetime.now(tz=__import__("datetime").timezone.utc).isoformat(),
                 }
             ),
             status_code=200,
@@ -65,7 +65,7 @@ def main(req: HttpRequest, charterDocuments: func.DocumentList) -> HttpResponse:
                         "message": "Governance validation failed",
                         "code": "GOVERNANCE_ERROR",
                     },
-                    "timestamp": datetime.utcnow().isoformat(),
+                    "timestamp": datetime.now(tz=__import__("datetime").timezone.utc).isoformat(),
                 }
             ),
             status_code=500,

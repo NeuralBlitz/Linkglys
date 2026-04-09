@@ -154,7 +154,7 @@ class QuadraticVotingCK:
             "proof_id": f"VPROOF#QVInit-{session_id}",
             "theorem": "QuadraticVotingInitIntegrity",
             "verdict": "PASS",
-            "timestamp": datetime.utcnow().isoformat(),
+            "timestamp": datetime.now(tz=__import__("datetime").timezone.utc).isoformat(),
             "constraints_verified": ["ϕ₇", "ϕ₅"],
         }
         self.veritas_proofs.append(proof)

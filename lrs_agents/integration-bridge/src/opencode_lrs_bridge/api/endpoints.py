@@ -56,7 +56,7 @@ class AgentManager:
             agent_type=request.agent_type,
             status=AgentStatus.IDLE,
             belief_state=request.config.get("belief_state", {}),
-            created_at=datetime.utcnow(),
+            created_at=datetime.now(tz=__import__("datetime").timezone.utc),
         )
 
         # Register with LRS if it's an LRS agent (disabled for testing)
@@ -141,7 +141,7 @@ class AgentManager:
         if request.belief_state:
             agent.belief_state.update(request.belief_state)
 
-        agent.last_activity = datetime.utcnow()
+        agent.last_activity = datetime.now(tz=__import__("datetime").timezone.utc)
 
         # Propagate updates to connected systems
         await self._propagate_agent_update(agent_id, request)
@@ -288,7 +288,7 @@ class ToolExecutor:
 
     async def execute_tool(self, request: ToolExecutionRequest) -> ToolExecutionResult:
         """Execute tool on appropriate system."""
-        execution_id = f"exec_{datetime.utcnow().timestamp()}"
+        execution_id = f"exec_{datetime.now(tz=__import__("datetime").timezone.utc).timestamp()}"
 
         result = ToolExecutionResult(
             execution_id=execution_id,
@@ -309,7 +309,7 @@ class ToolExecutor:
     ):
         """Execute tool in background."""
         result = self.executions[execution_id]
-        start_time = datetime.utcnow()
+        start_time = datetime.now(tz=__import__("datetime").timezone.utc)
 
         try:
             result.status = ToolExecutionStatus.RUNNING
@@ -338,7 +338,7 @@ class ToolExecutor:
             )
 
         finally:
-            end_time = datetime.utcnow()
+            end_time = datetime.now(tz=__import__("datetime").timezone.utc)
             result.execution_time = (end_time - start_time).total_seconds()
             result.timestamp = end_time
 

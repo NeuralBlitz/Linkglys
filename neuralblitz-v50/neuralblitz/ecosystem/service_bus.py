@@ -42,7 +42,7 @@ class ServiceRegistry:
             self._services[info.component_type].append(info)
             self._instance_map[info.instance_id] = info
             self._health_status[info.instance_id] = "healthy"
-            self._last_heartbeat[info.instance_id] = datetime.utcnow()
+            self._last_heartbeat[info.instance_id] = datetime.now(tz=__import__("datetime").timezone.utc)
             logger.info(f"Registered {info.component_type.value}: {info.instance_id}")
 
     def unregister(self, instance_id: str):
@@ -90,13 +90,13 @@ class ServiceRegistry:
         with self._lock:
             if instance_id in self._health_status:
                 self._health_status[instance_id] = status
-                self._last_heartbeat[instance_id] = datetime.utcnow()
+                self._last_heartbeat[instance_id] = datetime.now(tz=__import__("datetime").timezone.utc)
 
     def check_stale_services(self, timeout_seconds: int = 60) -> List[str]:
         """Find services that haven't sent heartbeat."""
         with self._lock:
             stale = []
-            cutoff = datetime.utcnow() - timedelta(seconds=timeout_seconds)
+            cutoff = datetime.now(tz=__import__("datetime").timezone.utc) - timedelta(seconds=timeout_seconds)
 
             for instance_id, last_seen in self._last_heartbeat.items():
                 if last_seen < cutoff:
@@ -200,6 +200,7 @@ class ServiceBus:
         self.subscriptions = SubscriptionManager()
         self._adapters: Dict[str, ComponentAdapter] = {}
         self._response_futures: Dict[str, asyncio.Future] = {}
+        self._response_lock = asyncio.Lock()
         self._running = False
         self._health_check_task: Optional[asyncio.Task] = None
         self._lock = threading.RLock()
@@ -232,7 +233,7 @@ class ServiceBus:
             Response message if target responds, None otherwise
         """
         # Add to trace
-        message.trace.append(f"bus:{datetime.utcnow().isoformat()}")
+        message.trace.append(f"bus:{datetime.now(tz=__import__("datetime").timezone.utc).isoformat()}")
 
         # Route to target
         if message.target:
@@ -314,7 +315,7 @@ class ServiceBus:
             payload={
                 "event_type": event_type,
                 "data": payload,
-                "timestamp": datetime.utcnow().isoformat(),
+                "timestamp": datetime.now(tz=__import__("datetime").timezone.utc).isoformat(),
             },
         )
 

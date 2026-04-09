@@ -13,6 +13,9 @@ import logging
 import ssl
 import threading
 import time
+import uuid
+from collections import defaultdict
+import paho.mqtt.client as mqtt
 from dataclasses import dataclass, field
 from datetime import datetime
 from enum import Enum, auto

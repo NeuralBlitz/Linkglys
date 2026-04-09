@@ -15,6 +15,7 @@ class SampleLRSPlugin(LRSPlugin):
         super().__init__()
         self.name = "SampleLRSPlugin"
         self.version = "1.0.0"
+        self.precision_tracker = {}  # Initialize to prevent AttributeError
         self.learning_data = {}
 
     def get_metadata(self) -> PluginMetadata:

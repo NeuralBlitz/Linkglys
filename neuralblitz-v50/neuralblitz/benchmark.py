@@ -154,7 +154,7 @@ class BenchmarkSuite:
                 p95_ms=mean_latency / batch_size,
                 p99_ms=mean_latency / batch_size,
                 throughput=(batch_size / mean_latency) * 1000,
-                timestamp=datetime.utcnow().isoformat(),
+                timestamp=datetime.now(tz=__import__("datetime").timezone.utc).isoformat(),
             )
 
             results.append(result)
@@ -314,7 +314,7 @@ class BenchmarkSuite:
                 "consciousness_evolution": results["consciousness_evolution"].to_dict(),
                 "memory_pressure": results["memory_pressure"],
             },
-            "timestamp": datetime.utcnow().isoformat(),
+            "timestamp": datetime.now(tz=__import__("datetime").timezone.utc).isoformat(),
         }
 
         return report
@@ -340,7 +340,7 @@ class BenchmarkSuite:
             p95_ms=sorted_latencies[min(p95_idx, len(sorted_latencies) - 1)],
             p99_ms=sorted_latencies[min(p99_idx, len(sorted_latencies) - 1)],
             throughput=(sample_size / total_time) * 1000,
-            timestamp=datetime.utcnow().isoformat(),
+            timestamp=datetime.now(tz=__import__("datetime").timezone.utc).isoformat(),
         )
 
     def save_report(

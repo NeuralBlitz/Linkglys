@@ -156,8 +156,18 @@ class SecurityManager:
         return "*" in permissions or action in permissions
 
     def _hash_password(self, password: str) -> str:
-        """Hash password using SHA-256."""
-        return hashlib.sha256(password.encode()).hexdigest()
+        """Hash password using bcrypt with salt."""
+        import bcrypt
+        salt = bcrypt.gensalt(rounds=12)
+        return bcrypt.hashpw(password.encode(), salt).decode()
+    
+    def _verify_password(self, password: str, hashed: str) -> bool:
+        """Verify password against bcrypt hash."""
+        import bcrypt
+        try:
+            return bcrypt.checkpw(password.encode(), hashed.encode())
+        except Exception:
+            return False
 
     def _check_rate_limit(self, username: str) -> bool:
         """Check if user is within rate limits."""

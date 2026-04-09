@@ -366,7 +366,7 @@ class RealTimeEventHandler:
                         "heartbeat",
                         {
                             "message": "NeuralBlitz system operational",
-                            "timestamp": datetime.utcnow().isoformat(),
+                            "timestamp": datetime.now(tz=__import__("datetime").timezone.utc).isoformat(),
                         },
                     )
                 except Exception as e:

@@ -215,7 +215,17 @@ class IsolationForestDetector:
             path_lengths = [self._path_length(x, tree) for tree in self.trees]
             avg_path_length = np.mean(path_lengths)
             # Convert to anomaly score (0 = normal, 1 = anomaly)
-            scores[i] = 1.0 - np.exp(-avg_path_length / np.mean(path_lengths))
+            # Compare path length against expected c(n) for random data
+            n = X.shape[0]
+            if n <= 1:
+                c_n = 0
+            else:
+                c_n = 2 * (np.log(n - 1) + 0.5772156649) - 2 * (n - 1) / n
+            # Anomaly score: shorter paths = more anomalous
+            if c_n == 0:
+                scores[i] = 0.5
+            else:
+                scores[i] = 2 ** (-avg_path_length / c_n)
 
         return scores
 

@@ -166,7 +166,16 @@ class CalculatorTool(ToolLens):
                 'abs': abs, 'round': round, 'min': min, 'max': max,
                 'sum': sum, 'pow': pow
             }
-            result = eval(expression, {"__builtins__": {}}, allowed_names)
+            # Safe expression evaluation using restricted eval
+            import ast
+            try:
+                node = ast.parse(expression, mode='eval')
+                for subnode in ast.walk(node):
+                    if isinstance(subnode, (ast.Call, ast.Attribute, ast.Import, ast.ImportFrom)):
+                        raise ValueError("Unsafe expression")
+                result = eval(expression, {"__builtins__": {}}, allowed_names)
+            except (ValueError, SyntaxError):
+                return {"error": "Unsafe or invalid expression", "result": None}
             
             return ExecutionResult(
                 success=True,

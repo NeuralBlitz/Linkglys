@@ -97,7 +97,7 @@ class CoralTPUInterpreter:
 
         self.interpreter = tflite.Interpreter(
             model_path=self.model_path,
-            experimental_delegates=[] if not self.enable_edgetpu else None,
+            experimental_delegates=[edgetpu.load_delegate('edgetpu.tflite')] if self.enable_edgetpu else [],
         )
 
         if self.enable_edgetpu and EDGETPU_AVAILABLE:

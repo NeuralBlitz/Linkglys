@@ -77,7 +77,7 @@ class TraceID:
 
     def __post_init__(self):
         if self.timestamp is None:
-            self.timestamp = datetime.utcnow().isoformat()
+            self.timestamp = datetime.now(tz=__import__("datetime").timezone.utc).isoformat()
 
     def __str__(self) -> str:
         return f"T-{self.version}-{self.context}-{self.hexcode}"

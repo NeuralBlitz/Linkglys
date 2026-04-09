@@ -28,8 +28,24 @@ except ImportError:
     pass
 
 # AWS clients
-s3_client = boto3.client("s3")
-dynamodb = boto3.resource("dynamodb")
+_s3_client = None
+_dynamodb_resource = None
+
+def get_s3_client():
+    """Lazy initialize S3 client."""
+    global _s3_client
+    if _s3_client is None:
+        import boto3
+        _s3_client = boto3.client("s3")
+    return _s3_client
+
+def get_dynamodb_resource():
+    """Lazy initialize DynamoDB resource."""
+    global _dynamodb_resource
+    if _dynamodb_resource is None:
+        import boto3
+        _dynamodb_resource = boto3.resource("dynamodb")
+    return _dynamodb_resource
 
 # Environment variables
 CACHE_BUCKET = os.environ.get("CACHE_BUCKET", "opencode-lrs-cache-dev")
@@ -89,7 +105,7 @@ def create_response(
 def save_result_to_dynamodb(result_id: str, result_data: Dict[str, Any]):
     """Save result to DynamoDB for persistence."""
     try:
-        table = dynamodb.Table(RESULTS_TABLE)
+        table = get_dynamodb_resource().Table(RESULTS_TABLE)
         item = {
             "id": result_id,
             "timestamp": int(time.time()),
@@ -104,14 +120,14 @@ def save_result_to_dynamodb(result_id: str, result_data: Dict[str, Any]):
 def get_cached_result(cache_key: str) -> Optional[Dict[str, Any]]:
     """Get cached result from S3."""
     try:
-        response = s3_client.get_object(Bucket=CACHE_BUCKET, Key=cache_key)
+        response = get_s3_client().get_object(Bucket=CACHE_BUCKET, Key=cache_key)
         cached_data = json.loads(response["Body"].read().decode("utf-8"))
 
         # Check if cache is still valid (1 hour)
         if time.time() - cached_data.get("timestamp", 0) < 3600:
             return cached_data.get("result")
 
-    except s3_client.exceptions.NoSuchKey:
+    except get_s3_client().exceptions.NoSuchKey:
         pass  # Cache miss
     except Exception as e:
         print(f"Cache retrieval error: {e}")
@@ -123,7 +139,7 @@ def save_to_cache(cache_key: str, result: Dict[str, Any]):
     """Save result to S3 cache."""
     try:
         cache_data = {"timestamp": time.time(), "result": result}
-        s3_client.put_object(
+        get_s3_client().put_object(
             Bucket=CACHE_BUCKET,
             Key=cache_key,
             Body=json.dumps(cache_data, default=str),

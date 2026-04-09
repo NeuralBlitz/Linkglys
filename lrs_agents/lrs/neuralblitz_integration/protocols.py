@@ -107,7 +107,7 @@ class BaseProtocol(ABC):
         while self.running:
             try:
                 heartbeat = await self.message_bus.create_heartbeat(
-                    self.config.source_system, {"timestamp": datetime.utcnow().isoformat()}
+                    self.config.source_system, {"timestamp": datetime.now(tz=__import__("datetime").timezone.utc).isoformat()}
                 )
                 await self.send_message(heartbeat)
                 await asyncio.sleep(self.config.heartbeat_interval)
@@ -169,7 +169,7 @@ class LRSToNeuralBlitzProtocol(BaseProtocol):
             payload={
                 "agent_id": agent_id,
                 "state": state,
-                "timestamp": datetime.utcnow().isoformat(),
+                "timestamp": datetime.now(tz=__import__("datetime").timezone.utc).isoformat(),
             },
         )
         return await self.send_message(message)
@@ -343,8 +343,8 @@ class BidirectionalProtocol:
                 source="bidirectional_protocol",
                 destination="broadcast",
                 payload={
-                    "timestamp": datetime.utcnow().isoformat(),
-                    "request_id": datetime.utcnow().timestamp(),
+                    "timestamp": datetime.now(tz=__import__("datetime").timezone.utc).isoformat(),
+                    "request_id": datetime.now(tz=__import__("datetime").timezone.utc).timestamp(),
                 },
             )
 

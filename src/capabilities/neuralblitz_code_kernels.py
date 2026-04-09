@@ -168,7 +168,7 @@ class AutoProgrammerCK(CapabilityKernel):
             return CKResponse(
                 ok=False,
                 kernel=self.contract.kernel,
-                timestamp=datetime.utcnow().isoformat(),
+                timestamp=datetime.now(tz=__import__("datetime").timezone.utc).isoformat(),
                 actor_id=self.principal_id,
                 result={},
                 warnings=[{"code": "E-BOUND", "message": w} for w in warnings],
@@ -220,7 +220,7 @@ class AutoProgrammerCK(CapabilityKernel):
             return CKResponse(
                 ok=True,
                 kernel=self.contract.kernel,
-                timestamp=datetime.utcnow().isoformat(),
+                timestamp=datetime.now(tz=__import__("datetime").timezone.utc).isoformat(),
                 actor_id=self.principal_id,
                 result=result,
                 warnings=[],
@@ -235,7 +235,7 @@ class AutoProgrammerCK(CapabilityKernel):
             return CKResponse(
                 ok=False,
                 kernel=self.contract.kernel,
-                timestamp=datetime.utcnow().isoformat(),
+                timestamp=datetime.now(tz=__import__("datetime").timezone.utc).isoformat(),
                 actor_id=self.principal_id,
                 result={},
                 warnings=[],
@@ -343,7 +343,7 @@ def require_audit(f):
     @wraps(f)
     def decorated(*args, **kwargs):
         audit_entry = {
-            'timestamp': __import__('datetime').datetime.utcnow().isoformat(),
+            'timestamp': __import__('datetime').datetime.now(tz=__import__("datetime").timezone.utc).isoformat(),
             'endpoint': request.endpoint,
             'method': request.method,
             'ip': request.remote_addr
@@ -687,7 +687,7 @@ class CodeReviewerCK(CapabilityKernel):
             return CKResponse(
                 ok=False,
                 kernel=self.contract.kernel,
-                timestamp=datetime.utcnow().isoformat(),
+                timestamp=datetime.now(tz=__import__("datetime").timezone.utc).isoformat(),
                 actor_id=self.principal_id,
                 result={},
                 warnings=[{"code": "E-BOUND", "message": w} for w in warnings],
@@ -741,7 +741,7 @@ class CodeReviewerCK(CapabilityKernel):
             return CKResponse(
                 ok=True,
                 kernel=self.contract.kernel,
-                timestamp=datetime.utcnow().isoformat(),
+                timestamp=datetime.now(tz=__import__("datetime").timezone.utc).isoformat(),
                 actor_id=self.principal_id,
                 result=result,
                 warnings=[],
@@ -759,7 +759,7 @@ class CodeReviewerCK(CapabilityKernel):
             return CKResponse(
                 ok=False,
                 kernel=self.contract.kernel,
-                timestamp=datetime.utcnow().isoformat(),
+                timestamp=datetime.now(tz=__import__("datetime").timezone.utc).isoformat(),
                 actor_id=self.principal_id,
                 result={},
                 warnings=[],
@@ -1104,7 +1104,7 @@ class TestGeneratorCK(CapabilityKernel):
             return CKResponse(
                 ok=False,
                 kernel=self.contract.kernel,
-                timestamp=datetime.utcnow().isoformat(),
+                timestamp=datetime.now(tz=__import__("datetime").timezone.utc).isoformat(),
                 actor_id=self.principal_id,
                 result={},
                 warnings=[{"code": "E-BOUND", "message": w} for w in warnings],
@@ -1174,7 +1174,7 @@ class TestGeneratorCK(CapabilityKernel):
             return CKResponse(
                 ok=True,
                 kernel=self.contract.kernel,
-                timestamp=datetime.utcnow().isoformat(),
+                timestamp=datetime.now(tz=__import__("datetime").timezone.utc).isoformat(),
                 actor_id=self.principal_id,
                 result=result,
                 warnings=[],
@@ -1189,7 +1189,7 @@ class TestGeneratorCK(CapabilityKernel):
             return CKResponse(
                 ok=False,
                 kernel=self.contract.kernel,
-                timestamp=datetime.utcnow().isoformat(),
+                timestamp=datetime.now(tz=__import__("datetime").timezone.utc).isoformat(),
                 actor_id=self.principal_id,
                 result={},
                 warnings=[],
@@ -1607,7 +1607,7 @@ def main():
             "caller_principal_id": "Principal/Operator/Dev01",
             "caller_dag_ref": "DAG#A1B2C3",
         },
-        timestamp=datetime.utcnow().isoformat(),
+        timestamp=datetime.now(tz=__import__("datetime").timezone.utc).isoformat(),
     )
 
     response1 = auto_programmer.execute(payload1)
@@ -1653,7 +1653,7 @@ def main():
                 "caller_principal_id": auto_programmer.principal_id,
                 "caller_dag_ref": response1.result.get("dag_ref", "DAG#UNKNOWN"),
             },
-            timestamp=datetime.utcnow().isoformat(),
+            timestamp=datetime.now(tz=__import__("datetime").timezone.utc).isoformat(),
         )
 
         response2 = code_reviewer.execute(payload2)
@@ -1703,7 +1703,7 @@ def main():
                 "caller_principal_id": auto_programmer.principal_id,
                 "caller_dag_ref": response1.result.get("dag_ref", "DAG#UNKNOWN"),
             },
-            timestamp=datetime.utcnow().isoformat(),
+            timestamp=datetime.now(tz=__import__("datetime").timezone.utc).isoformat(),
         )
 
         response3 = test_generator.execute(payload3)

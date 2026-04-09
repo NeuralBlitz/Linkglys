@@ -58,7 +58,7 @@ class QuantumResistantCrypto:
         # Security parameters
         self.nonce_cache = {}
         self.key_rotation_interval = timedelta(hours=24)
-        self.last_key_rotation = datetime.utcnow()
+        self.last_key_rotation = datetime.now(tz=__import__("datetime").timezone.utc)
 
         logger.info(
             f"Initialized Quantum-Resistant Crypto with security level: {security_level}"
@@ -82,7 +82,7 @@ class QuantumResistantCrypto:
                 public_key=public_key_data,
                 private_key=private_key_data,
                 key_size=key_size,
-                created_at=datetime.utcnow(),
+                created_at=datetime.now(tz=__import__("datetime").timezone.utc),
                 security_level="POST_QUANTUM",
             )
 
@@ -106,7 +106,7 @@ class QuantumResistantCrypto:
                 public_key=public_key_data,
                 private_key=private_key_data,
                 key_size=key_size,
-                created_at=datetime.utcnow(),
+                created_at=datetime.now(tz=__import__("datetime").timezone.utc),
                 security_level="POST_QUANTUM",
             )
 
@@ -211,7 +211,7 @@ class QuantumResistantCrypto:
                 algorithm=algorithm,
                 public_key=self._extract_public_key(private_key, algorithm),
                 message_hash=message_hash,
-                timestamp=datetime.utcnow(),
+                timestamp=datetime.now(tz=__import__("datetime").timezone.utc),
                 quantum_proof=quantum_proof,
             )
 
@@ -526,7 +526,7 @@ class QuantumResistantCrypto:
         """Rotate cryptographic keys for enhanced security."""
         try:
             # Check if rotation is needed
-            if datetime.utcnow() - self.last_key_rotation < self.key_rotation_interval:
+            if datetime.now(tz=__import__("datetime").timezone.utc) - self.last_key_rotation < self.key_rotation_interval:
                 return True
 
             # Generate new key pairs
@@ -538,7 +538,7 @@ class QuantumResistantCrypto:
             self.dilithium_keys = new_dilithium
 
             # Update rotation timestamp
-            self.last_key_rotation = datetime.utcnow()
+            self.last_key_rotation = datetime.now(tz=__import__("datetime").timezone.utc)
 
             logger.info("Quantum-resistant keys rotated successfully")
             return True
@@ -563,7 +563,7 @@ class QuantumResistantCrypto:
             "key_rotation_interval_hours": self.key_rotation_interval.total_seconds()
             / 3600,
             "nonce_cache_size": len(self.nonce_cache),
-            "timestamp": datetime.utcnow().isoformat(),
+            "timestamp": datetime.now(tz=__import__("datetime").timezone.utc).isoformat(),
         }
 
 

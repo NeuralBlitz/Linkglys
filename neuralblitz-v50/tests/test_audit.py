@@ -180,7 +180,7 @@ class TestAuditEntry:
 
     def test_entry_creation(self):
         """Test audit entry creation."""
-        timestamp = datetime.utcnow().isoformat()
+        timestamp = datetime.now(tz=__import__("datetime").timezone.utc).isoformat()
         entry = AuditEntry(
             operation="test_op",
             intent_hash="test_hash",
@@ -242,7 +242,7 @@ class TestCreateAuditLogger:
             logger = create_audit_logger(temp_dir)
 
             # Should create file with today's date
-            today = datetime.utcnow().strftime("%Y%m%d")
+            today = datetime.now(tz=__import__("datetime").timezone.utc).strftime("%Y%m%d")
             expected_filename = f"audit_{today}.log"
             expected_path = os.path.join(temp_dir, expected_filename)
 

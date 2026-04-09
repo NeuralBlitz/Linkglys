@@ -89,7 +89,7 @@ class StateMerger:
                         field_path=current_path,
                         lrs_value=lrs_value,
                         opencode_value=opencode_value,
-                        timestamp=datetime.utcnow(),
+                        timestamp=datetime.now(tz=__import__("datetime").timezone.utc),
                     )
                     conflicts.append(conflict)
 
@@ -322,7 +322,7 @@ class StateSynchronizer:
                 resolved_state=merged_state,
                 conflicts=[c.field_path for c in conflicts],
                 strategy_used=strategy,
-                timestamp=datetime.utcnow(),
+                timestamp=datetime.now(tz=__import__("datetime").timezone.utc),
             )
 
             # Update cached state
@@ -330,7 +330,7 @@ class StateSynchronizer:
                 "lrs": lrs_state,
                 "opencode": opencode_state,
                 "merged": merged_state,
-                "last_sync": datetime.utcnow(),
+                "last_sync": datetime.now(tz=__import__("datetime").timezone.utc),
             }
 
             # Store sync history
@@ -343,7 +343,7 @@ class StateSynchronizer:
             if len(self.sync_history[agent_id]) > 50:
                 self.sync_history[agent_id] = self.sync_history[agent_id][-50:]
 
-            self.last_sync_times[agent_id] = datetime.utcnow()
+            self.last_sync_times[agent_id] = datetime.now(tz=__import__("datetime").timezone.utc)
 
             logger.info(
                 "Agent state synchronized",
@@ -364,7 +364,7 @@ class StateSynchronizer:
                 resolved_state={},
                 conflicts=[f"Sync error: {str(e)}"],
                 strategy_used=strategy,
-                timestamp=datetime.utcnow(),
+                timestamp=datetime.now(tz=__import__("datetime").timezone.utc),
             )
 
     async def resolve_conflict_manually(
@@ -385,7 +385,7 @@ class StateSynchronizer:
             resolved_state=current_state,
             conflicts=[],
             strategy_used=ConflictResolutionStrategy.MERGE,
-            timestamp=datetime.utcnow(),
+            timestamp=datetime.now(tz=__import__("datetime").timezone.utc),
         )
 
         # Update cache
@@ -461,7 +461,7 @@ class StateSynchronizer:
                 conflict_strategies[strategy] = conflict_strategies.get(strategy, 0) + 1
 
         recent_syncs = 0
-        one_hour_ago = datetime.utcnow() - timedelta(hours=1)
+        one_hour_ago = datetime.now(tz=__import__("datetime").timezone.utc) - timedelta(hours=1)
 
         for last_sync in self.last_sync_times.values():
             if last_sync > one_hour_ago:

@@ -456,7 +456,7 @@ class LoadTestRunner:
         """Generate comprehensive load test report."""
         report = {
             "test_summary": {
-                "timestamp": datetime.utcnow().isoformat(),
+                "timestamp": datetime.now(tz=__import__("datetime").timezone.utc).isoformat(),
                 "config": {
                     "concurrent_users": self.config.concurrent_users,
                     "duration_seconds": self.config.duration_seconds,
@@ -485,7 +485,7 @@ class LoadTestRunner:
 
         # Save report
         report_file = (
-            f"load_test_report_{datetime.utcnow().strftime('%Y%m%d_%H%M%S')}.json"
+            f"load_test_report_{datetime.now(tz=__import__("datetime").timezone.utc).strftime('%Y%m%d_%H%M%S')}.json"
         )
 
         with open(report_file, "w") as f:
@@ -742,7 +742,7 @@ def run_load_tests(
 
         if output_format == "json":
             output_file = (
-                f"load_test_results_{datetime.utcnow().strftime('%Y%m%d_%H%M%S')}.json"
+                f"load_test_results_{datetime.now(tz=__import__("datetime").timezone.utc).strftime('%Y%m%d_%H%M%S')}.json"
             )
             with open(output_file, "w") as f:
                 json.dump(results, f, indent=2, default=str)
@@ -760,7 +760,7 @@ def run_load_tests(
             import yaml
 
             output_file = (
-                f"load_test_results_{datetime.utcnow().strftime('%Y%m%d_%H%M%S')}.yaml"
+                f"load_test_results_{datetime.now(tz=__import__("datetime").timezone.utc).strftime('%Y%m%d_%H%M%S')}.yaml"
             )
             with open(output_file, "w") as f:
                 yaml.dump(results, f, default_flow_style=False)

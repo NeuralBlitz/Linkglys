@@ -250,6 +250,6 @@ class ComposedLens(ToolLens):
         state = self.right.set(state, observation)
         
         # Update from left (intermediate state preserved)
-        state = self.left.set(state, state)
+        state = self.left.set(state, new_state)
         
         return state

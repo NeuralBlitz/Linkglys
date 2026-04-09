@@ -41,7 +41,7 @@ class KnowledgeNode:
 
     def __post_init__(self):
         if self.created_at is None:
-            self.created_at = datetime.utcnow().isoformat()
+            self.created_at = datetime.now(tz=__import__("datetime").timezone.utc).isoformat()
 
 
 @dataclass
@@ -382,7 +382,7 @@ class WeaviateIntegration:
                     properties = {
                         "concept": node.concept,
                         "description": node.description,
-                        "updated_at": datetime.utcnow().isoformat(),
+                        "updated_at": datetime.now(tz=__import__("datetime").timezone.utc).isoformat(),
                         **node.metadata,
                     }
 

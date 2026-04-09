@@ -216,13 +216,13 @@ class TestRBACManager:
             key="key1",
             username="multi_key_test",
             permissions={Permission.PROCESS},
-            created_at=datetime.utcnow(),
+            created_at=datetime.now(tz=__import__("datetime").timezone.utc),
         )
         key2 = APIKey(
             key="key2",
             username="multi_key_test",
             permissions={Permission.READ},
-            created_at=datetime.utcnow(),
+            created_at=datetime.now(tz=__import__("datetime").timezone.utc),
         )
 
         self.rbac._api_keys["key1"] = key1
@@ -265,7 +265,7 @@ class TestUserAndAPIKeyClasses:
 
     def test_user_creation(self):
         """Test User class creation."""
-        created_at = datetime.utcnow()
+        created_at = datetime.now(tz=__import__("datetime").timezone.utc)
         user = User(
             username="testuser",
             role=Role.USER,
@@ -283,7 +283,7 @@ class TestUserAndAPIKeyClasses:
 
     def test_api_key_creation(self):
         """Test APIKey class creation."""
-        created_at = datetime.utcnow()
+        created_at = datetime.now(tz=__import__("datetime").timezone.utc)
         expires_at = created_at + timedelta(days=30)
 
         api_key = APIKey(

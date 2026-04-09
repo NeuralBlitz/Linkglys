@@ -85,7 +85,7 @@ class Message:
         """Check if message has expired based on TTL."""
         if self.ttl is None:
             return False
-        elapsed = (datetime.utcnow() - self.timestamp).total_seconds()
+        elapsed = (datetime.now(tz=__import__("datetime").timezone.utc) - self.timestamp).total_seconds()
         return elapsed > self.ttl
 
     def can_retry(self) -> bool:

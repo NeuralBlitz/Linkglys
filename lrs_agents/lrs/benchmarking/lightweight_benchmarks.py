@@ -141,7 +141,7 @@ class LightweightShellTool(LightweightTool):
 
         # Simulate higher failure rate when locked
         if self.env.is_locked() and random.random() < 0.6:
-            self.success_count -= 1  # Don't increment for failure
+            self.success_count = max(0, self.success_count - 1)  # Don't increment for failure
             return {
                 "success": False,
                 "error": "Permission denied",
@@ -403,7 +403,7 @@ class CalculatorTool(LightweightTool):
         self.call_count += 1
         try:
             # Safe evaluation
-            result = eval(expression, {"__builtins__": {}})
+            result = self._safe_eval(expression)
             self.success_count += 1
             return {"success": True, "result": result, "prediction_error": 0.0}
         except (SyntaxError, NameError, TypeError):

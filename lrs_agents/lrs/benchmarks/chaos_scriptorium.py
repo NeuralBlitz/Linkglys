@@ -371,7 +371,8 @@ class ChaosScriptoriumBenchmark:
         from lrs import create_lrs_agent
 
         tracker = LRSStateTracker()
-        agent = create_lrs_agent(llm=self.llm, tools=tools, tracker=tracker)
+        agent = create_lrs_agent(llm=self.llm, tools=tools,
+                                       preferences={"tracker": tracker})
 
         # Run agent
         start_time = time.time()

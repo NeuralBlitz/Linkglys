@@ -1,3 +1,4 @@
+import sys
 """
 Real-Time Dashboard for NeuralBlitz
 Live monitoring with Plotly Dash - 1 second refresh rate.
@@ -59,30 +60,30 @@ class DashboardMetrics:
     def update_coherence(self, coherence: float):
         """Update coherence metric."""
         self.coherence_history.append(coherence)
-        self.last_updated = datetime.utcnow()
+        self.last_updated = datetime.now(tz=__import__("datetime").timezone.utc)
 
     def update_processing_time(self, processing_time_ms: float):
         """Update processing time metric."""
         self.processing_time_history.append(processing_time_ms)
-        self.last_updated = datetime.utcnow()
+        self.last_updated = datetime.now(tz=__import__("datetime").timezone.utc)
 
     def update_consciousness_level(self, level: str):
         """Update consciousness level distribution."""
         self.consciousness_level_counts[level] = (
             self.consciousness_level_counts.get(level, 0) + 1
         )
-        self.last_updated = datetime.utcnow()
+        self.last_updated = datetime.now(tz=__import__("datetime").timezone.utc)
 
     def add_alert(self, alert_type: str, message: str, severity: str = "warning"):
         """Add alert to dashboard."""
         alert = {
-            "timestamp": datetime.utcnow().isoformat(),
+            "timestamp": datetime.now(tz=__import__("datetime").timezone.utc).isoformat(),
             "type": alert_type,
             "message": message,
             "severity": severity,
         }
         self.active_alerts.append(alert)
-        self.last_updated = datetime.utcnow()
+        self.last_updated = datetime.now(tz=__import__("datetime").timezone.utc)
 
         # Keep only recent alerts (last 50)
         if len(self.active_alerts) > 50:
@@ -90,7 +91,7 @@ class DashboardMetrics:
 
     def clear_old_alerts(self, hours: int = 1):
         """Clear alerts older than specified hours."""
-        cutoff = datetime.utcnow() - timedelta(hours=hours)
+        cutoff = datetime.now(tz=__import__("datetime").timezone.utc) - timedelta(hours=hours)
         self.active_alerts = [
             alert
             for alert in self.active_alerts
@@ -301,7 +302,7 @@ class NeuralBlitzDashboard:
         """Create processing rate graph."""
         # Calculate recent processing rate
         recent_times = [
-            datetime.utcnow() - timedelta(seconds=i) for i in range(30, 0, -1)
+            datetime.now(tz=__import__("datetime").timezone.utc) - timedelta(seconds=i) for i in range(30, 0, -1)
         ]
         rates = [
             self.metrics.requests_per_second + (i % 3) for i in range(30)

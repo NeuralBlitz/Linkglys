@@ -1,0 +1,148 @@
+{
+  "test_v6_v1.pkl": {
+    "name": "test_v6",
+    "version": "v1",
+    "path": "ml_models/test_v6_v1.pkl",
+    "created_at": "2026-04-09T09:49:41.580071+00:00",
+    "size_bytes": 438002,
+    "type": "classification",
+    "model_type": "random_forest",
+    "metrics": {
+      "accuracy": 0.35,
+      "precision": 0.3525,
+      "recall": 0.35,
+      "f1": 0.3486714975845411,
+      "cv_accuracy_mean": 0.37,
+      "cv_accuracy_std": 0.062048368229954284
+    }
+  },
+  "test_final_v1.pkl": {
+    "name": "test_final",
+    "version": "v1",
+    "path": "ml_models/test_final_v1.pkl",
+    "created_at": "2026-04-09T09:50:15.121313+00:00",
+    "size_bytes": 436242,
+    "type": "classification",
+    "model_type": "random_forest",
+    "metrics": {
+      "accuracy": 0.275,
+      "precision": 0.3366304347826087,
+      "recall": 0.275,
+      "f1": 0.24815789473684208,
+      "cv_accuracy_mean": 0.32999999999999996,
+      "cv_accuracy_std": 0.062048368229954284
+    }
+  },
+  "final2_v1.pkl": {
+    "name": "final2",
+    "version": "v1",
+    "path": "ml_models/final2_v1.pkl",
+    "created_at": "2026-04-09T09:50:48.488375+00:00",
+    "size_bytes": 425506,
+    "type": "classification",
+    "model_type": "random_forest",
+    "metrics": {
+      "accuracy": 0.425,
+      "precision": 0.4964502164502164,
+      "recall": 0.425,
+      "f1": 0.4502226566742696,
+      "cv_accuracy_mean": 0.365,
+      "cv_accuracy_std": 0.0845576726264388
+    }
+  },
+  "clf_test_v1.pkl": {
+    "name": "clf_test",
+    "version": "v1",
+    "path": "ml_models/clf_test_v1.pkl",
+    "created_at": "2026-04-09T10:02:10.254511+00:00",
+    "size_bytes": 427090,
+    "type": "classification",
+    "model_type": "random_forest",
+    "metrics": {
+      "accuracy": 0.35,
+      "precision": 0.3613636363636364,
+      "recall": 0.35,
+      "f1": 0.3203846153846154,
+      "cv_accuracy_mean": 0.375,
+      "cv_accuracy_std": 0.0447213595499958
+    }
+  },
+  "svm_test_v1.pkl": {
+    "name": "svm_test",
+    "version": "v1",
+    "path": "ml_models/svm_test_v1.pkl",
+    "created_at": "2026-04-09T10:02:10.285195+00:00",
+    "size_bytes": 5196,
+    "type": "classification",
+    "model_type": "svm",
+    "metrics": {
+      "accuracy": 0.5,
+      "precision": 0.33333333333333337,
+      "recall": 0.5,
+      "f1": 0.4,
+      "cv_accuracy_mean": 0.51,
+      "cv_accuracy_std": 0.04898979485566355
+    }
+  },
+  "pred_test_v1.pkl": {
+    "name": "pred_test",
+    "version": "v1",
+    "path": "ml_models/pred_test_v1.pkl",
+    "created_at": "2026-04-09T10:02:10.577954+00:00",
+    "size_bytes": 67757,
+    "type": "classification",
+    "model_type": "random_forest",
+    "metrics": {
+      "accuracy": 0.3,
+      "precision": 0.3525252525252525,
+      "recall": 0.3,
+      "f1": 0.31414141414141417,
+      "cv_accuracy_mean": 0.43000000000000005,
+      "cv_accuracy_std": 0.12884098726725127
+    }
+  },
+  "reg_test_v1.pkl": {
+    "name": "reg_test",
+    "version": "v1",
+    "path": "ml_models/reg_test_v1.pkl",
+    "created_at": "2026-04-09T10:02:10.649555+00:00",
+    "size_bytes": 298234,
+    "type": "regression",
+    "metrics": {
+      "mse": 0.9319531838340371,
+      "rmse": 0.9653772235939883,
+      "r2": -0.24614468132937883
+    }
+  },
+  "cluster_kmeans_v1.pkl": {
+    "name": "cluster_kmeans",
+    "version": "v1",
+    "path": "ml_models/cluster_kmeans_v1.pkl",
+    "created_at": "2026-04-09T10:02:10.799161+00:00",
+    "size_bytes": 1497,
+    "type": "clustering",
+    "method": "kmeans",
+    "metrics": {
+      "silhouette": 0.18022992970551677,
+      "inertia": 550.1203915860584,
+      "n_clusters": 3
+    }
+  },
+  "fi_test_v1.pkl": {
+    "name": "fi_test",
+    "version": "v1",
+    "path": "ml_models/fi_test_v1.pkl",
+    "created_at": "2026-04-09T10:02:11.298855+00:00",
+    "size_bytes": 97517,
+    "type": "classification",
+    "model_type": "random_forest",
+    "metrics": {
+      "accuracy": 0.55,
+      "precision": 0.5549999999999999,
+      "recall": 0.55,
+      "f1": 0.5511278195488721,
+      "cv_accuracy_mean": 0.53,
+      "cv_accuracy_std": 0.0678232998312527
+    }
+  }
+}

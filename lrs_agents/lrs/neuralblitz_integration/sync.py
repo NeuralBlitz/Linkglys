@@ -202,7 +202,7 @@ class RealTimeSynchronizer:
         while self.running:
             try:
                 # Check for stale heartbeats
-                current_time = datetime.utcnow()
+                current_time = datetime.now(tz=__import__("datetime").timezone.utc)
                 stale_systems = []
 
                 for system, last_heartbeat in self.last_heartbeat.items():
@@ -231,7 +231,7 @@ class RealTimeSynchronizer:
                 return
 
             # Check time since last sync
-            time_since_sync = (datetime.utcnow() - self.metrics.last_sync_time).total_seconds()
+            time_since_sync = (datetime.now(tz=__import__("datetime").timezone.utc) - self.metrics.last_sync_time).total_seconds()
             if time_since_sync >= self.metrics.sync_frequency:
                 await self.force_sync("auto", "auto")
 
@@ -251,7 +251,7 @@ class RealTimeSynchronizer:
                 "neuralblitz_source": unified_state.neuralblitz_source,
                 "neuralblitz_intent": unified_state.neuralblitz_intent,
                 "coordination": unified_state.coordination,
-                "timestamp": datetime.utcnow().isoformat(),
+                "timestamp": datetime.now(tz=__import__("datetime").timezone.utc).isoformat(),
             }
 
             # Detect conflicts
@@ -268,7 +268,7 @@ class RealTimeSynchronizer:
             sync_event.status = SyncStatus.SYNCHRONIZED
             sync_event.state_changes = [state_snapshot]
 
-            self.metrics.last_sync_time = datetime.utcnow()
+            self.metrics.last_sync_time = datetime.now(tz=__import__("datetime").timezone.utc)
 
             # Send sync response
             response = Message(
@@ -304,7 +304,7 @@ class RealTimeSynchronizer:
                         "entity": agent_id,
                         "lrs_state": agent_state,
                         "neuralblitz_state": neuralblitz_source[agent_id],
-                        "detected_at": datetime.utcnow().isoformat(),
+                        "detected_at": datetime.now(tz=__import__("datetime").timezone.utc).isoformat(),
                     }
                     conflicts.append(conflict)
 
@@ -350,7 +350,7 @@ class RealTimeSynchronizer:
 
             # Update synchronization state
             sync_info = {
-                "last_sync": datetime.utcnow().isoformat(),
+                "last_sync": datetime.now(tz=__import__("datetime").timezone.utc).isoformat(),
                 "sync_event_id": sync_event.id,
                 "status": sync_event.status.value,
             }
@@ -407,7 +407,7 @@ class RealTimeSynchronizer:
     async def _handle_heartbeat(self, message: Message) -> None:
         """Handle heartbeat messages."""
         try:
-            self.last_heartbeat[message.source] = datetime.utcnow()
+            self.last_heartbeat[message.source] = datetime.now(tz=__import__("datetime").timezone.utc)
             logger.debug(f"Heartbeat received from {message.source}")
 
         except Exception as e:
@@ -451,7 +451,7 @@ class RealTimeSynchronizer:
 
     def get_active_systems(self) -> List[str]:
         """Get list of currently active systems."""
-        current_time = datetime.utcnow()
+        current_time = datetime.now(tz=__import__("datetime").timezone.utc)
         return [
             system
             for system, last_heartbeat in self.last_heartbeat.items()

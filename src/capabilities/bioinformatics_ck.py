@@ -128,7 +128,7 @@ class DNASequenceAnalyzerCK:
         # Validate payload
         self.contract.validate_payload(payload)
 
-        start_time = datetime.utcnow()
+        start_time = datetime.now(tz=__import__("datetime").timezone.utc)
 
         # Parse sequence
         sequence_str = payload["sequence"]
@@ -144,7 +144,7 @@ class DNASequenceAnalyzerCK:
 
         results = {
             "sequence_length": len(seq),
-            "analysis_timestamp": datetime.utcnow().isoformat(),
+            "analysis_timestamp": datetime.now(tz=__import__("datetime").timezone.utc).isoformat(),
             "nucleotide_counts": {
                 "A": seq.count("A"),
                 "T": seq.count("T"),
@@ -178,7 +178,7 @@ class DNASequenceAnalyzerCK:
         results["provenance_hash"] = self._generate_hash(results)
 
         # Calculate latency
-        end_time = datetime.utcnow()
+        end_time = datetime.now(tz=__import__("datetime").timezone.utc)
         latency_ms = (end_time - start_time).total_seconds() * 1000
         results["kpi_metrics"] = {
             "analysis_latency_ms": latency_ms,
@@ -324,7 +324,7 @@ class ProteinStructurePredictorCK:
         """Execute protein structure prediction"""
         self.contract.validate_payload(payload)
 
-        start_time = datetime.utcnow()
+        start_time = datetime.now(tz=__import__("datetime").timezone.utc)
 
         # Parse sequence
         sequence_str = payload["sequence"]
@@ -349,7 +349,7 @@ class ProteinStructurePredictorCK:
 
         results = {
             "sequence_length_aa": len(seq),
-            "analysis_timestamp": datetime.utcnow().isoformat(),
+            "analysis_timestamp": datetime.now(tz=__import__("datetime").timezone.utc).isoformat(),
             "amino_acid_counts": dict(analyzer.count_amino_acids()),
             "amino_acid_percentages": dict(analyzer.get_amino_acids_percent()),
         }
@@ -374,7 +374,7 @@ class ProteinStructurePredictorCK:
         results["provenance_hash"] = self._generate_hash(results)
 
         # Calculate metrics
-        end_time = datetime.utcnow()
+        end_time = datetime.now(tz=__import__("datetime").timezone.utc)
         latency_ms = (end_time - start_time).total_seconds() * 1000
         results["kpi_metrics"] = {
             "prediction_latency_ms": latency_ms,
@@ -525,7 +525,7 @@ class GenomicVisualizerCK:
         """Execute genomic visualization"""
         self.contract.validate_payload(payload)
 
-        start_time = datetime.utcnow()
+        start_time = datetime.now(tz=__import__("datetime").timezone.utc)
 
         data = payload["data"]
         viz_type = payload["viz_type"]
@@ -549,7 +549,7 @@ class GenomicVisualizerCK:
             "visualization": viz_data,
             "viz_type": viz_type,
             "format": format_type,
-            "analysis_timestamp": datetime.utcnow().isoformat(),
+            "analysis_timestamp": datetime.now(tz=__import__("datetime").timezone.utc).isoformat(),
             "data_summary": self._summarize_data(data),
         }
 
@@ -557,7 +557,7 @@ class GenomicVisualizerCK:
         results["provenance_hash"] = self._generate_hash(results)
 
         # Calculate metrics
-        end_time = datetime.utcnow()
+        end_time = datetime.now(tz=__import__("datetime").timezone.utc)
         latency_ms = (end_time - start_time).total_seconds() * 1000
 
         # Estimate image size

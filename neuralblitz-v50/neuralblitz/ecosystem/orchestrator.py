@@ -168,7 +168,7 @@ class EcosystemOrchestrator:
         if not source_adapters or not target_adapters:
             return None
 
-        stream_id = f"stream_{source_type.value}_{target_type.value}_{datetime.utcnow().timestamp()}"
+        stream_id = f"stream_{source_type.value}_{target_type.value}_{datetime.now(tz=__import__("datetime").timezone.utc).timestamp()}"
 
         stream = BidirectionalStream(
             stream_id=stream_id,
@@ -283,7 +283,7 @@ class WorkflowTemplates:
     def research_and_code(research_topic: str, coding_task: str) -> Workflow:
         """Research then code workflow."""
         return Workflow(
-            id=f"research_code_{datetime.utcnow().timestamp()}",
+            id=f"research_code_{datetime.now(tz=__import__("datetime").timezone.utc).timestamp()}",
             name="Research and Code",
             steps=[
                 {
@@ -323,7 +323,7 @@ class WorkflowTemplates:
     def consciousness_guided_coding(requirements: str) -> Workflow:
         """Use consciousness engine to guide coding."""
         return Workflow(
-            id=f"conscious_coding_{datetime.utcnow().timestamp()}",
+            id=f"conscious_coding_{datetime.now(tz=__import__("datetime").timezone.utc).timestamp()}",
             name="Consciousness-Guided Coding",
             steps=[
                 {
@@ -356,7 +356,7 @@ class WorkflowTemplates:
     def multi_agent_problem_solving(problem: str) -> Workflow:
         """Multiple agents collaborate to solve a problem."""
         return Workflow(
-            id=f"multi_agent_{datetime.utcnow().timestamp()}",
+            id=f"multi_agent_{datetime.now(tz=__import__("datetime").timezone.utc).timestamp()}",
             name="Multi-Agent Problem Solving",
             steps=[
                 {

@@ -45,7 +45,7 @@ _system_state = {
     "initialized": False,
     "dyad": None,
     "oath": None,
-    "start_time": datetime.utcnow(),
+    "start_time": datetime.now(tz=__import__("datetime").timezone.utc),
 }
 
 
@@ -209,7 +209,7 @@ async def system_status():
         coherence=1.0,
         separation=0.0,
         golden_dag_seed="a8d0f2a4c6b8d0f2a4c6b8d0f2a4c6b8d0f2a4c6b8d0f2a4c6b8d0",
-        timestamp=datetime.utcnow(),
+        timestamp=datetime.now(tz=__import__("datetime").timezone.utc),
     )
 
 
@@ -265,7 +265,7 @@ async def verify_target(request: VerificationRequest):
     return VerificationResponse(
         coherent=result.get("result", True),
         coherence_value=1.0,
-        verification_timestamp=datetime.utcnow(),
+        verification_timestamp=datetime.now(tz=__import__("datetime").timezone.utc),
         structural_integrity=True,
     )
 
@@ -313,7 +313,7 @@ async def get_attestation():
     return AttestationResponse(
         attested=True,
         attestation_hash=attestation.get("seal", "default_hash"),
-        attestation_timestamp=datetime.utcnow(),
+        attestation_timestamp=datetime.now(tz=__import__("datetime").timezone.utc),
     )
 
 
@@ -370,7 +370,7 @@ async def check_synthesis():
         "living_embodiment": synthesis["living_embodiment"],
         "perpetual_becoming": synthesis["perpetual_becoming"],
         "codex_reality_correspondence": synthesis["codex_reality_correspondence"],
-        "timestamp": datetime.utcnow().isoformat(),
+        "timestamp": datetime.now(tz=__import__("datetime").timezone.utc).isoformat(),
     }
 
 

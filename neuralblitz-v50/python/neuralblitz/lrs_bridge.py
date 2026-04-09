@@ -275,7 +275,7 @@ class LRSBridge:
 
         message = LRSMessage(
             protocol_version="1.0",
-            timestamp=datetime.utcnow(),
+            timestamp=datetime.now(tz=__import__("datetime").timezone.utc),
             source_system=self.config.system_id,
             target_system=target_system,
             message_type=message_type,
@@ -304,7 +304,7 @@ class LRSBridge:
                         "success": True,
                         "data": result,
                         "message_id": message.message_id,
-                        "timestamp": datetime.utcnow().isoformat(),
+                        "timestamp": datetime.now(tz=__import__("datetime").timezone.utc).isoformat(),
                     }
                 else:
                     self.circuit_breaker.record_failure()
@@ -500,7 +500,7 @@ async def lrs_bridge_status():
         "system_id": bridge.config.system_id,
         "status": "healthy" if bridge.is_healthy else "degraded",
         "metrics": bridge.metrics,
-        "timestamp": datetime.utcnow().isoformat(),
+        "timestamp": datetime.now(tz=__import__("datetime").timezone.utc).isoformat(),
     }
 
 
@@ -535,7 +535,7 @@ async def lrs_bridge_heartbeat():
     bridge = get_lrs_bridge()
     heartbeat = HeartbeatResponse(
         status="healthy" if bridge.is_healthy else "degraded",
-        timestamp=datetime.utcnow(),
+        timestamp=datetime.now(tz=__import__("datetime").timezone.utc),
         metrics=bridge.metrics,
     )
     return heartbeat.dict()

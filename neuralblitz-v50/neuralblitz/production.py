@@ -333,7 +333,7 @@ class ProductionCognitiveEngine:
             "processing_count": self.engine.processing_count,
             "seed": self.engine.SEED,
             "metadata": {
-                "saved_at": datetime.utcnow().isoformat(),
+                "saved_at": datetime.now(tz=__import__("datetime").timezone.utc).isoformat(),
                 "version": "50.0.0-minimal-prod",
             },
         }

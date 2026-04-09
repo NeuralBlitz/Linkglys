@@ -41,7 +41,7 @@ class NeuralBlitzResponse:
                 {
                     "success": True,
                     "data": data,
-                    "timestamp": datetime.utcnow().isoformat(),
+                    "timestamp": datetime.now(tz=__import__("datetime").timezone.utc).isoformat(),
                 }
             ),
         }
@@ -58,7 +58,7 @@ class NeuralBlitzResponse:
                 {
                     "success": False,
                     "error": {"message": message, "code": error_code},
-                    "timestamp": datetime.utcnow().isoformat(),
+                    "timestamp": datetime.now(tz=__import__("datetime").timezone.utc).isoformat(),
                 }
             ),
         }
@@ -211,7 +211,7 @@ def _process_inference(input_data, model_config, request_id):
     4. Postprocess results
     5. Apply governance checks
     """
-    start_time = datetime.utcnow()
+    start_time = datetime.now(tz=__import__("datetime").timezone.utc)
 
     # Simulate inference processing
     result = {
@@ -243,10 +243,10 @@ def _store_result(result, user_id):
         results_table.put_item(
             Item={
                 "request_id": result["request_id"],
-                "timestamp": datetime.utcnow().isoformat(),
+                "timestamp": datetime.now(tz=__import__("datetime").timezone.utc).isoformat(),
                 "user_id": user_id,
                 "result": result,
-                "ttl": int((datetime.utcnow().timestamp() + 2592000)),  # 30 days
+                "ttl": int((datetime.now(tz=__import__("datetime").timezone.utc).timestamp() + 2592000)),  # 30 days
             }
         )
     except Exception as e:
@@ -295,7 +295,7 @@ def audit_handler(event, context):
             new_image = record["dynamodb"].get("NewImage", {})
 
             audit_log = {
-                "timestamp": datetime.utcnow().isoformat(),
+                "timestamp": datetime.now(tz=__import__("datetime").timezone.utc).isoformat(),
                 "event_type": record["eventName"],
                 "request_id": new_image.get("request_id", {}).get("S", "unknown"),
                 "user_id": new_image.get("user_id", {}).get("S", "unknown"),

@@ -238,7 +238,7 @@ class EcosystemAPI:
                     {
                         "type": "connected",
                         "client_id": client_id,
-                        "timestamp": datetime.utcnow().isoformat(),
+                        "timestamp": datetime.now(datetime.timezone.utc).isoformat(),
                     }
                 )
 
@@ -269,7 +269,7 @@ class EcosystemAPI:
                                         "type": "response",
                                         "component": data["component"],
                                         "result": response.payload,
-                                        "timestamp": datetime.utcnow().isoformat(),
+                                        "timestamp": datetime.now(datetime.timezone.utc).isoformat(),
                                     }
                                 )
                             else:
