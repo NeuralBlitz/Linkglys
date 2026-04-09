@@ -298,11 +298,5 @@
   "tests/test_federated_learning.py::TestFederatedLearningIntegration::test_full_federation_round": true,
   "tests/test_governance_ethics.py::TestGoldenDAGLedger::test_goldendag_initialization": true,
   "tests/test_governance_full.py::TestTranscendentalCharter::test_low_risk_action_has_higher_score": true,
-  "tests/test_src_governance_deep.py::TestAuditTrail::test_record_multiple_and_verify": true,
-  "tests/test_src_capabilities_deep.py::TestMLAutomatedPipeline::test_regression_pipeline": true,
-  "tests/test_src_capabilities_deep.py::TestMLAutomatedPipeline::test_multiple_models_comparison": true,
-  "tests/test_src_capabilities_deep.py::TestMLAutomatedPipeline::test_feature_importance_extracted": true,
-  "tests/test_src_capabilities_deep.py::TestMLAutomatedPipeline::test_grid_search_method": true,
-  "tests/test_src_capabilities_deep.py::TestMLAutomatedPipeline::test_execution_time_tracked": true,
-  "tests/test_src_capabilities_deep.py::TestNetworkAnomalyDetector::test_feature_extraction": true
+  "tests/test_src_governance_deep.py::TestAuditTrail::test_record_multiple_and_verify": true
 }
