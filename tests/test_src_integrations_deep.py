@@ -56,11 +56,32 @@ CHROMA_MOD = load_int_module("chromadb_integration")
 WEAVIATE_MOD = load_int_module("weaviate_integration")
 
 
+def chroma_available():
+    """Check if ChromaDB client is actually available (installed)."""
+    if CHROMA_MOD is None:
+        return False
+    return getattr(CHROMA_MOD, "CHROMADB_AVAILABLE", False)
+
+
+def pinecone_available():
+    """Check if Pinecone client is actually available (installed)."""
+    if PINECONE_MOD is None:
+        return False
+    return getattr(PINECONE_MOD, "PINECONE_AVAILABLE", False)
+
+
+def weaviate_available():
+    """Check if Weaviate client is actually available (installed)."""
+    if WEAVIATE_MOD is None:
+        return False
+    return getattr(WEAVIATE_MOD, "WEAVIATE_AVAILABLE", False)
+
+
 # ---------------------------------------------------------------------------
 # 1. Pinecone VectorRecord
 # ---------------------------------------------------------------------------
 
-@pytest.mark.skipif(PINECONE_MOD is None, reason="pinecone_integration not available")
+@pytest.mark.skipif(not pinecone_available(), reason="pinecone client not installed")
 class TestPineconeVectorRecord:
     def test_vector_record_exists(self):
         VR = get_int_class(PINECONE_MOD, "VectorRecord")
@@ -102,7 +123,7 @@ class TestPineconeVectorRecord:
 # 2. PineconeIntegration class
 # ---------------------------------------------------------------------------
 
-@pytest.mark.skipif(PINECONE_MOD is None, reason="pinecone_integration not available")
+@pytest.mark.skipif(not pinecone_available(), reason="pinecone client not installed")
 class TestPineconeIntegration:
     def test_pinecone_integration_exists(self):
         PI = get_int_class(PINECONE_MOD, "PineconeIntegration")
@@ -128,7 +149,7 @@ class TestPineconeIntegration:
 # 3. Pinecone availability flags
 # ---------------------------------------------------------------------------
 
-@pytest.mark.skipif(PINECONE_MOD is None, reason="pinecone_integration not available")
+@pytest.mark.skipif(not pinecone_available(), reason="pinecone client not installed")
 class TestPineconeAvailability:
     def test_pinecone_client_flag(self):
         assert hasattr(PINECONE_MOD, "PINECONE_AVAILABLE")
@@ -142,7 +163,7 @@ class TestPineconeAvailability:
 # 4. ChromaDB Document
 # ---------------------------------------------------------------------------
 
-@pytest.mark.skipif(CHROMA_MOD is None, reason="chromadb_integration not available")
+@pytest.mark.skipif(not chroma_available(), reason="chromadb client not installed")
 class TestChromaDBDocument:
     def test_document_exists(self):
         Doc = get_int_class(CHROMA_MOD, "Document")
@@ -186,7 +207,7 @@ class TestChromaDBDocument:
 # 5. ChromaDBIntegration class
 # ---------------------------------------------------------------------------
 
-@pytest.mark.skipif(CHROMA_MOD is None, reason="chromadb_integration not available")
+@pytest.mark.skipif(not chroma_available(), reason="chromadb client not installed")
 class TestChromaDBIntegration:
     def test_chroma_integration_exists(self):
         CI = get_int_class(CHROMA_MOD, "ChromaDBIntegration")
@@ -390,7 +411,7 @@ class TestChromaDBIntegration:
 # 6. Weaviate KnowledgeNode
 # ---------------------------------------------------------------------------
 
-@pytest.mark.skipif(WEAVIATE_MOD is None, reason="weaviate_integration not available")
+@pytest.mark.skipif(not weaviate_available(), reason="weaviate client not installed")
 class TestWeaviateKnowledgeNode:
     def test_knowledge_node_exists(self):
         KN = get_int_class(WEAVIATE_MOD, "KnowledgeNode")
@@ -431,7 +452,7 @@ class TestWeaviateKnowledgeNode:
 # 7. WeaviateIntegration class
 # ---------------------------------------------------------------------------
 
-@pytest.mark.skipif(WEAVIATE_MOD is None, reason="weaviate_integration not available")
+@pytest.mark.skipif(not weaviate_available(), reason="weaviate client not installed")
 class TestWeaviateIntegration:
     def test_weaviate_integration_exists(self):
         WI = get_int_class(WEAVIATE_MOD, "WeaviateIntegration")

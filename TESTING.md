@@ -1,4 +1,4 @@
-# NeuralBlitz / OpenCode LRS — Testing Guide
+# Linkglys — Testing Guide
 
 **Last Updated:** April 9, 2026
 

@@ -1,7 +1,7 @@
 {
-  "name": "neuralblitz",
+  "name": "linkglys",
   "version": "1.0.0",
-  "description": "NeuralBlitz Cognitive AI Hub",
+  "description": "Linkglys Cognitive AI Hub",
   "private": true,
   "scripts": {
     "start": "cd src && python3 main.py",

@@ -1,14 +1,14 @@
-# src/ — NeuralBlitz Main Application
+# src/ — Linkglys Main Application
 
-**Location:** `/home/runner/workspace/src/`  
-**Language:** Python 3.11+ (FastAPI) + TypeScript (VS Code extension)  
+**Location:** `/home/runner/workspace/src/`
+**Language:** Python 3.11+ (FastAPI) + TypeScript (VS Code extension)
 **Port:** 5000
 
 ---
 
 ## Overview
 
-This directory contains the **main FastAPI application** for NeuralBlitz. It serves as the central API gateway, integrating authentication, rate limiting, caching, WebSocket communication, event-driven architecture, Prometheus metrics, ML pipelines, and the plugin system.
+This directory contains the **main FastAPI application** for Linkglys. It serves as the central API gateway, integrating authentication, rate limiting, caching, WebSocket communication, event-driven architecture, Prometheus metrics, ML pipelines, and the plugin system.
 
 ---
 

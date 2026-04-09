@@ -1,4 +1,4 @@
-# NeuralBlitz / OpenCode LRS — Directory Structure
+# Linkglys — Directory Structure
 
 **Last Updated:** April 9, 2026
 
@@ -6,7 +6,7 @@
 
 ## Overview
 
-This document explains every directory in the project, what it contains, and how components relate to each other.
+This document explains every directory in the Linkglys project, what it contains, and how components relate to each other.
 
 ---
 

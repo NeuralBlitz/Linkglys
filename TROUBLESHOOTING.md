@@ -1,4 +1,4 @@
-# NeuralBlitz / OpenCode LRS — Troubleshooting Guide
+# Linkglys — Troubleshooting Guide
 
 **Last Updated:** April 9, 2026
 

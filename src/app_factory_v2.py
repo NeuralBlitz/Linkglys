@@ -104,7 +104,7 @@ class MLPredictRequest(BaseModel):
 async def lifespan(app: FastAPI):
     """Application lifespan: startup and shutdown."""
     # Startup
-    print("🚀 NeuralBlitz API starting...")
+    print("🚀 Linkglys API starting...")
     print(f"   🔐 Auth: JWT enabled (secret: {os.getenv('JWT_SECRET', 'default (change me!)')[:8]}...)")
     print(f"   ⏱️  Rate limiting: {rate_limiter.default_profile}")
     print(f"   💾 Cache backend: {'Redis' if cache._use_redis else 'Memory'}")
@@ -124,7 +124,7 @@ async def lifespan(app: FastAPI):
     yield
 
     # Shutdown
-    print("👋 NeuralBlitz API shutting down...")
+    print("👋 Linkglys API shutting down...")
     await ws_manager.cleanup()
 
 
@@ -134,8 +134,8 @@ async def lifespan(app: FastAPI):
 
 def create_app() -> FastAPI:
     app = FastAPI(
-        title="NeuralBlitz API v2.0",
-        description="OpenCode LRS-Agents Integration Hub — Full API with auth, rate limiting, real-time, ML",
+        title="Linkglys API v2.0",
+        description="Linkglys — OpenCode LRS-Agents Integration Hub — Full API with auth, rate limiting, real-time, ML",
         version="2.0.0",
         docs_url="/docs",
         redoc_url="/redoc",

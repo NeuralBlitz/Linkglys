@@ -1,8 +1,8 @@
-# Contributing to NeuralBlitz / OpenCode LRS
+# Contributing to Linkglys
 
 **Last Updated:** April 9, 2026
 
-Thank you for your interest in contributing to NeuralBlitz! This document provides guidelines and instructions for contributing to the project.
+Thank you for your interest in contributing to Linkglys! This document provides guidelines and instructions for contributing to the project.
 
 ---
 

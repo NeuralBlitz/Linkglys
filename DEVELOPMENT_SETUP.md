@@ -1,4 +1,4 @@
-# NeuralBlitz / OpenCode LRS — Development Setup Guide
+# Linkglys — Development Setup Guide
 
 **Last Updated:** April 9, 2026
 

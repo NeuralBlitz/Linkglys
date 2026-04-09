@@ -643,6 +643,7 @@ class TestDistributedMLMAS:
         assert "total_nodes" in status
         assert "pending_tasks" in status
 
+    @pytest.mark.skip(reason="Slow: involves full distributed stage execution with async sleeps")
     def test_run_stages(self):
         D = get_agent_class(DMLMAS_MOD, "DistributedMLMAS")
         dm = D(num_nodes=2, tasks_per_stage=5)

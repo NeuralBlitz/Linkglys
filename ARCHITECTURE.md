@@ -1,13 +1,13 @@
-# NeuralBlitz / OpenCode LRS — System Architecture
+# Linkglys — System Architecture
 
-**Version:** 2.0.0  
+**Version:** 2.0.0
 **Last Updated:** April 9, 2026
 
 ---
 
 ## Overview
 
-NeuralBlitz is a **multi-language, multi-component AI development platform** that combines active inference agents, cognitive consciousness engines, governance systems, and enterprise infrastructure into a unified ecosystem.
+Linkglys is a **multi-language, multi-component AI development platform** that combines active inference agents, cognitive consciousness engines, governance systems, and enterprise infrastructure into a unified ecosystem.
 
 The platform is built on **FastAPI** (Python 3.11+) with supporting services in Go, Rust, Java, and TypeScript.
 

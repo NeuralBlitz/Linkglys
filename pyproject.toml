@@ -1,7 +1,7 @@
 [project]
-name = "neuralblitz"
+name = "linkglys"
 version = "1.0.0"
-description = "NeuralBlitz Cognitive AI Hub - OpenCode & LRS-Agents Integration"
+description = "Linkglys Cognitive AI Hub - OpenCode & LRS-Agents Integration"
 requires-python = ">=3.11"
 dependencies = [
     "fastapi>=0.100.0",

@@ -1,7 +1,7 @@
 # Middleware — FastAPI Middleware Layer
 
-**Location:** `src/middleware/`  
-**Package:** `NeuralBlitz Middleware Package`
+**Location:** `src/middleware/`
+**Package:** `Linkglys Middleware Package`
 
 ---
 
