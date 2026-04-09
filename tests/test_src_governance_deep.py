@@ -11,6 +11,7 @@ import sys
 import pytest
 import json
 import time
+import asyncio
 from datetime import datetime
 
 # ---------------------------------------------------------------------------
@@ -51,6 +52,19 @@ def get_all_gov_classes():
 # ---------------------------------------------------------------------------
 # Helpers
 # ---------------------------------------------------------------------------
+
+# ---------------------------------------------------------------------------
+# Helper: run async
+# ---------------------------------------------------------------------------
+
+def run_async(coro):
+    try:
+        loop = asyncio.new_event_loop()
+        asyncio.set_event_loop(loop)
+        return loop.run_until_complete(coro)
+    finally:
+        loop.close()
+
 
 def make_action(**overrides):
     """Build a sample action dict for compliance testing."""
@@ -484,7 +498,8 @@ class TestComplianceMonitor:
         CM = get_gov_class("ComplianceMonitor")
         CGS = get_gov_class("ComprehensiveGovernanceSystem")
         monitor = CM(CGS())
-        result = monitor.check_compliance({"id": "op1", "type": "test"})
+        # check_compliance is async
+        result = run_async(monitor.check_compliance({"id": "op1", "type": "test"}))
         assert isinstance(result, dict)
         assert "overall_compliant" in result
         assert "clause_checks" in result

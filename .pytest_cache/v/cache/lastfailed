@@ -305,7 +305,5 @@
   "tests/test_src_governance_deep.py::TestAuditTrail::test_record_and_verify_single": true,
   "tests/test_src_governance_deep.py::TestAuditTrail::test_record_multiple_and_verify": true,
   "tests/test_src_governance_deep.py::TestPolicyEnforcer::test_register_and_enforce": true,
-  "tests/test_src_governance_deep.py::TestGovernanceIntegration::test_agent_action_through_governance": true,
-  "tests/test_new_modules.py::TestEventBus::test_wildcard_subscription": true,
-  "tests/test_new_modules.py::TestTaskQueue::test_retry_on_failure": true
+  "tests/test_src_governance_deep.py::TestGovernanceIntegration::test_agent_action_through_governance": true
 }

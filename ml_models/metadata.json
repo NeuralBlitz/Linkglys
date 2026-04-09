@@ -239,5 +239,290 @@
       "cv_accuracy_mean": 0.4600000000000001,
       "cv_accuracy_std": 0.058309518948453015
     }
+  },
+  "clf_test_v3.pkl": {
+    "name": "clf_test",
+    "version": "v3",
+    "path": "ml_models/clf_test_v3.pkl",
+    "created_at": "2026-04-09T10:05:12.450531+00:00",
+    "size_bytes": 448034,
+    "type": "classification",
+    "model_type": "random_forest",
+    "metrics": {
+      "accuracy": 0.3,
+      "precision": 0.30770833333333336,
+      "recall": 0.3,
+      "f1": 0.3031356801093643,
+      "cv_accuracy_mean": 0.31000000000000005,
+      "cv_accuracy_std": 0.08154753215150046
+    }
+  },
+  "svm_test_v3.pkl": {
+    "name": "svm_test",
+    "version": "v3",
+    "path": "ml_models/svm_test_v3.pkl",
+    "created_at": "2026-04-09T10:05:12.471697+00:00",
+    "size_bytes": 5196,
+    "type": "classification",
+    "model_type": "svm",
+    "metrics": {
+      "accuracy": 0.45,
+      "precision": 0.471875,
+      "recall": 0.45,
+      "f1": 0.3986666666666667,
+      "cv_accuracy_mean": 0.4800000000000001,
+      "cv_accuracy_std": 0.09797958971132714
+    }
+  },
+  "pred_test_v3.pkl": {
+    "name": "pred_test",
+    "version": "v3",
+    "path": "ml_models/pred_test_v3.pkl",
+    "created_at": "2026-04-09T10:05:12.740657+00:00",
+    "size_bytes": 70797,
+    "type": "classification",
+    "model_type": "random_forest",
+    "metrics": {
+      "accuracy": 0.45,
+      "precision": 0.4450549450549451,
+      "recall": 0.45,
+      "f1": 0.4373401534526854,
+      "cv_accuracy_mean": 0.45,
+      "cv_accuracy_std": 0.031622776601683784
+    }
+  },
+  "reg_test_v3.pkl": {
+    "name": "reg_test",
+    "version": "v3",
+    "path": "ml_models/reg_test_v3.pkl",
+    "created_at": "2026-04-09T10:05:12.808598+00:00",
+    "size_bytes": 270817,
+    "type": "regression",
+    "metrics": {
+      "mse": 0.8271161942313723,
+      "rmse": 0.9094592867365598,
+      "r2": -0.4274433369670434
+    }
+  },
+  "cluster_kmeans_v3.pkl": {
+    "name": "cluster_kmeans",
+    "version": "v3",
+    "path": "ml_models/cluster_kmeans_v3.pkl",
+    "created_at": "2026-04-09T10:05:12.893460+00:00",
+    "size_bytes": 1497,
+    "type": "clustering",
+    "method": "kmeans",
+    "metrics": {
+      "silhouette": 0.18318168588465514,
+      "inertia": 541.8747026739929,
+      "n_clusters": 3
+    }
+  },
+  "fi_test_v3.pkl": {
+    "name": "fi_test",
+    "version": "v3",
+    "path": "ml_models/fi_test_v3.pkl",
+    "created_at": "2026-04-09T10:05:13.341182+00:00",
+    "size_bytes": 95437,
+    "type": "classification",
+    "model_type": "random_forest",
+    "metrics": {
+      "accuracy": 0.65,
+      "precision": 0.8133333333333332,
+      "recall": 0.65,
+      "f1": 0.6312020460358057,
+      "cv_accuracy_mean": 0.58,
+      "cv_accuracy_std": 0.06782329983125265
+    }
+  },
+  "clf_test_v4.pkl": {
+    "name": "clf_test",
+    "version": "v4",
+    "path": "ml_models/clf_test_v4.pkl",
+    "created_at": "2026-04-09T10:05:47.160737+00:00",
+    "size_bytes": 441346,
+    "type": "classification",
+    "model_type": "random_forest",
+    "metrics": {
+      "accuracy": 0.225,
+      "precision": 0.1984375,
+      "recall": 0.225,
+      "f1": 0.20446054750402576,
+      "cv_accuracy_mean": 0.335,
+      "cv_accuracy_std": 0.046368092477478515
+    }
+  },
+  "svm_test_v4.pkl": {
+    "name": "svm_test",
+    "version": "v4",
+    "path": "ml_models/svm_test_v4.pkl",
+    "created_at": "2026-04-09T10:05:47.193055+00:00",
+    "size_bytes": 4832,
+    "type": "classification",
+    "model_type": "svm",
+    "metrics": {
+      "accuracy": 0.6,
+      "precision": 0.6282828282828283,
+      "recall": 0.6,
+      "f1": 0.6083333333333333,
+      "cv_accuracy_mean": 0.65,
+      "cv_accuracy_std": 0.1140175425099138
+    }
+  },
+  "pred_test_v4.pkl": {
+    "name": "pred_test",
+    "version": "v4",
+    "path": "ml_models/pred_test_v4.pkl",
+    "created_at": "2026-04-09T10:05:47.591313+00:00",
+    "size_bytes": 62948,
+    "type": "classification",
+    "model_type": "random_forest",
+    "metrics": {
+      "accuracy": 0.35,
+      "precision": 0.395,
+      "recall": 0.35,
+      "f1": 0.36496163682864446,
+      "cv_accuracy_mean": 0.54,
+      "cv_accuracy_std": 0.11135528725660043
+    }
+  },
+  "reg_test_v4.pkl": {
+    "name": "reg_test",
+    "version": "v4",
+    "path": "ml_models/reg_test_v4.pkl",
+    "created_at": "2026-04-09T10:05:47.691341+00:00",
+    "size_bytes": 283969,
+    "type": "regression",
+    "metrics": {
+      "mse": 2.016020657090333,
+      "rmse": 1.4198664222701842,
+      "r2": -0.45690102864825266
+    }
+  },
+  "cluster_kmeans_v4.pkl": {
+    "name": "cluster_kmeans",
+    "version": "v4",
+    "path": "ml_models/cluster_kmeans_v4.pkl",
+    "created_at": "2026-04-09T10:05:47.782247+00:00",
+    "size_bytes": 1497,
+    "type": "clustering",
+    "method": "kmeans",
+    "metrics": {
+      "silhouette": 0.18928515397019352,
+      "inertia": 542.1702074798736,
+      "n_clusters": 3
+    }
+  },
+  "fi_test_v4.pkl": {
+    "name": "fi_test",
+    "version": "v4",
+    "path": "ml_models/fi_test_v4.pkl",
+    "created_at": "2026-04-09T10:05:48.460009+00:00",
+    "size_bytes": 101677,
+    "type": "classification",
+    "model_type": "random_forest",
+    "metrics": {
+      "accuracy": 0.5,
+      "precision": 0.5,
+      "recall": 0.5,
+      "f1": 0.5,
+      "cv_accuracy_mean": 0.5599999999999999,
+      "cv_accuracy_std": 0.048989794855663564
+    }
+  },
+  "clf_test_v5.pkl": {
+    "name": "clf_test",
+    "version": "v5",
+    "path": "ml_models/clf_test_v5.pkl",
+    "created_at": "2026-04-09T10:06:08.404641+00:00",
+    "size_bytes": 445922,
+    "type": "classification",
+    "model_type": "random_forest",
+    "metrics": {
+      "accuracy": 0.3,
+      "precision": 0.2952317290552585,
+      "recall": 0.3,
+      "f1": 0.2967989130434783,
+      "cv_accuracy_mean": 0.325,
+      "cv_accuracy_std": 0.04743416490252569
+    }
+  },
+  "svm_test_v5.pkl": {
+    "name": "svm_test",
+    "version": "v5",
+    "path": "ml_models/svm_test_v5.pkl",
+    "created_at": "2026-04-09T10:06:08.426728+00:00",
+    "size_bytes": 5196,
+    "type": "classification",
+    "model_type": "svm",
+    "metrics": {
+      "accuracy": 0.7,
+      "precision": 0.8058823529411765,
+      "recall": 0.7,
+      "f1": 0.6571428571428571,
+      "cv_accuracy_mean": 0.56,
+      "cv_accuracy_std": 0.1019803902718557
+    }
+  },
+  "pred_test_v5.pkl": {
+    "name": "pred_test",
+    "version": "v5",
+    "path": "ml_models/pred_test_v5.pkl",
+    "created_at": "2026-04-09T10:06:08.697405+00:00",
+    "size_bytes": 62788,
+    "type": "classification",
+    "model_type": "random_forest",
+    "metrics": {
+      "accuracy": 0.5,
+      "precision": 0.5199999999999999,
+      "recall": 0.5,
+      "f1": 0.505050505050505,
+      "cv_accuracy_mean": 0.43,
+      "cv_accuracy_std": 0.050990195135927854
+    }
+  },
+  "reg_test_v5.pkl": {
+    "name": "reg_test",
+    "version": "v5",
+    "path": "ml_models/reg_test_v5.pkl",
+    "created_at": "2026-04-09T10:06:08.763590+00:00",
+    "size_bytes": 264622,
+    "type": "regression",
+    "metrics": {
+      "mse": 1.6649903944766913,
+      "rmse": 1.2903450679863473,
+      "r2": -0.48217963163472266
+    }
+  },
+  "cluster_kmeans_v5.pkl": {
+    "name": "cluster_kmeans",
+    "version": "v5",
+    "path": "ml_models/cluster_kmeans_v5.pkl",
+    "created_at": "2026-04-09T10:06:08.840622+00:00",
+    "size_bytes": 1497,
+    "type": "clustering",
+    "method": "kmeans",
+    "metrics": {
+      "silhouette": 0.19352525265786677,
+      "inertia": 526.2901784949897,
+      "n_clusters": 3
+    }
+  },
+  "fi_test_v5.pkl": {
+    "name": "fi_test",
+    "version": "v5",
+    "path": "ml_models/fi_test_v5.pkl",
+    "created_at": "2026-04-09T10:06:09.301389+00:00",
+    "size_bytes": 99917,
+    "type": "classification",
+    "model_type": "random_forest",
+    "metrics": {
+      "accuracy": 0.65,
+      "precision": 0.74375,
+      "recall": 0.65,
+      "f1": 0.6543859649122806,
+      "cv_accuracy_mean": 0.47000000000000003,
+      "cv_accuracy_std": 0.07483314773547882
+    }
   }
 }
