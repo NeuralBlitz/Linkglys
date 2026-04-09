@@ -1391,7 +1391,7 @@ class DIDManager:
             raise ValueError("Issuer DID not found")
 
         # Generate credential ID
-        cred_id = f"urn:uuid:{hashlib.uuid4().hex}"
+        cred_id = f"urn:uuid:{uuid.uuid4().hex}"
 
         # Calculate expiration
         issued_at = datetime.utcnow()

@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 from flask import Flask, render_template_string, request, jsonify
+import os
 import time
 import json
 
@@ -305,7 +306,9 @@ def home():
 
 @app.route('/api/analyze', methods=['POST'])
 def analyze():
-    data = request.get_json()
+    data = request.get_json(silent=True)
+    if data is None:
+        return jsonify({'success': False, 'error': 'Invalid or missing JSON body'}), 400
     code = data.get('code', '')
 
     # Simulate cognitive analysis
@@ -340,5 +343,5 @@ def analyze():
     })
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=8080, debug=True)</content>
-<parameter name="filePath">simple_app.py
+    debug_mode = os.environ.get('FLASK_DEBUG', 'false').lower() == 'true'
+    app.run(host='0.0.0.0', port=8080, debug=debug_mode)

@@ -4,8 +4,15 @@
   "description": "NeuralBlitz Cognitive AI Hub",
   "private": true,
   "scripts": {
+    "start": "cd src && python3 main.py",
+    "start:server": "cd src && python3 server.py",
     "build:dashboard": "cd neuralblitz-dashboard && bun run build",
-    "start": "python server.py"
+    "ai": "./openclaude.sh",
+    "openclaude": "./openclaude.sh",
+    "ai:gpt": "source .env && opencode",
+    "ai:gemini": "source .env && opencode",
+    "ai:deepseek": "source .env && opencode",
+    "ai:groq": "source .env && opencode"
   },
   "dependencies": {
     "@charmland/crush": "^0.55.1",

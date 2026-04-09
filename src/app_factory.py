@@ -1,6 +1,6 @@
 """App factory to avoid circular imports."""
 
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import HTMLResponse, FileResponse
 import os
@@ -99,11 +99,29 @@ def create_app() -> FastAPI:
     
     @app.get("/api/integration/status")
     async def get_integration_status():
+        opencode_avail = False
+        try:
+            opencode_avail = (opencode_tool is not None and
+                              getattr(opencode_tool, "opencode_path", None) is not None)
+        except Exception:
+            pass
+
+        lrs_precision = None
+        lrs_adaptations = None
+        if lrs_agent is not None:
+            try:
+                bs = getattr(lrs_agent, "belief_state", {})
+                if isinstance(bs, dict):
+                    lrs_precision = bs.get("precision")
+                    lrs_adaptations = bs.get("adaptation_count")
+            except Exception:
+                pass
+
         return {
             "lrs_available": LRS_AVAILABLE,
-            "opencode_available": opencode_tool.opencode_path is not None if opencode_tool else False,
-            "lrs_agent_precision": lrs_agent.belief_state["precision"] if lrs_agent else None,
-            "lrs_agent_adaptations": lrs_agent.belief_state["adaptation_count"] if lrs_agent else None,
+            "opencode_available": opencode_avail,
+            "lrs_agent_precision": lrs_precision,
+            "lrs_agent_adaptations": lrs_adaptations,
             "cognitive_available": COGNITIVE_AVAILABLE,
             "multi_agent_available": MULTI_AGENT_AVAILABLE,
             "integration_active": True,
@@ -131,10 +149,8 @@ def create_app() -> FastAPI:
     @app.post("/api/cognitive/analyze")
     async def analyze_code_with_cognition(request: dict):
         if not COGNITIVE_AVAILABLE:
-            from fastapi import HTTPException
             raise HTTPException(status_code=503, detail="Cognitive components not available")
         try:
-            from fastapi import HTTPException
             analyzer = CognitiveCodeAnalyzer()
             code_content = request.get("code", "")
             file_path = request.get("file_path", "unknown.py")
@@ -145,7 +161,6 @@ def create_app() -> FastAPI:
                 "success": True,
             }
         except Exception as e:
-            from fastapi import HTTPException
             raise HTTPException(status_code=500, detail=f"Cognitive analysis failed: {str(e)}")
     
     @app.get("/api/multi-agent/status")
@@ -168,10 +183,8 @@ def create_app() -> FastAPI:
     @app.post("/api/multi-agent/execute-workflow")
     async def execute_multi_agent_workflow(request: dict):
         if not MULTI_AGENT_AVAILABLE:
-            from fastapi import HTTPException
             raise HTTPException(status_code=503, detail="Multi-agent components not available")
         try:
-            from fastapi import HTTPException
             task_descriptions = request.get("tasks", [])
             if not task_descriptions:
                 raise HTTPException(status_code=400, detail="No tasks provided")
@@ -182,7 +195,6 @@ def create_app() -> FastAPI:
                 "message": "Multi-agent workflow completed with cognitive coordination",
             }
         except Exception as e:
-            from fastapi import HTTPException
             raise HTTPException(status_code=500, detail=f"Multi-agent workflow failed: {str(e)}")
     
     @app.get("/{full_path:path}", response_class=FileResponse)

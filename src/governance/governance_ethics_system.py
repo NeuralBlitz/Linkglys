@@ -309,6 +309,28 @@ class VeritasEngine:
 
         return proof
 
+    def check_coherence(self, state: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:
+        """Check overall system coherence status"""
+        if state is None:
+            state = {"default_coherence": 0.99}
+
+        vpce = self.calculate_vpce(state)
+        coherent = vpce >= self.vpce_threshold
+
+        # Get recent history
+        recent = self.coherence_history[-10:] if self.coherence_history else []
+        avg_coherence = (
+            sum(h.get("vpce", 0) for h in recent) / len(recent) if recent else vpce
+        )
+
+        return {
+            "coherent": coherent,
+            "vpce": vpce,
+            "threshold": self.vpce_threshold,
+            "average_recent": avg_coherence,
+            "history_count": len(self.coherence_history),
+        }
+
 
 # ============================================================================
 # JUDEX QUORUM ARBITRATION

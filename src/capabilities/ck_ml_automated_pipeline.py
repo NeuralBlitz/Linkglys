@@ -183,6 +183,7 @@ class AutomatedPipelineCK:
             )
             best_model_name = None
             best_params = None
+            best_test_score = None  # Track test score for the best model
 
             for model_name in models_to_try:
                 if model_name not in self.model_registry[task_type]:
@@ -218,7 +219,16 @@ class AutomatedPipelineCK:
                         verbose=0,
                     )
 
-                search.fit(X_train_processed, y_train)
+                try:
+                    search.fit(X_train_processed, y_train)
+                except Exception as e:
+                    warnings_list.append(
+                        {
+                            "code": "MODEL:WARN-002",
+                            "message": f"Model {model_name} training failed: {e}",
+                        }
+                    )
+                    continue
 
                 # Cross-validation score
                 cv_mean = search.best_score_
@@ -236,7 +246,7 @@ class AutomatedPipelineCK:
                         "model": model_name,
                         "cv_mean": float(cv_mean),
                         "cv_std": float(cv_std),
-                        "test_score": float(test_score),
+                        "test_score": float(best_test_score) if best_test_score is not None else 0.0,
                         "params": search.best_params_,
                     }
                 )
@@ -249,13 +259,13 @@ class AutomatedPipelineCK:
                         best_model_name = model_name
                         best_params = search.best_params_
                 else:
-                    if abs(cv_mean - 0) < abs(
-                        best_score - 0
-                    ):  # For regression, closer to 0 error is better
+                    # For regression, higher cv_mean is better (sklearn uses neg metrics)
+                    if cv_mean > best_score:
                         best_score = cv_mean
                         best_model = search.best_estimator_
                         best_model_name = model_name
                         best_params = search.best_params_
+                        best_test_score = test_score
 
             # Feature importance
             feature_importance = self._extract_feature_importance(
@@ -271,7 +281,7 @@ class AutomatedPipelineCK:
                 "best_model_name": best_model_name,
                 "best_params": best_params,
                 "cv_score": float(best_score),
-                "test_score": float(test_score),
+                "test_score": float(best_test_score) if best_test_score is not None else 0.0,
                 "all_results": results,
                 "feature_importance": feature_importance,
                 "execution_time_ms": execution_time,
