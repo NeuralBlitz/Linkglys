@@ -31,7 +31,7 @@ $(LIBRARY): $(OBJECTS)
 
 $(TEST): $(TEST_DIR)/test_neuralblitz.c $(LIBRARY)
 	@echo "  CC  $< -> $@"
-	@$(CC) $(CFLAGS) -I$(INCLUDE_DIR) $< -L$(BUILD_DIR) -lneuralblitz $(LDFLAGS) -o $@
+	@$(CC) $(CFLAGS) -I$(INCLUDE_DIR) $< -L$(BUILD_DIR) -lneuralblitz -lm -o $@
 
 test: $(TEST)
 	@echo ""

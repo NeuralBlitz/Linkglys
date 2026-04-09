@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include <time.h>
 #include "neuralblitz/lens.h"
+#include "neuralblitz/precision.h"
 
 /* ──────────────────────────────────────────────────────────────
  * Tool Lens Module Implementation

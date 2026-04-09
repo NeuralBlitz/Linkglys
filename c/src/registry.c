@@ -3,6 +3,7 @@
 #include <math.h>
 #include <float.h>
 #include "neuralblitz/registry.h"
+#include "neuralblitz/precision.h"
 
 /* ──────────────────────────────────────────────────────────────
  * Tool Registry Implementation

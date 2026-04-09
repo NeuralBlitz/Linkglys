@@ -3,6 +3,7 @@
 #include <math.h>
 #include <float.h>
 #include "neuralblitz/free_energy.h"
+#include "neuralblitz/precision.h"
 
 /* ──────────────────────────────────────────────────────────────
  * Free Energy Module Implementation
