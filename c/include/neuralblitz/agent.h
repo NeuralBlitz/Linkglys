@@ -2,6 +2,14 @@
 #define NEURALBLITZ_AGENT_H
 
 #include "neuralblitz/types.h"
+#include "neuralblitz/precision.h"
+#include "neuralblitz/intent.h"
+#include "neuralblitz/free_energy.h"
+#include "neuralblitz/cognitive.h"
+#include "neuralblitz/lens.h"
+
+/* Forward declare for use in function signatures */
+typedef struct nb_tool_registry nb_tool_registry_t;
 
 /* ──────────────────────────────────────────────────────────────
  * Agent Module
@@ -15,10 +23,12 @@ typedef struct nb_agent_system nb_agent_system_t;
  * Agent System (manages multiple agents)
  * ────────────────────────────────────────────────────────────── */
 
+typedef struct nb_tool_registry nb_tool_registry_t;
+
 struct nb_agent_system {
     nb_agent_t          agents[NB_MAX_AGENTS];
     int                 agent_count;
-    nb_tool_registry_t  registry;
+    nb_tool_registry_t *registry;
     nb_event_handler_t  event_handler;
     void               *event_user_data;
 };
@@ -50,7 +60,7 @@ nb_status_t nb_system_remove_agent(nb_agent_system_t *sys, const char *id);
 
 /* List all agents */
 nb_status_t nb_system_list_agents(
-    const nb_agent_system_t *sys,
+    nb_agent_system_t *sys,
     nb_agent_t **agents,
     int max_agents,
     int *count

@@ -1,7 +1,9 @@
 #include <stdio.h>
 #include <string.h>
+#include <stdlib.h>
 #include <time.h>
 #include "neuralblitz/api.h"
+#include "neuralblitz/registry.h"
 
 /* ──────────────────────────────────────────────────────────────
  * NeuralBlitz C API Implementation
@@ -35,8 +37,10 @@ nb_status_t nb_engine_init(nb_engine_t *engine) {
     nb_status_t s;
     s = nb_system_init(&engine->agent_system);
     NB_CHECK(s);
+    engine->agent_system.registry = &engine->registry;
     s = nb_multi_agent_init(&engine->multi_agent);
     NB_CHECK(s);
+    engine->multi_agent.system.registry = &engine->registry;
     s = nb_plugin_system_init(&engine->plugin_system);
     NB_CHECK(s);
     s = nb_registry_init(&engine->registry);
@@ -119,9 +123,8 @@ nb_status_t nb_engine_infer(
     nb_status_t s = nb_agent_execute(agent, &engine->registry, input, input_size, result);
     NB_CHECK(s);
 
-    /* Update multi-agent social precision */
-    nb_multi_agent_update_social_precision(&engine->multi_agent, "engine", agent_id,
-        result->status == NB_EXEC_SUCCESS);
+    /* Update agent precision tracking */
+    nb_agent_update_precision(agent, result->status == NB_EXEC_SUCCESS);
 
     return NB_OK;
 }

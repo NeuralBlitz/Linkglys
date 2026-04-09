@@ -1,7 +1,9 @@
 #include <stdio.h>
 #include <string.h>
+#include <stdlib.h>
 #include <time.h>
 #include "neuralblitz/agent.h"
+#include "neuralblitz/registry.h"
 
 /* ──────────────────────────────────────────────────────────────
  * Agent Module Implementation
@@ -26,7 +28,7 @@ nb_status_t nb_system_init(nb_agent_system_t *sys) {
 
     memset(sys, 0, sizeof(*sys));
     sys->agent_count = 0;
-    nb_registry_init(&sys->registry);
+    sys->registry = NULL;
     return NB_OK;
 }
 
@@ -96,7 +98,7 @@ nb_status_t nb_system_remove_agent(nb_agent_system_t *sys, const char *id) {
 }
 
 nb_status_t nb_system_list_agents(
-    const nb_agent_system_t *sys,
+    nb_agent_system_t *sys,
     nb_agent_t **agents,
     int max_agents,
     int *count

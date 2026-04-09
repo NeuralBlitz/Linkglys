@@ -3,6 +3,7 @@
 #include <math.h>
 #include <time.h>
 #include "neuralblitz/cognitive.h"
+#include "neuralblitz/precision.h"
 
 /* ──────────────────────────────────────────────────────────────
  * Cognitive State Module Implementation

@@ -2,6 +2,7 @@
 #define NEURALBLITZ_REGISTRY_H
 
 #include "neuralblitz/types.h"
+#include "neuralblitz/lens.h"
 
 /* ──────────────────────────────────────────────────────────────
  * Tool Registry
@@ -9,7 +10,7 @@
  * fallback chains and schema-based lookup.
  * ────────────────────────────────────────────────────────────── */
 
-typedef struct {
+struct nb_tool_registry {
     nb_tool_lens_t     tools[NB_MAX_TOOLS];
     nb_tool_schema_t   schemas[NB_MAX_TOOLS];
     int                count;
@@ -19,7 +20,12 @@ typedef struct {
     /* Usage statistics */
     int64_t            total_executions;
     double             total_latency;
-} nb_tool_registry_t;
+};
+
+#ifndef NB_TOOL_REGISTRY_TYPEDEF
+#define NB_TOOL_REGISTRY_TYPEDEF
+typedef struct nb_tool_registry nb_tool_registry_t;
+#endif
 
 /* Initialize registry */
 nb_status_t nb_registry_init(nb_tool_registry_t *reg);

@@ -2,6 +2,7 @@
 #define NEURALBLITZ_MULTI_AGENT_H
 
 #include "neuralblitz/types.h"
+#include "neuralblitz/agent.h"
 
 /* ──────────────────────────────────────────────────────────────
  * Multi-Agent Coordination

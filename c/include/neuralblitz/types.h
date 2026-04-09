@@ -123,7 +123,6 @@ typedef struct {
  * ────────────────────────────────────────────────────────────── */
 
 typedef struct nb_tool_lens  nb_tool_lens_t;
-typedef struct nb_tool_registry nb_tool_registry_t;
 
 /* Tool forward mapping: input -> tool_args */
 typedef nb_exec_result_t (*nb_tool_forward_t)(
