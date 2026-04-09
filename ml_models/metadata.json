@@ -619,5 +619,100 @@
       "cv_accuracy_mean": 0.5,
       "cv_accuracy_std": 0.0894427190999916
     }
+  },
+  "clf_test_v7.pkl": {
+    "name": "clf_test",
+    "version": "v7",
+    "path": "ml_models/clf_test_v7.pkl",
+    "created_at": "2026-04-09T10:08:45.763356+00:00",
+    "size_bytes": 431666,
+    "type": "classification",
+    "model_type": "random_forest",
+    "metrics": {
+      "accuracy": 0.25,
+      "precision": 0.33290598290598294,
+      "recall": 0.25,
+      "f1": 0.2722115384615385,
+      "cv_accuracy_mean": 0.33499999999999996,
+      "cv_accuracy_std": 0.09027735042633894
+    }
+  },
+  "svm_test_v7.pkl": {
+    "name": "svm_test",
+    "version": "v7",
+    "path": "ml_models/svm_test_v7.pkl",
+    "created_at": "2026-04-09T10:08:45.786464+00:00",
+    "size_bytes": 5092,
+    "type": "classification",
+    "model_type": "svm",
+    "metrics": {
+      "accuracy": 0.55,
+      "precision": 0.5818181818181818,
+      "recall": 0.55,
+      "f1": 0.5533834586466165,
+      "cv_accuracy_mean": 0.63,
+      "cv_accuracy_std": 0.08124038404635958
+    }
+  },
+  "pred_test_v7.pkl": {
+    "name": "pred_test",
+    "version": "v7",
+    "path": "ml_models/pred_test_v7.pkl",
+    "created_at": "2026-04-09T10:08:46.077992+00:00",
+    "size_bytes": 65837,
+    "type": "classification",
+    "model_type": "random_forest",
+    "metrics": {
+      "accuracy": 0.5,
+      "precision": 0.5989010989010989,
+      "recall": 0.5,
+      "f1": 0.5,
+      "cv_accuracy_mean": 0.53,
+      "cv_accuracy_std": 0.09273618495495704
+    }
+  },
+  "reg_test_v7.pkl": {
+    "name": "reg_test",
+    "version": "v7",
+    "path": "ml_models/reg_test_v7.pkl",
+    "created_at": "2026-04-09T10:08:46.189156+00:00",
+    "size_bytes": 275008,
+    "type": "regression",
+    "metrics": {
+      "mse": 1.2255793937539994,
+      "rmse": 1.1070588935345758,
+      "r2": -0.35341756625869625
+    }
+  },
+  "cluster_kmeans_v7.pkl": {
+    "name": "cluster_kmeans",
+    "version": "v7",
+    "path": "ml_models/cluster_kmeans_v7.pkl",
+    "created_at": "2026-04-09T10:08:46.320355+00:00",
+    "size_bytes": 1497,
+    "type": "clustering",
+    "method": "kmeans",
+    "metrics": {
+      "silhouette": 0.18758075298041504,
+      "inertia": 538.8821702632126,
+      "n_clusters": 3
+    }
+  },
+  "fi_test_v7.pkl": {
+    "name": "fi_test",
+    "version": "v7",
+    "path": "ml_models/fi_test_v7.pkl",
+    "created_at": "2026-04-09T10:08:46.814756+00:00",
+    "size_bytes": 101837,
+    "type": "classification",
+    "model_type": "random_forest",
+    "metrics": {
+      "accuracy": 0.55,
+      "precision": 0.595,
+      "recall": 0.55,
+      "f1": 0.5603580562659847,
+      "cv_accuracy_mean": 0.5700000000000001,
+      "cv_accuracy_std": 0.03999999999999998
+    }
   }
 }
