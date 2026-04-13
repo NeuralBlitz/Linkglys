@@ -1,21 +1,20 @@
-"""
-raft_consensus.py
-Raft-based Distributed Consensus for D-MLMAS
+"""raft_consensus.py
+Raft-based Distributed Consensus for D-MLMAS.
 
 Implements the Raft consensus algorithm with a shared message bus
 so nodes actually communicate with each other (not simulated RPCs).
 """
 
 import asyncio
-import random
-import time
-import logging
-from typing import Dict, List, Optional, Any, Callable
-from dataclasses import dataclass, field
-from enum import Enum
-from collections import deque
 import hashlib
 import json
+import logging
+import random
+import time
+from collections.abc import Callable
+from dataclasses import dataclass, field
+from enum import Enum
+from typing import Any
 
 logger = logging.getLogger(__name__)
 
@@ -44,8 +43,8 @@ class LogEntry:
 @dataclass
 class RaftState:
     current_term: int = 0
-    voted_for: Optional[str] = None
-    log: List[LogEntry] = field(default_factory=list)
+    voted_for: str | None = None
+    log: list[LogEntry] = field(default_factory=list)
 
     def get_last_log_index(self) -> int:
         return len(self.log) - 1 if self.log else -1
@@ -53,7 +52,7 @@ class RaftState:
     def get_last_log_term(self) -> int:
         return self.log[-1].term if self.log else -1
 
-    def get_entry(self, index: int) -> Optional[LogEntry]:
+    def get_entry(self, index: int) -> LogEntry | None:
         if 0 <= index < len(self.log):
             return self.log[index]
         return None
@@ -63,17 +62,18 @@ class RaftState:
 
 class ClusterMessageBus:
     """Shared message bus for inter-node communication in the same process.
-    In production, this would be replaced with actual network RPCs."""
+    In production, this would be replaced with actual network RPCs.
+    """
 
     def __init__(self):
-        self._handlers: Dict[str, Dict[str, Callable]] = {}  # node_id -> {method -> handler}
+        self._handlers: dict[str, dict[str, Callable]] = {}  # node_id -> {method -> handler}
 
-    def register_node(self, node_id: str, handlers: Dict[str, Callable]):
-        """Register a node's RPC handlers"""
+    def register_node(self, node_id: str, handlers: dict[str, Callable]):
+        """Register a node's RPC handlers."""
         self._handlers[node_id] = handlers
 
     async def send_rpc(self, target_id: str, method: str, params: dict) -> dict:
-        """Send RPC to target node via message bus"""
+        """Send RPC to target node via message bus."""
         if target_id not in self._handlers:
             return {"error": f"Node {target_id} not found"}
         handler = self._handlers[target_id].get(method)
@@ -91,7 +91,7 @@ class RaftNode:
     MIN_ELECTION_TIMEOUT = 0.15
     MAX_ELECTION_TIMEOUT = 0.30
 
-    def __init__(self, node_id: str, peer_ids: List[str], bus: ClusterMessageBus):
+    def __init__(self, node_id: str, peer_ids: list[str], bus: ClusterMessageBus):
         self.node_id = node_id
         self.peer_ids = peer_ids
         self.bus = bus
@@ -105,16 +105,16 @@ class RaftNode:
         self.last_applied = -1
 
         # Leader state
-        self.next_index: Dict[str, int] = {}
-        self.match_index: Dict[str, int] = {}
+        self.next_index: dict[str, int] = {}
+        self.match_index: dict[str, int] = {}
 
         # Timing
         self.election_timeout = self._random_timeout()
         self.last_heartbeat = time.time()
 
         # State machine
-        self.state_machine: Dict[str, Any] = {}
-        self.pending_commands: Dict[str, asyncio.Future] = {}
+        self.state_machine: dict[str, Any] = {}
+        self.pending_commands: dict[str, asyncio.Future] = {}
 
         # RPC handlers (registered on bus)
         self._rpc_handlers = {
@@ -192,7 +192,7 @@ class RaftNode:
     async def _handle_append_entries(self, params: dict) -> dict:
         """Handle incoming AppendEntries (heartbeat/log replication) from leader."""
         term = params["term"]
-        leader_id = params["leader_id"]
+        params["leader_id"]
         prev_log_index = params["prev_log_index"]
         prev_log_term = params["prev_log_term"]
         entries = params.get("entries", [])
@@ -278,7 +278,7 @@ class RaftNode:
                     continue
                 if isinstance(resp, dict) and resp.get("vote_granted"):
                     votes_received += 1
-        except asyncio.TimeoutError:
+        except TimeoutError:
             pass
 
         if votes_received >= self.majority:
@@ -305,7 +305,7 @@ class RaftNode:
         for peer in self.peer_ids:
             asyncio.create_task(self._send_append_entries(peer))
 
-    async def _send_append_entries(self, peer: str, entries: Optional[List[LogEntry]] = None):
+    async def _send_append_entries(self, peer: str, entries: list[LogEntry] | None = None):
         next_idx = self.next_index.get(peer, 0)
         prev_log_index = next_idx - 1
         prev_log_term = self.state.get_entry(prev_log_index).term if prev_log_index >= 0 and self.state.get_entry(prev_log_index) else -1
@@ -411,7 +411,7 @@ class RaftNode:
 
         try:
             return await asyncio.wait_for(future, timeout=timeout)
-        except asyncio.TimeoutError:
+        except TimeoutError:
             self.pending_commands.pop(command_id, None)
             return {"status": "error", "message": "timeout waiting for commit"}
 
@@ -431,9 +431,9 @@ class RaftNode:
 # ─── Cluster Manager ───
 
 class RaftCluster:
-    def __init__(self, node_ids: List[str]):
+    def __init__(self, node_ids: list[str]):
         self.node_ids = node_ids
-        self.nodes: Dict[str, RaftNode] = {}
+        self.nodes: dict[str, RaftNode] = {}
         self.bus = ClusterMessageBus()
 
     async def start(self):
@@ -448,7 +448,7 @@ class RaftCluster:
         for node in self.nodes.values():
             await node.stop()
 
-    def get_leader(self) -> Optional[RaftNode]:
+    def get_leader(self) -> RaftNode | None:
         for node in self.nodes.values():
             if node.role == NodeRole.LEADER:
                 return node

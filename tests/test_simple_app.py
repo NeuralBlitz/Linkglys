@@ -111,12 +111,13 @@ class TestAnalyzeEndpoint:
         assert "analysis_time" in data
         assert isinstance(data["analysis_time"], (int, float))
 
-    def test_analyze_returns_cognitive_score(self, client):
-        """Test analysis returns cognitive score."""
+    def test_analyze_returns_complexity(self, client):
+        """Test analysis returns complexity metrics instead of fake cognitive score."""
         response = client.post("/api/analyze", json={"code": "x = 1"})
         data = response.get_json()
-        assert "cognitive_score" in data
-        assert isinstance(data["cognitive_score"], (int, float))
+        assert "insights" in data
+        assert "complexity" in data["insights"]
+        assert isinstance(data["insights"]["complexity"], str)
 
     def test_analyze_returns_recommendations(self, client):
         """Test analysis returns recommendations."""

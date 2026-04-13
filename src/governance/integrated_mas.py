@@ -1,5 +1,4 @@
-"""
-Integrated Multi-Agent Governance System
+"""Integrated Multi-Agent Governance System.
 ========================================
 Combines:
 - Multi-Layered Multi-Agent System (MLMAS)
@@ -11,22 +10,18 @@ Based on NeuralBlitz v20.0 Architecture
 
 import asyncio
 import logging
-from typing import Dict, List, Optional, Any
 from dataclasses import dataclass
-import uuid
-import json
-import hashlib
 from datetime import datetime
 
-from distributed_mlmas import DistributedMLMAS, DistributedScheduler
+from distributed_mlmas import DistributedMLMAS
 from governance_ethics_system import (
-    TranscendentalCharter,
-    VeritasEngine,
+    AuditTrail,
+    ComplianceMonitor,
+    GoldenDAGLedger,
     JudexQuorum,
     SentiaGuard,
-    GoldenDAGLedger,
-    ComplianceMonitor,
-    AuditTrail,
+    TranscendentalCharter,
+    VeritasEngine,
 )
 
 logging.basicConfig(level=logging.INFO)
@@ -35,7 +30,7 @@ logger = logging.getLogger("IntegratedMAS")
 
 @dataclass
 class IntegratedConfig:
-    """Configuration for integrated system"""
+    """Configuration for integrated system."""
 
     num_agents: int = 50
     num_nodes: int = 4
@@ -45,15 +40,15 @@ class IntegratedConfig:
 
 
 class IntegratedAgent:
-    """Agent with embedded governance"""
+    """Agent with embedded governance."""
 
     def __init__(self, agent_id: str):
         self.agent_id = agent_id
         self.veritas = VeritasEngine()
-        self.actions_history: List[Dict] = []
+        self.actions_history: list[dict] = []
 
-    async def execute_action(self, action: Dict) -> Dict:
-        """Execute action through governance pipeline"""
+    async def execute_action(self, action: dict) -> dict:
+        """Execute action through governance pipeline."""
         # Pre-action governance check
         coherence = self.veritas.calculate_vpce({"state": action})
 
@@ -70,12 +65,12 @@ class IntegratedAgent:
 
         return result
 
-    def get_status(self) -> Dict:
+    def get_status(self) -> dict:
         return {"agent_id": self.agent_id, "total_actions": len(self.actions_history)}
 
 
 class IntegratedMAS:
-    """Complete Integrated Multi-Agent System with Governance"""
+    """Complete Integrated Multi-Agent System with Governance."""
 
     def __init__(self, config: IntegratedConfig):
         self.config = config
@@ -92,7 +87,7 @@ class IntegratedMAS:
         self.audit = AuditTrail()
 
         # Initialize agents
-        self.agents: Dict[str, IntegratedAgent] = {}
+        self.agents: dict[str, IntegratedAgent] = {}
 
         # Initialize distributed system
         self.distributed = DistributedMLMAS(
@@ -104,7 +99,7 @@ class IntegratedMAS:
         )
 
     async def initialize(self):
-        """Initialize all subsystems"""
+        """Initialize all subsystems."""
         logger.info("Initializing integrated system...")
 
         # Initialize distributed nodes
@@ -117,8 +112,8 @@ class IntegratedMAS:
 
         logger.info(f"Initialized {len(self.agents)} governed agents")
 
-    async def run_task(self, task: Dict) -> Dict:
-        """Run task with full governance pipeline"""
+    async def run_task(self, task: dict) -> dict:
+        """Run task with full governance pipeline."""
         # 1. Veritas coherence check
         coherence = self.veritas.calculate_vpce({"state": task})
 
@@ -136,8 +131,8 @@ class IntegratedMAS:
 
         return {"task": task, "coherent": coherence > 0.7, "result": result}
 
-    async def run_simulation(self, num_stages: int = 10) -> Dict:
-        """Run distributed simulation with governance"""
+    async def run_simulation(self, num_stages: int = 10) -> dict:
+        """Run distributed simulation with governance."""
         logger.info(f"Running simulation: {num_stages} stages")
 
         # Run distributed stages
@@ -161,8 +156,8 @@ class IntegratedMAS:
             "total_tasks": dist_results["total_tasks"],
         }
 
-    def get_system_status(self) -> Dict:
-        """Get comprehensive system status"""
+    def get_system_status(self) -> dict:
+        """Get comprehensive system status."""
         return {
             "governance": {
                 "veritas_active": True,
@@ -182,7 +177,7 @@ class IntegratedMAS:
 
 
 async def demonstrate_integrated_system():
-    """Demonstrate the integrated system"""
+    """Demonstrate the integrated system."""
     print("=" * 80)
     print("INTEGRATED MULTI-AGENT GOVERNANCE SYSTEM")
     print("=" * 80)

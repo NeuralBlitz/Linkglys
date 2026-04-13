@@ -395,7 +395,8 @@ class TestGoldenDAGLedger:
         ledger.block_size = 3  # Small block for testing
         for i in range(3):
             ledger.append_operation({"i": i})
-        assert len(ledger.chain) == 1
+        # Genesis is sealed immediately (1) + 1 data block = 2
+        assert len(ledger.chain) == 2
         assert len(ledger.current_block) == 0
 
     def test_verify_chain_valid(self):

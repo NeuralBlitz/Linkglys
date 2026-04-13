@@ -1,17 +1,16 @@
 #!/usr/bin/env python3
-"""
-Health Check System — Real Service Monitoring
+"""Health Check System — Real Service Monitoring
 Monitors all components: database, cache, Redis, WebSocket, event bus, ML pipeline, external services.
 """
 
-import os
-import time
 import socket
-import asyncio
-from typing import Dict, Any, Optional, List
+import time
 from dataclasses import dataclass, field
+from datetime import UTC, datetime
 from enum import Enum
-from datetime import datetime, timezone
+from typing import Any
+
+from fastapi import APIRouter
 
 
 class HealthStatus(str, Enum):
@@ -27,19 +26,19 @@ class ComponentHealth:
     status: HealthStatus
     latency_ms: float = 0.0
     message: str = ""
-    details: Dict[str, Any] = field(default_factory=dict)
+    details: dict[str, Any] = field(default_factory=dict)
     checked_at: float = field(default_factory=time.time)
 
 
 @dataclass
 class SystemHealth:
     status: HealthStatus
-    components: Dict[str, ComponentHealth]
+    components: dict[str, ComponentHealth]
     overall_uptime: float
     checks_performed: int
     timestamp: float = field(default_factory=time.time)
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         return {
             "status": self.status.value,
             "components": {k: {
@@ -47,11 +46,11 @@ class SystemHealth:
                 "latency_ms": round(v.latency_ms, 2),
                 "message": v.message,
                 "details": v.details,
-                "checked_at": datetime.fromtimestamp(v.checked_at, tz=timezone.utc).isoformat(),
+                "checked_at": datetime.fromtimestamp(v.checked_at, tz=UTC).isoformat(),
             } for k, v in self.components.items()},
             "overall_uptime": round(self.overall_uptime, 2),
             "checks_performed": self.checks_performed,
-            "timestamp": datetime.fromtimestamp(self.timestamp, tz=timezone.utc).isoformat(),
+            "timestamp": datetime.fromtimestamp(self.timestamp, tz=UTC).isoformat(),
         }
 
 
@@ -61,7 +60,7 @@ class HealthChecker:
     def __init__(self):
         self._start_time = time.time()
         self._checks_performed = 0
-        self._history: List[Dict[str, Any]] = []
+        self._history: list[dict[str, Any]] = []
         self._max_history = 1000
 
     async def check_all(self) -> SystemHealth:
@@ -120,7 +119,7 @@ class HealthChecker:
     async def _check_database(self) -> ComponentHealth:
         start = time.time()
         try:
-            from middleware.database import SessionLocal, DBUser
+            from middleware.database import DBUser, SessionLocal
             db = SessionLocal()
             count = db.query(DBUser).count()
             db.close()
@@ -267,7 +266,7 @@ class HealthChecker:
                 message=str(e),
             )
 
-    def get_history(self, limit: int = 50) -> List[Dict[str, Any]]:
+    def get_history(self, limit: int = 50) -> list[dict[str, Any]]:
         return self._history[-limit:]
 
 
@@ -278,8 +277,6 @@ health_checker = HealthChecker()
 # ──────────────────────────────────────────────────────────────
 # FastAPI Integration
 # ──────────────────────────────────────────────────────────────
-
-from fastapi import APIRouter
 
 health_router = APIRouter(tags=["health"])
 

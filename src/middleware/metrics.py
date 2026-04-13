@@ -1,16 +1,16 @@
 #!/usr/bin/env python3
-"""
-Prometheus Metrics — Real App Metrics Export
+"""Prometheus Metrics — Real App Metrics Export
 Exports application metrics in Prometheus exposition format for monitoring.
 """
 
-import os
-import time
 import threading
-from typing import Dict, Any, Optional, List
+import time
 from dataclasses import dataclass, field
 from enum import Enum
-from collections import defaultdict
+from typing import Any
+
+from fastapi import Request
+from fastapi.responses import PlainTextResponse
 
 
 class MetricType(str, Enum):
@@ -23,18 +23,18 @@ class MetricType(str, Enum):
 class MetricSample:
     name: str
     value: float
-    labels: Dict[str, str] = field(default_factory=dict)
+    labels: dict[str, str] = field(default_factory=dict)
     timestamp: float = field(default_factory=time.time)
 
 
 class Counter:
     """Monotonically increasing counter metric."""
 
-    def __init__(self, name: str, description: str, label_names: List[str] = None):
+    def __init__(self, name: str, description: str, label_names: list[str] = None):
         self.name = name
         self.description = description
         self.label_names = label_names or []
-        self._values: Dict[str, float] = {"": 0.0}
+        self._values: dict[str, float] = {"": 0.0}
         self._lock = threading.Lock()
 
     def inc(self, value: float = 1.0, **labels) -> None:
@@ -46,12 +46,12 @@ class Counter:
         key = self._label_key(labels)
         return self._values.get(key, 0.0)
 
-    def _label_key(self, labels: Dict[str, str]) -> str:
+    def _label_key(self, labels: dict[str, str]) -> str:
         if not labels:
             return ""
         return ",".join(f"{k}={labels.get(k, '')}" for k in self.label_names)
 
-    def _samples(self) -> List[MetricSample]:
+    def _samples(self) -> list[MetricSample]:
         samples = []
         for key, value in self._values.items():
             labels = {}
@@ -68,11 +68,11 @@ class Counter:
 class Gauge:
     """Gauge metric that can go up and down."""
 
-    def __init__(self, name: str, description: str, label_names: List[str] = None):
+    def __init__(self, name: str, description: str, label_names: list[str] = None):
         self.name = name
         self.description = description
         self.label_names = label_names or []
-        self._values: Dict[str, float] = {"": 0.0}
+        self._values: dict[str, float] = {"": 0.0}
         self._lock = threading.Lock()
 
     def set(self, value: float, **labels) -> None:
@@ -102,12 +102,12 @@ class Gauge:
         """Decorator/context manager to track duration."""
         return _Timer(self, labels)
 
-    def _label_key(self, labels: Dict[str, str]) -> str:
+    def _label_key(self, labels: dict[str, str]) -> str:
         if not labels:
             return ""
         return ",".join(f"{k}={labels.get(k, '')}" for k in self.label_names)
 
-    def _samples(self) -> List[MetricSample]:
+    def _samples(self) -> list[MetricSample]:
         samples = []
         for key, value in self._values.items():
             labels = {}
@@ -126,14 +126,14 @@ class Histogram:
 
     DEFAULT_BUCKETS = (0.005, 0.01, 0.025, 0.05, 0.1, 0.25, 0.5, 1.0, 2.5, 5.0, 10.0, float("inf"))
 
-    def __init__(self, name: str, description: str, buckets: tuple = None, label_names: List[str] = None):
+    def __init__(self, name: str, description: str, buckets: tuple = None, label_names: list[str] = None):
         self.name = name
         self.description = description
         self.buckets = buckets or self.DEFAULT_BUCKETS
         self.label_names = label_names or []
         self._lock = threading.Lock()
         # Per-label-group storage
-        self._data: Dict[str, Dict] = {"": {
+        self._data: dict[str, dict] = {"": {
             "bucket_counts": [0] * len(self.buckets),
             "sum": 0.0,
             "count": 0,
@@ -158,12 +158,12 @@ class Histogram:
     def time(self, **labels):
         return _Timer(self, labels)
 
-    def _label_key(self, labels: Dict[str, str]) -> str:
+    def _label_key(self, labels: dict[str, str]) -> str:
         if not labels:
             return ""
         return ",".join(f"{k}={labels.get(k, '')}" for k in self.label_names)
 
-    def _samples(self) -> List[MetricSample]:
+    def _samples(self) -> list[MetricSample]:
         samples = []
         for key, data in self._data.items():
             labels = {}
@@ -193,7 +193,7 @@ class Histogram:
 
 
 class _InprogressTracker:
-    def __init__(self, gauge: Gauge, labels: Dict[str, str]):
+    def __init__(self, gauge: Gauge, labels: dict[str, str]):
         self.gauge = gauge
         self.labels = labels
 
@@ -206,7 +206,7 @@ class _InprogressTracker:
 
 
 class _Timer:
-    def __init__(self, metric, labels: Dict[str, str]):
+    def __init__(self, metric, labels: dict[str, str]):
         self.metric = metric
         self.labels = labels
         self.start = None
@@ -229,21 +229,21 @@ class MetricsRegistry:
     """Central registry for all application metrics."""
 
     def __init__(self):
-        self._counters: Dict[str, Counter] = {}
-        self._gauges: Dict[str, Gauge] = {}
-        self._histograms: Dict[str, Histogram] = {}
+        self._counters: dict[str, Counter] = {}
+        self._gauges: dict[str, Gauge] = {}
+        self._histograms: dict[str, Histogram] = {}
 
-    def counter(self, name: str, description: str, label_names: List[str] = None) -> Counter:
+    def counter(self, name: str, description: str, label_names: list[str] = None) -> Counter:
         if name not in self._counters:
             self._counters[name] = Counter(name, description, label_names)
         return self._counters[name]
 
-    def gauge(self, name: str, description: str, label_names: List[str] = None) -> Gauge:
+    def gauge(self, name: str, description: str, label_names: list[str] = None) -> Gauge:
         if name not in self._gauges:
             self._gauges[name] = Gauge(name, description, label_names)
         return self._gauges[name]
 
-    def histogram(self, name: str, description: str, buckets: tuple = None, label_names: List[str] = None) -> Histogram:
+    def histogram(self, name: str, description: str, buckets: tuple = None, label_names: list[str] = None) -> Histogram:
         if name not in self._histograms:
             self._histograms[name] = Histogram(name, description, buckets, label_names)
         return self._histograms[name]
@@ -274,7 +274,7 @@ class MetricsRegistry:
 
         return "\n".join(lines)
 
-    def get_all(self) -> Dict[str, Any]:
+    def get_all(self) -> dict[str, Any]:
         return {
             "counters": {n: {k: v for k, v in c._values.items()} for n, c in self._counters.items()},
             "gauges": {n: {k: v for k, v in g._values.items()} for n, g in self._gauges.items()},
@@ -367,9 +367,6 @@ def update_system_metrics():
 # ──────────────────────────────────────────────────────────────
 # FastAPI Integration
 # ──────────────────────────────────────────────────────────────
-
-from fastapi import Request, Response
-from fastapi.responses import PlainTextResponse
 
 
 async def prometheus_metrics_middleware(request: Request, call_next):

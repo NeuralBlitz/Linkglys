@@ -1,23 +1,21 @@
 #!/usr/bin/env python3
-"""
-Task Queue — Async Task Processing
+"""Task Queue — Async Task Processing
 Lightweight async task queue with priority, retry, scheduling, and result storage.
 No external dependencies needed (no Celery/RabbitMQ required).
 """
 
-import os
-import time
-import json
-import uuid
 import asyncio
 import hashlib
-import traceback
-from typing import Dict, Any, Optional, Callable, Awaitable, List
-from dataclasses import dataclass, field
-from enum import Enum
-from datetime import datetime, timezone
-from collections import defaultdict
 import heapq
+import time
+import traceback
+import uuid
+from collections import defaultdict
+from collections.abc import Callable
+from dataclasses import dataclass, field
+from datetime import UTC, datetime
+from enum import Enum
+from typing import Any
 
 
 class TaskStatus(str, Enum):
@@ -41,23 +39,24 @@ class TaskPriority(int, Enum):
 @dataclass(order=True)
 class Task:
     """Represents an async task to be executed."""
+
     priority: int
     task_id: str = field(default_factory=lambda: str(uuid.uuid4()), compare=False)
     name: str = field(default="", compare=False)
     func_name: str = field(default="", compare=False)
     args: tuple = field(default_factory=tuple, compare=False)
-    kwargs: Dict[str, Any] = field(default_factory=dict, compare=False)
+    kwargs: dict[str, Any] = field(default_factory=dict, compare=False)
     status: TaskStatus = field(default=TaskStatus.PENDING, compare=False)
     created_at: float = field(default_factory=time.time, compare=False)
     scheduled_at: float = field(default=0, compare=False)
     started_at: float = field(default=0, compare=False)
     completed_at: float = field(default=0, compare=False)
     result: Any = field(default=None, compare=False)
-    error: Optional[str] = field(default=None, compare=False)
+    error: str | None = field(default=None, compare=False)
     retry_count: int = field(default=0, compare=False)
     max_retries: int = field(default=3, compare=False)
     timeout: float = field(default=300, compare=False)
-    tags: List[str] = field(default_factory=list, compare=False)
+    tags: list[str] = field(default_factory=list, compare=False)
     group: str = field(default="", compare=False)
 
     def is_due(self) -> bool:
@@ -65,17 +64,17 @@ class Task:
             return True
         return time.time() >= self.scheduled_at
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         return {
             "task_id": self.task_id,
             "name": self.name,
             "func_name": self.func_name,
             "status": self.status.value,
             "priority": self.priority,
-            "created_at": datetime.fromtimestamp(self.created_at, tz=timezone.utc).isoformat(),
-            "scheduled_at": datetime.fromtimestamp(self.scheduled_at, tz=timezone.utc).isoformat() if self.scheduled_at else None,
-            "started_at": datetime.fromtimestamp(self.started_at, tz=timezone.utc).isoformat() if self.started_at else None,
-            "completed_at": datetime.fromtimestamp(self.completed_at, tz=timezone.utc).isoformat() if self.completed_at else None,
+            "created_at": datetime.fromtimestamp(self.created_at, tz=UTC).isoformat(),
+            "scheduled_at": datetime.fromtimestamp(self.scheduled_at, tz=UTC).isoformat() if self.scheduled_at else None,
+            "started_at": datetime.fromtimestamp(self.started_at, tz=UTC).isoformat() if self.started_at else None,
+            "completed_at": datetime.fromtimestamp(self.completed_at, tz=UTC).isoformat() if self.completed_at else None,
             "result": str(self.result) if self.result is not None else None,
             "error": self.error,
             "retry_count": self.retry_count,
@@ -90,10 +89,10 @@ class TaskQueue:
     """Async task queue with priority, retry, and scheduling."""
 
     def __init__(self, max_workers: int = 4):
-        self._queue: List[Task] = []
-        self._tasks: Dict[str, Task] = {}
-        self._handlers: Dict[str, Callable] = {}
-        self._results: Dict[str, Any] = {}
+        self._queue: list[Task] = []
+        self._tasks: dict[str, Task] = {}
+        self._handlers: dict[str, Callable] = {}
+        self._results: dict[str, Any] = {}
         self._running = False
         self._max_workers = max_workers
         self._semaphore = asyncio.Semaphore(max_workers)
@@ -105,7 +104,7 @@ class TaskQueue:
             "total_cancelled": 0,
             "total_timeout": 0,
         }
-        self._group_stats: Dict[str, Dict[str, int]] = defaultdict(
+        self._group_stats: dict[str, dict[str, int]] = defaultdict(
             lambda: {"submitted": 0, "completed": 0, "failed": 0}
         )
 
@@ -124,7 +123,7 @@ class TaskQueue:
         delay: float = 0,
         timeout: float = 300,
         max_retries: int = 3,
-        tags: List[str] = None,
+        tags: list[str] = None,
         group: str = "",
         task_id: str = None,
         **kwargs,
@@ -159,7 +158,7 @@ class TaskQueue:
 
         return task.task_id
 
-    async def submit_batch(self, tasks: List[Dict[str, Any]]) -> List[str]:
+    async def submit_batch(self, tasks: list[dict[str, Any]]) -> list[str]:
         """Submit multiple tasks at once."""
         ids = []
         for t in tasks:
@@ -177,11 +176,11 @@ class TaskQueue:
             ids.append(task_id)
         return ids
 
-    def get_task(self, task_id: str) -> Optional[Dict[str, Any]]:
+    def get_task(self, task_id: str) -> dict[str, Any] | None:
         task = self._tasks.get(task_id)
         return task.to_dict() if task else None
 
-    def get_result(self, task_id: str) -> Optional[Any]:
+    def get_result(self, task_id: str) -> Any | None:
         task = self._tasks.get(task_id)
         if task and task.status == TaskStatus.COMPLETED:
             return task.result
@@ -192,7 +191,7 @@ class TaskQueue:
         status: TaskStatus = None,
         group: str = None,
         limit: int = 100,
-    ) -> List[Dict[str, Any]]:
+    ) -> list[dict[str, Any]]:
         tasks = list(self._tasks.values())
         if status:
             tasks = [t for t in tasks if t.status == status]
@@ -209,7 +208,7 @@ class TaskQueue:
             return True
         return False
 
-    async def retry_task(self, task_id: str) -> Optional[str]:
+    async def retry_task(self, task_id: str) -> str | None:
         task = self._tasks.get(task_id)
         if task and task.status == TaskStatus.FAILED:
             task.status = TaskStatus.PENDING
@@ -221,7 +220,7 @@ class TaskQueue:
             return task.task_id
         return None
 
-    def get_stats(self) -> Dict[str, Any]:
+    def get_stats(self) -> dict[str, Any]:
         return {
             **self._stats,
             "queue_size": len([t for t in self._queue if t.status == TaskStatus.PENDING]),
@@ -285,7 +284,7 @@ class TaskQueue:
             if task.group:
                 self._group_stats[task.group]["completed"] += 1
 
-        except asyncio.TimeoutError:
+        except TimeoutError:
             task.status = TaskStatus.FAILED
             task.error = f"Task timed out after {task.timeout}s"
             task.completed_at = time.time()
@@ -360,7 +359,7 @@ async def analyze_data_task(dataset_id: str, analysis_type: str = "basic"):
 
 
 @task_queue.register("generate_report")
-async def generate_report_task(report_type: str, params: Dict[str, Any] = None):
+async def generate_report_task(report_type: str, params: dict[str, Any] = None):
     """Generate a report."""
     await asyncio.sleep(1.0)
     return {

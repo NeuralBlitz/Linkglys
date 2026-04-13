@@ -1,10 +1,11 @@
 #!/usr/bin/env python3
 """OpenCode LRS Code Analysis Hub — Honest benchmarks, real pattern analysis."""
 
-from flask import Flask, render_template_string, request, jsonify
 import os
-import time
 import re
+import time
+
+from flask import Flask, jsonify, render_template_string, request
 
 app = Flask(__name__)
 
@@ -297,7 +298,7 @@ def analyze():
             max_nesting = max(max_nesting, depth)
 
     # Comment ratio
-    total_lines = len([l for l in lines if l.strip()])
+    total_lines = len([line for line in lines if line.strip()])
     comment_ratio = round((comments / total_lines * 100), 1) if total_lines > 0 else 0
 
     elapsed_ms = round((time.time() - start_time) * 1000, 2)

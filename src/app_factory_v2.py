@@ -1,40 +1,37 @@
 #!/usr/bin/env python3
-"""
-Enhanced App Factory — Complete FastAPI Application
+"""Enhanced App Factory — Complete FastAPI Application
 Integrates auth, rate limiting, caching, WebSocket, event bus, metrics, ML pipeline, and all existing routes.
 """
 
 import os
 import time
-import json
 from contextlib import asynccontextmanager
 from pathlib import Path
-from typing import Dict, Any, Optional
+from typing import Any
 
-from fastapi import FastAPI, Depends, HTTPException, Request, APIRouter
+from fastapi import APIRouter, Depends, FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import JSONResponse, FileResponse, HTMLResponse
-from fastapi.staticfiles import StaticFiles
+from fastapi.responses import FileResponse
 from pydantic import BaseModel, Field
 
 # ── Import middleware components ──
 from middleware.auth import (
-    user_store, create_token_pair, decode_access_token,
-    get_current_user, get_current_active_user, require_permission, require_role,
-    User, Role
+    JWT_ALGORITHM,
+    Role,
+    User,
+    create_token_pair,
+    get_current_active_user,
+    require_role,
+    user_store,
 )
-from middleware.rate_limiter import rate_limiter, rate_limit_middleware, rate_limit
-from middleware.cache import cache, cached, invalidate_cache
-from middleware.websocket import ws_manager, ws_router, emit_agent_status
-from middleware.event_bus import event_bus, Event, EventPriority, emit, on_event
+from middleware.cache import cache
+from middleware.event_bus import emit, event_bus, on_event
 from middleware.metrics import (
-    registry, prometheus_metrics_middleware, metrics_endpoint,
-    http_requests_total, agents_total, db_query_duration_seconds
+    metrics_endpoint,
+    prometheus_metrics_middleware,
 )
-from middleware.database import (
-    get_db, Repository, User as DBUser, Agent as DBAgent,
-    AgentMetric, AgentEvent, Plugin, AgentStatus, AgentType
-)
+from middleware.rate_limiter import rate_limit_middleware, rate_limiter
+from middleware.websocket import emit_agent_status, ws_manager, ws_router
 
 # ── Import existing components ──
 try:
@@ -72,16 +69,16 @@ class UserCreate(BaseModel):
 class AgentCreate(BaseModel):
     name: str
     type: str = "inference"
-    config: Dict[str, Any] = Field(default_factory=dict)
+    config: dict[str, Any] = Field(default_factory=dict)
 
 class AgentCommand(BaseModel):
     command: str
-    params: Dict[str, Any] = Field(default_factory=dict)
+    params: dict[str, Any] = Field(default_factory=dict)
 
 class PluginInstall(BaseModel):
     name: str
     version: str = "1.0.0"
-    config: Dict[str, Any] = Field(default_factory=dict)
+    config: dict[str, Any] = Field(default_factory=dict)
 
 class MLTrainRequest(BaseModel):
     model_name: str
@@ -89,7 +86,7 @@ class MLTrainRequest(BaseModel):
     task: str = "classification"  # classification, regression, clustering
     features: list
     labels: list = []
-    params: Dict[str, Any] = Field(default_factory=dict)
+    params: dict[str, Any] = Field(default_factory=dict)
 
 class MLPredictRequest(BaseModel):
     model_name: str
@@ -108,9 +105,9 @@ async def lifespan(app: FastAPI):
     print(f"   🔐 Auth: JWT enabled (secret: {os.getenv('JWT_SECRET', 'default (change me!)')[:8]}...)")
     print(f"   ⏱️  Rate limiting: {rate_limiter.default_profile}")
     print(f"   💾 Cache backend: {'Redis' if cache._use_redis else 'Memory'}")
-    print(f"   🔌 WebSocket: /ws/connect/{{client_id}}")
-    print(f"   📊 Metrics: /metrics (Prometheus)")
-    print(f"   🤖 ML Pipeline: Ready")
+    print("   🔌 WebSocket: /ws/connect/{client_id}")
+    print("   📊 Metrics: /metrics (Prometheus)")
+    print("   🤖 ML Pipeline: Ready")
 
     # Seed event bus with demo handlers
     @on_event(["agent.status_changed"])
@@ -143,9 +140,13 @@ def create_app() -> FastAPI:
     )
 
     # ── Middleware ──
+    # Configurable CORS origins (defaults to ["*"] for dev, set via ALLOWED_ORIGINS env var)
+    allowed_origins = os.getenv("ALLOWED_ORIGINS", "*").split(",")
+    if allowed_origins == [""]:
+        allowed_origins = ["*"]
     app.add_middleware(
         CORSMiddleware,
-        allow_origins=["*"],
+        allow_origins=allowed_origins,
         allow_credentials=True,
         allow_methods=["*"],
         allow_headers=["*"],
@@ -267,8 +268,9 @@ def create_app() -> FastAPI:
     @api.post("/ml/train")
     async def train_model(req: MLTrainRequest, _user: User = Depends(get_current_active_user)):
         try:
-            from ml_pipeline import ml_pipeline
             import numpy as np
+
+            from ml_pipeline import ml_pipeline
 
             X = np.array(req.features)
             if req.task == "classification":
@@ -289,8 +291,9 @@ def create_app() -> FastAPI:
     @api.post("/ml/predict")
     async def predict(req: MLPredictRequest):
         try:
-            from ml_pipeline import ml_pipeline
             import numpy as np
+
+            from ml_pipeline import ml_pipeline
             X = np.array(req.features).reshape(1, -1)
             return ml_pipeline.predict(req.model_name, X)
         except Exception as e:
@@ -299,8 +302,9 @@ def create_app() -> FastAPI:
     @api.post("/ml/cluster")
     async def cluster_data(features: list, n_clusters: int = 5, method: str = "kmeans"):
         try:
-            from ml_pipeline import ml_pipeline
             import numpy as np
+
+            from ml_pipeline import ml_pipeline
             X = np.array(features)
             return ml_pipeline.cluster(X, n_clusters=n_clusters, method=method)
         except Exception as e:
@@ -309,8 +313,9 @@ def create_app() -> FastAPI:
     @api.post("/ml/anomalies")
     async def detect_anomalies(features: list, contamination: float = 0.1):
         try:
-            from ml_pipeline import ml_pipeline
             import numpy as np
+
+            from ml_pipeline import ml_pipeline
             X = np.array(features)
             return ml_pipeline.detect_anomalies(X, contamination=contamination)
         except Exception as e:
@@ -417,8 +422,8 @@ def create_app() -> FastAPI:
     @api.get("/config")
     async def config():
         return {
-            "rate_limit_profiles": list(rate_limiter._profiles) if hasattr(rate_limiter, '_profiles') else list(__import__('middleware.rate_limiter', fromlist=['RATE_LIMIT_PROFILES']).RATE_LIMIT_PROFILES.keys()),
-            "jwt_algorithm": "HS256",
+            "rate_limit_profiles": rate_limiter.available_profiles,
+            "jwt_algorithm": JWT_ALGORITHM,
             "cache_backend": "redis" if cache._use_redis else "memory",
             "ml_models": len(cache._store) if hasattr(cache, '_store') else 0,
         }

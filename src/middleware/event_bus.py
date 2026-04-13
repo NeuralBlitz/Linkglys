@@ -1,20 +1,17 @@
 #!/usr/bin/env python3
-"""
-Event Bus — Pub/Sub Event System
+"""Event Bus — Pub/Sub Event System
 Async event bus with filtering, persistence, and real-time distribution.
 """
 
-import os
-import json
+import asyncio
 import time
 import uuid
-import asyncio
-import heapq
-from typing import Dict, List, Set, Optional, Any, Callable, Awaitable
-from dataclasses import dataclass, field
-from enum import Enum
-from datetime import datetime, timezone
 from collections import defaultdict
+from collections.abc import Callable
+from dataclasses import dataclass, field
+from datetime import UTC, datetime
+from enum import Enum
+from typing import Any
 
 
 class EventPriority(int, Enum):
@@ -36,24 +33,25 @@ class EventStatus(str, Enum):
 @dataclass
 class Event:
     """Represents a system event."""
+
     id: str = field(default_factory=lambda: str(uuid.uuid4()))
     type: str = ""
     source: str = ""
-    data: Dict[str, Any] = field(default_factory=dict)
+    data: dict[str, Any] = field(default_factory=dict)
     priority: EventPriority = EventPriority.NORMAL
     status: EventStatus = EventStatus.PENDING
     timestamp: float = field(default_factory=time.time)
     ttl: int = 3600  # Time to live in seconds
     retry_count: int = 0
     max_retries: int = 3
-    tags: List[str] = field(default_factory=list)
+    tags: list[str] = field(default_factory=list)
     correlation_id: str = ""
-    error: Optional[str] = None
+    error: str | None = None
 
     def is_expired(self) -> bool:
         return time.time() - self.timestamp > self.ttl
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         return {
             "id": self.id,
             "type": self.type,
@@ -61,7 +59,7 @@ class Event:
             "data": self.data,
             "priority": self.priority.value,
             "status": self.status.value,
-            "timestamp": datetime.fromtimestamp(self.timestamp, tz=timezone.utc).isoformat(),
+            "timestamp": datetime.fromtimestamp(self.timestamp, tz=UTC).isoformat(),
             "ttl": self.ttl,
             "retry_count": self.retry_count,
             "tags": self.tags,
@@ -70,7 +68,7 @@ class Event:
         }
 
     @classmethod
-    def from_dict(cls, d: Dict[str, Any]) -> "Event":
+    def from_dict(cls, d: dict[str, Any]) -> "Event":
         d = d.copy()
         d["priority"] = EventPriority(d.get("priority", 2))
         d["status"] = EventStatus(d.get("status", "pending"))
@@ -80,15 +78,16 @@ class Event:
 @dataclass
 class Subscription:
     """Represents an event subscription."""
+
     id: str = field(default_factory=lambda: str(uuid.uuid4()))
-    event_types: List[str] = field(default_factory=list)
-    handler: Optional[Callable] = None
-    async_handler: Optional[Callable] = None
-    filter_fn: Optional[Callable[[Event], bool]] = None
+    event_types: list[str] = field(default_factory=list)
+    handler: Callable | None = None
+    async_handler: Callable | None = None
+    filter_fn: Callable[[Event], bool] | None = None
     max_invocations: int = 0  # 0 = unlimited
     invocation_count: int = 0
     created_at: float = field(default_factory=time.time)
-    tags: List[str] = field(default_factory=list)
+    tags: list[str] = field(default_factory=list)
 
     def can_invoke(self) -> bool:
         return self.max_invocations == 0 or self.invocation_count < self.max_invocations
@@ -115,10 +114,10 @@ class EventBus:
     """Async pub/sub event bus with priority queue and filtering."""
 
     def __init__(self, max_queue_size: int = 10000):
-        self._subscriptions: Dict[str, List[Subscription]] = defaultdict(list)
-        self._event_history: List[Event] = []
+        self._subscriptions: dict[str, list[Subscription]] = defaultdict(list)
+        self._event_history: list[Event] = []
         self._max_history = 5000
-        self._dead_letters: List[Event] = []
+        self._dead_letters: list[Event] = []
         self._max_dead_letters = 1000
         self._running = False
         self._stats = {
@@ -152,7 +151,7 @@ class EventBus:
         for sub in subs:
             event.status = EventStatus.PROCESSING
             try:
-                result = await sub.handle(event)
+                await sub.handle(event)
                 event.status = EventStatus.COMPLETED
             except Exception as e:
                 event.status = EventStatus.FAILED
@@ -180,19 +179,19 @@ class EventBus:
         finally:
             loop.close()
 
-    async def publish_batch(self, events: List[Event]) -> List[str]:
+    async def publish_batch(self, events: list[Event]) -> list[str]:
         return [await self.publish(e) for e in events]
 
     # ── Subscriptions ──
 
     def subscribe(
         self,
-        event_types: List[str],
+        event_types: list[str],
         handler: Callable = None,
         async_handler: Callable = None,
         filter_fn: Callable[[Event], bool] = None,
         max_invocations: int = 0,
-        tags: List[str] = None,
+        tags: list[str] = None,
     ) -> str:
         """Subscribe to events. Returns subscription ID."""
         if not handler and not async_handler:
@@ -218,7 +217,7 @@ class EventBus:
             self._subscriptions[et] = [s for s in subs if s.id != subscription_id]
         return True
 
-    def list_subscriptions(self) -> List[Dict[str, Any]]:
+    def list_subscriptions(self) -> list[dict[str, Any]]:
         all_subs = []
         seen = set()
         for subs in self._subscriptions.values():
@@ -238,11 +237,11 @@ class EventBus:
 
     def get_events(
         self,
-        event_type: Optional[str] = None,
-        status: Optional[EventStatus] = None,
+        event_type: str | None = None,
+        status: EventStatus | None = None,
         limit: int = 100,
         since: float = None,
-    ) -> List[Dict[str, Any]]:
+    ) -> list[dict[str, Any]]:
         events = self._event_history
         if event_type:
             events = [e for e in events if e.type == event_type]
@@ -252,10 +251,10 @@ class EventBus:
             events = [e for e in events if e.timestamp >= since]
         return [e.to_dict() for e in events[-limit:]]
 
-    def get_dead_letters(self, limit: int = 100) -> List[Dict[str, Any]]:
+    def get_dead_letters(self, limit: int = 100) -> list[dict[str, Any]]:
         return [e.to_dict() for e in self._dead_letters[-limit:]]
 
-    async def replay_dead_letter(self, event_id: str) -> Optional[str]:
+    async def replay_dead_letter(self, event_id: str) -> str | None:
         for i, event in enumerate(self._dead_letters):
             if event.id == event_id:
                 event.status = EventStatus.PENDING
@@ -267,7 +266,7 @@ class EventBus:
 
     # ── Internal ──
 
-    def _get_subscriptions(self, event_type: str) -> List[Subscription]:
+    def _get_subscriptions(self, event_type: str) -> list[Subscription]:
         """Get subscriptions for an event type, including wildcard subscribers."""
         subs = list(self._subscriptions.get(event_type, []))
         # Wildcard subscriptions
@@ -280,7 +279,7 @@ class EventBus:
                     subs.extend(pattern_subs)
         return subs
 
-    def get_stats(self) -> Dict[str, Any]:
+    def get_stats(self) -> dict[str, Any]:
         return {
             **self._stats,
             "active_subscriptions": len(self.list_subscriptions()),
@@ -303,7 +302,7 @@ event_bus = EventBus()
 
 # ── Convenience Decorators ──
 
-def on_event(event_types: List[str], filter_fn=None):
+def on_event(event_types: list[str], filter_fn=None):
     """Decorator to subscribe a function to events."""
     def decorator(func):
         import asyncio
@@ -323,7 +322,7 @@ def on_event(event_types: List[str], filter_fn=None):
     return decorator
 
 
-async def emit(event_type: str, data: Dict[str, Any], source: str = "", tags: List[str] = None):
+async def emit(event_type: str, data: dict[str, Any], source: str = "", tags: list[str] = None):
     """Quick emit helper."""
     event = Event(type=event_type, source=source, data=data, tags=tags or [])
     return await event_bus.publish(event)

@@ -1,19 +1,19 @@
 #!/usr/bin/env python3
-"""
-WebSocket System — Real-Time Streaming
+"""WebSocket System — Real-Time Streaming
 Provides WebSocket connections for real-time agent communication, live metrics, and event streaming.
 """
 
-import os
+import asyncio
+import contextlib
 import json
 import time
-import asyncio
-from typing import Dict, Set, Optional, Any, Callable, List
+from collections.abc import Callable
 from dataclasses import dataclass, field
+from datetime import UTC, datetime
 from enum import Enum
-from datetime import datetime, timezone
+from typing import Any
 
-from fastapi import WebSocket, WebSocketDisconnect, APIRouter
+from fastapi import APIRouter, WebSocket, WebSocketDisconnect
 from starlette.websockets import WebSocketState
 
 
@@ -42,7 +42,7 @@ class MessageType(str, Enum):
 @dataclass
 class WSMessage:
     type: MessageType
-    data: Dict[str, Any] = field(default_factory=dict)
+    data: dict[str, Any] = field(default_factory=dict)
     timestamp: float = field(default_factory=time.time)
     sender: str = ""
     room: str = ""
@@ -71,12 +71,13 @@ class WSMessage:
 @dataclass
 class WSClient:
     """Represents a connected WebSocket client."""
+
     websocket: WebSocket
     client_id: str
-    rooms: Set[str] = field(default_factory=set)
+    rooms: set[str] = field(default_factory=set)
     message_count: int = 0
     connected_at: float = field(default_factory=time.time)
-    filters: Dict[str, Any] = field(default_factory=dict)
+    filters: dict[str, Any] = field(default_factory=dict)
 
     async def send(self, message: WSMessage) -> bool:
         try:
@@ -93,9 +94,9 @@ class ConnectionManager:
     """Manages all WebSocket connections, rooms, and message routing."""
 
     def __init__(self):
-        self._clients: Dict[str, WSClient] = {}
-        self._rooms: Dict[str, Set[str]] = {}  # room -> set of client_ids
-        self._handlers: Dict[MessageType, List[Callable]] = {}
+        self._clients: dict[str, WSClient] = {}
+        self._rooms: dict[str, set[str]] = {}  # room -> set of client_ids
+        self._handlers: dict[MessageType, list[Callable]] = {}
         self._stats = {
             "total_connections": 0,
             "total_disconnections": 0,
@@ -124,7 +125,7 @@ class ConnectionManager:
                 self.leave_room(client_id, room)
             self._stats["total_disconnections"] += 1
 
-    def get_client(self, client_id: str) -> Optional[WSClient]:
+    def get_client(self, client_id: str) -> WSClient | None:
         return self._clients.get(client_id)
 
     def get_connected_count(self) -> int:
@@ -159,7 +160,7 @@ class ConnectionManager:
                 del self._rooms[room]
         return True
 
-    def get_rooms(self) -> Dict[str, int]:
+    def get_rooms(self) -> dict[str, int]:
         return {room: len(clients) for room, clients in self._rooms.items()}
 
     # ── Message Sending ──
@@ -170,10 +171,10 @@ class ConnectionManager:
             return await client.send(message)
         return False
 
-    async def send_to_room(self, room: str, message: WSMessage, exclude: List[str] = None) -> int:
+    async def send_to_room(self, room: str, message: WSMessage, exclude: list[str] = None) -> int:
         return await self._send_to_room(room, message, exclude or [])
 
-    async def _send_to_room(self, room: str, message: WSMessage, exclude: List[str]) -> int:
+    async def _send_to_room(self, room: str, message: WSMessage, exclude: list[str]) -> int:
         client_ids = self._rooms.get(room, set())
         sent = 0
         for cid in client_ids:
@@ -182,13 +183,12 @@ class ConnectionManager:
                     sent += 1
         return sent
 
-    async def broadcast(self, message: WSMessage, exclude: List[str] = None) -> int:
+    async def broadcast(self, message: WSMessage, exclude: list[str] = None) -> int:
         exclude = exclude or []
         sent = 0
         for cid, client in list(self._clients.items()):
-            if cid not in exclude:
-                if await client.send(message):
-                    sent += 1
+            if cid not in exclude and await client.send(message):
+                sent += 1
         return sent
 
     # ── Event Handlers ──
@@ -209,13 +209,13 @@ class ConnectionManager:
             except Exception as e:
                 await self.send_to_client(client_id, WSMessage(
                     type=MessageType.MESSAGE,
-                    data={"error": str(e), "type": message_type.value},
+                    data={"error": str(e), "type": message.type.value},
                     sender="system",
                 ))
 
     # ── Stats ──
 
-    def get_stats(self) -> Dict[str, Any]:
+    def get_stats(self) -> dict[str, Any]:
         return {
             **self._stats,
             "active_connections": len(self._clients),
@@ -228,10 +228,8 @@ class ConnectionManager:
         for client_id in list(self._clients.keys()):
             client = self._clients.get(client_id)
             if client and client.websocket.client_state == WebSocketState.CONNECTED:
-                try:
+                with contextlib.suppress(Exception):
                     await client.websocket.close()
-                except Exception:
-                    pass
         self._clients.clear()
         self._rooms.clear()
 
@@ -257,7 +255,7 @@ async def websocket_endpoint(websocket: WebSocket, client_id: str):
             if message.type == MessageType.PING:
                 await ws_manager.send_to_client(client_id, WSMessage(
                     type=MessageType.PONG,
-                    data={"server_time": datetime.now(timezone.utc).isoformat()},
+                    data={"server_time": datetime.now(UTC).isoformat()},
                     sender="server",
                 ))
             elif message.type == MessageType.MESSAGE and message.data.get("room"):
@@ -278,7 +276,7 @@ async def get_ws_stats():
 
 # ── Helper Functions ──
 
-async def emit_agent_status(agent_id: str, status: str, details: Dict[str, Any] = None):
+async def emit_agent_status(agent_id: str, status: str, details: dict[str, Any] = None):
     await ws_manager.broadcast(WSMessage(
         type=MessageType.AGENT_STATUS,
         data={"agent_id": agent_id, "status": status, **(details or {})},
@@ -286,7 +284,7 @@ async def emit_agent_status(agent_id: str, status: str, details: Dict[str, Any] 
     ))
 
 
-async def emit_metrics(agent_id: str, metrics: Dict[str, Any]):
+async def emit_metrics(agent_id: str, metrics: dict[str, Any]):
     await ws_manager.broadcast(WSMessage(
         type=MessageType.METRICS,
         data={"agent_id": agent_id, **metrics},
@@ -294,7 +292,7 @@ async def emit_metrics(agent_id: str, metrics: Dict[str, Any]):
     ))
 
 
-async def emit_log(level: str, message: str, data: Dict[str, Any] = None):
+async def emit_log(level: str, message: str, data: dict[str, Any] = None):
     await ws_manager.broadcast(WSMessage(
         type=MessageType.LOG,
         data={"level": level, "message": message, **(data or {})},

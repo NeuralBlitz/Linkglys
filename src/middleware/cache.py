@@ -1,17 +1,15 @@
 #!/usr/bin/env python3
-"""
-Redis Caching Layer — Distributed Cache with Fallback
+"""Redis Caching Layer — Distributed Cache with Fallback
 Provides Redis caching with in-memory fallback, cache invalidation, and TTL management.
 """
 
-import os
-import json
-import time
-import hashlib
 import functools
-from typing import Any, Optional, Dict, Callable, Union
-from dataclasses import dataclass, field
-
+import hashlib
+import json
+import os
+import time
+from collections.abc import Callable
+from typing import Any
 
 # ──────────────────────────────────────────────────────────────
 # In-Memory Fallback Cache (used when Redis unavailable)
@@ -21,13 +19,13 @@ class MemoryCache:
     """LRU in-memory cache with TTL support — fallback for Redis."""
 
     def __init__(self, max_size: int = 10000):
-        self._store: Dict[str, Dict[str, Any]] = {}
+        self._store: dict[str, dict[str, Any]] = {}
         self._max_size = max_size
-        self._access_order: Dict[str, float] = {}
+        self._access_order: dict[str, float] = {}
         self._hits = 0
         self._misses = 0
 
-    def get(self, key: str) -> Optional[Any]:
+    def get(self, key: str) -> Any | None:
         entry = self._store.get(key)
         if entry is None:
             self._misses += 1
@@ -65,7 +63,7 @@ class MemoryCache:
         self._store.clear()
         self._access_order.clear()
 
-    def get_stats(self) -> Dict[str, Any]:
+    def get_stats(self) -> dict[str, Any]:
         total = self._hits + self._misses
         return {
             "type": "memory",
@@ -92,7 +90,7 @@ class MemoryCache:
 class CacheManager:
     """Unified cache manager with Redis primary and memory fallback."""
 
-    def __init__(self, redis_url: Optional[str] = None):
+    def __init__(self, redis_url: str | None = None):
         self._redis_url = redis_url or os.getenv("REDIS_URL", "redis://localhost:6379/0")
         self._redis = None
         self._memory = MemoryCache()
@@ -117,7 +115,7 @@ class CacheManager:
     def _make_key(self, key: str) -> str:
         return f"{self._prefix}{key}"
 
-    def get(self, key: str) -> Optional[Any]:
+    def get(self, key: str) -> Any | None:
         self._stats["gets"] += 1
         if self._use_redis:
             try:
@@ -177,7 +175,7 @@ class CacheManager:
                 self._stats["errors"] += 1
         self._memory.clear()
 
-    def get_stats(self) -> Dict[str, Any]:
+    def get_stats(self) -> dict[str, Any]:
         mem_stats = self._memory.get_stats()
         return {
             "backend": "redis" if self._use_redis else "memory",
@@ -186,7 +184,7 @@ class CacheManager:
             "memory_cache": mem_stats,
         }
 
-    def health_check(self) -> Dict[str, Any]:
+    def health_check(self) -> dict[str, Any]:
         if self._use_redis:
             try:
                 ping = self._redis.ping()

@@ -1,5 +1,4 @@
-"""
-Advanced Governance & Ethics System (AGES)
+"""Advanced Governance & Ethics System (AGES).
 ==========================================
 
 Implementation of comprehensive ethical governance based on NeuralBlitz v20.0
@@ -14,19 +13,16 @@ Based on AGENTS.md specifications
 """
 
 import asyncio
-import json
-import uuid
-import time
 import hashlib
+import json
 import logging
-from typing import Dict, List, Optional, Any, Set, Callable, Tuple
-from dataclasses import dataclass, field, asdict
-from enum import Enum, auto
-from datetime import datetime, timedelta
-from collections import deque
-from abc import ABC, abstractmethod
-import random
 import math
+import random
+import uuid
+from dataclasses import dataclass
+from datetime import datetime
+from enum import Enum
+from typing import Any
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger("AGES")
@@ -38,7 +34,7 @@ logger = logging.getLogger("AGES")
 
 
 class CharterClause(Enum):
-    """Transcendental Charter Clauses (ϕ₁-ϕ₁₅)"""
+    """Transcendental Charter Clauses (ϕ₁-ϕ₁₅)."""
 
     PHI_1_FLOURISHING = "ϕ1"  # Universal Flourishing Objective
     PHI_2_CLASS_BOUNDS = "ϕ2"  # Class-III Kernel Bounds
@@ -59,7 +55,7 @@ class CharterClause(Enum):
 
 @dataclass
 class EthicalConstraint:
-    """Represents an ethical constraint from the Charter"""
+    """Represents an ethical constraint from the Charter."""
 
     clause: CharterClause
     weight: float
@@ -69,7 +65,7 @@ class EthicalConstraint:
 
 
 class TranscendentalCharter:
-    """The complete Transcendental Charter governing all NBOS operations"""
+    """The complete Transcendental Charter governing all NBOS operations."""
 
     def __init__(self):
         self.clauses = {}
@@ -77,7 +73,7 @@ class TranscendentalCharter:
         self._initialize_charter()
 
     def _initialize_charter(self):
-        """Initialize all charter clauses with constraints"""
+        """Initialize all charter clauses with constraints."""
         charter_definitions = [
             (
                 CharterClause.PHI_1_FLOURISHING,
@@ -191,8 +187,8 @@ class TranscendentalCharter:
             ],
         }
 
-    def evaluate_action(self, action: Dict[str, Any]) -> Dict[str, Any]:
-        """Evaluate an action against all charter clauses"""
+    def evaluate_action(self, action: dict[str, Any]) -> dict[str, Any]:
+        """Evaluate an action against all charter clauses."""
         results = {}
         total_weighted_score = 0.0
         total_weight = 0.0
@@ -227,10 +223,10 @@ class TranscendentalCharter:
             "timestamp": datetime.now(),
         }
 
-    def _evaluate_clause(self, clause: CharterClause, action: Dict[str, Any]) -> float:
+    def _evaluate_clause(self, clause: CharterClause, action: dict[str, Any]) -> float:
         """Evaluate a specific charter clause based on action properties."""
         risk = action.get("risk", "medium").lower()
-        action_type = action.get("type", "").lower()
+        action.get("type", "").lower()
 
         # Risk-based baseline scoring
         risk_scores = {"low": 0.95, "medium": 0.80, "high": 0.60, "critical": 0.40}
@@ -268,7 +264,7 @@ class TranscendentalCharter:
 
 
 class VeritasEngine:
-    """Formal verification engine for truth-coherence and invariants"""
+    """Formal verification engine for truth-coherence and invariants."""
 
     def __init__(self):
         self.vpce_threshold = 0.985  # Default threshold
@@ -276,8 +272,8 @@ class VeritasEngine:
         self.invariant_checks = []
         self.coherence_history = []
 
-    def calculate_vpce(self, state: Dict[str, Any]) -> float:
-        """Calculate Veritas Phase-Coherence Equation (VPCE)"""
+    def calculate_vpce(self, state: dict[str, Any]) -> float:
+        """Calculate Veritas Phase-Coherence Equation (VPCE)."""
         # VPCE = (1/Σw_i) * |Σ w_i * e^(j(θ_i - φ_baseline))|
         weights = []
         phases = []
@@ -306,9 +302,9 @@ class VeritasEngine:
         return coherence
 
     def verify_invariant(
-        self, invariant_name: str, state: Dict[str, Any]
-    ) -> Dict[str, Any]:
-        """Verify a specific invariant"""
+        self, invariant_name: str, state: dict[str, Any]
+    ) -> dict[str, Any]:
+        """Verify a specific invariant."""
         vpce = self.calculate_vpce(state)
 
         result = {
@@ -323,8 +319,8 @@ class VeritasEngine:
 
         return result
 
-    def create_proof(self, theorem: str, evidence: Dict[str, Any]) -> Dict[str, Any]:
-        """Create a formal proof capsule"""
+    def create_proof(self, theorem: str, evidence: dict[str, Any]) -> dict[str, Any]:
+        """Create a formal proof capsule."""
         proof_id = f"VPROOF#{uuid.uuid4().hex[:12].upper()}"
 
         proof = {
@@ -342,8 +338,8 @@ class VeritasEngine:
 
         return proof
 
-    def check_coherence(self, state: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:
-        """Check overall system coherence status"""
+    def check_coherence(self, state: dict[str, Any] | None = None) -> dict[str, Any]:
+        """Check overall system coherence status."""
         if state is None:
             state = {"default_coherence": 0.99}
 
@@ -372,33 +368,33 @@ class VeritasEngine:
 
 @dataclass
 class JudgeProfile:
-    """Profile for a Judex judge"""
+    """Profile for a Judex judge."""
 
     judge_id: str
     name: str
-    expertise_areas: List[str]
+    expertise_areas: list[str]
     authority_level: float
     weight: float
 
 
 class JudexQuorum:
-    """Multi-party arbitration system for privileged operations"""
+    """Multi-party arbitration system for privileged operations."""
 
     def __init__(self):
-        self.judges: Dict[str, JudgeProfile] = {}
+        self.judges: dict[str, JudgeProfile] = {}
         self.quorum_history = []
         self.threshold = 0.75  # Default quorum threshold
         self.pending_cases = {}
 
     def register_judge(self, judge: JudgeProfile):
-        """Register a judge"""
+        """Register a judge."""
         self.judges[judge.judge_id] = judge
         logger.info(f"Registered judge: {judge.name}")
 
     def submit_case(
-        self, case_id: str, proposal: Dict[str, Any], required_expertise: List[str]
+        self, case_id: str, proposal: dict[str, Any], required_expertise: list[str]
     ) -> str:
-        """Submit a case for arbitration"""
+        """Submit a case for arbitration."""
         case = {
             "case_id": case_id,
             "proposal": proposal,
@@ -411,7 +407,7 @@ class JudexQuorum:
         self.pending_cases[case_id] = case
 
         # Find eligible judges
-        eligible = [
+        [
             j
             for j in self.judges.values()
             if any(exp in j.expertise_areas for exp in required_expertise)
@@ -421,8 +417,8 @@ class JudexQuorum:
 
     def cast_vote(
         self, case_id: str, judge_id: str, vote: str, rationale: str
-    ) -> Dict[str, Any]:
-        """Cast a vote in a pending case"""
+    ) -> dict[str, Any]:
+        """Cast a vote in a pending case."""
         if case_id not in self.pending_cases:
             raise ValueError(f"Case {case_id} not found")
 
@@ -447,8 +443,8 @@ class JudexQuorum:
 
         return case["votes"][judge_id]
 
-    def calculate_quorum(self, case_id: str) -> Dict[str, Any]:
-        """Calculate quorum result for a case"""
+    def calculate_quorum(self, case_id: str) -> dict[str, Any]:
+        """Calculate quorum result for a case."""
         if case_id not in self.pending_cases:
             raise ValueError(f"Case {case_id} not found")
 
@@ -493,8 +489,8 @@ class JudexQuorum:
 
         return result
 
-    def _create_quorum_stamp(self, case: Dict[str, Any]) -> str:
-        """Create a quorum stamp for approved cases"""
+    def _create_quorum_stamp(self, case: dict[str, Any]) -> str:
+        """Create a quorum stamp for approved cases."""
         stamp_data = {
             "case_id": case["case_id"],
             "timestamp": datetime.now().isoformat(),
@@ -510,7 +506,7 @@ class JudexQuorum:
 
 
 class SentiaGuard:
-    """Real-time ethical drift monitoring and proactive attenuation"""
+    """Real-time ethical drift monitoring and proactive attenuation."""
 
     def __init__(self, charter: TranscendentalCharter):
         self.charter = charter
@@ -521,8 +517,8 @@ class SentiaGuard:
         self.monitoring_history = []
         self.alert_level = "GREEN"
 
-    def calculate_risk_score(self, state: Dict[str, Any]) -> float:
-        """Calculate aggregate risk score"""
+    def calculate_risk_score(self, state: dict[str, Any]) -> float:
+        """Calculate aggregate risk score."""
         charter_eval = self.charter.evaluate_action(state)
 
         # Risk increases with violations and low scores
@@ -535,7 +531,7 @@ class SentiaGuard:
         return risk
 
     def apply_seam(self, error: float, dt: float) -> float:
-        """Apply SentiaGuard Ethical Attenuation Model (SEAM) PID controller"""
+        """Apply SentiaGuard Ethical Attenuation Model (SEAM) PID controller."""
         # PID control for ethical damping
         self.error_integral += error * dt
         derivative = (error - self.previous_error) / dt if dt > 0 else 0
@@ -550,8 +546,8 @@ class SentiaGuard:
 
         return output
 
-    def monitor_and_intervene(self, state: Dict[str, Any]) -> Dict[str, Any]:
-        """Monitor ethical state and apply interventions if needed"""
+    def monitor_and_intervene(self, state: dict[str, Any]) -> dict[str, Any]:
+        """Monitor ethical state and apply interventions if needed."""
         risk = self.calculate_risk_score(state)
         intervention = None
 
@@ -593,7 +589,7 @@ class SentiaGuard:
 
 
 class GoldenDAGLedger:
-    """Immutable causal chain record for all operations"""
+    """Immutable causal chain record for all operations."""
 
     def __init__(self, block_size: int = 10):
         self.chain = []
@@ -603,8 +599,8 @@ class GoldenDAGLedger:
         # Seal genesis immediately
         self.chain.append(self.genesis_block)
 
-    def _create_genesis(self) -> Dict[str, Any]:
-        """Create genesis block"""
+    def _create_genesis(self) -> dict[str, Any]:
+        """Create genesis block."""
         return {
             "block_id": "GENESIS",
             "previous_hash": "0" * 64,
@@ -613,17 +609,17 @@ class GoldenDAGLedger:
             "seal": self._seal_block({"GENESIS": True}),
         }
 
-    def _calculate_hash(self, data: Dict[str, Any]) -> str:
-        """Calculate hash for a block"""
+    def _calculate_hash(self, data: dict[str, Any]) -> str:
+        """Calculate hash for a block."""
         content = json.dumps(data, sort_keys=True)
         return hashlib.sha256(content.encode()).hexdigest()
 
-    def _seal_block(self, data: Dict[str, Any]) -> str:
-        """Seal a block with cryptographic hash"""
+    def _seal_block(self, data: dict[str, Any]) -> str:
+        """Seal a block with cryptographic hash."""
         return f"NBHS-512:{self._calculate_hash(data)}"
 
-    def append_operation(self, operation: Dict[str, Any]) -> str:
-        """Append an operation to the ledger"""
+    def append_operation(self, operation: dict[str, Any]) -> str:
+        """Append an operation to the ledger."""
         op_id = f"OP-{uuid.uuid4().hex[:16].upper()}"
 
         operation_entry = {
@@ -641,7 +637,7 @@ class GoldenDAGLedger:
         return op_id
 
     def _seal_current_block(self):
-        """Seal the current block and add to chain"""
+        """Seal the current block and add to chain."""
         if not self.current_block:
             return  # Nothing to seal
 
@@ -659,16 +655,16 @@ class GoldenDAGLedger:
         self.current_block = []
 
     def force_seal(self):
-        """Force seal current block even if not full"""
+        """Force seal current block even if not full."""
         if self.current_block:
             self._seal_current_block()
 
     def get_pending_operations(self) -> int:
-        """Get count of operations waiting to be sealed"""
+        """Get count of operations waiting to be sealed."""
         return len(self.current_block)
 
-    def verify_chain(self) -> Dict[str, Any]:
-        """Verify the integrity of the chain"""
+    def verify_chain(self) -> dict[str, Any]:
+        """Verify the integrity of the chain."""
         if not self.chain:
             return {"valid": False, "reason": "Chain is empty"}
 
@@ -724,7 +720,7 @@ class GoldenDAGLedger:
 
 
 class ComprehensiveGovernanceSystem:
-    """Unified governance system integrating all components"""
+    """Unified governance system integrating all components."""
 
     def __init__(self):
         self.charter = TranscendentalCharter()
@@ -737,7 +733,7 @@ class ComprehensiveGovernanceSystem:
         self._initialize_judges()
 
     def _initialize_judges(self):
-        """Initialize default Judex judges"""
+        """Initialize default Judex judges."""
         default_judges = [
             JudgeProfile(
                 "judge_ethics_1", "Ethics Judge 1", ["ethics", "governance"], 0.9, 1.0
@@ -761,8 +757,8 @@ class ComprehensiveGovernanceSystem:
         for judge in default_judges:
             self.judex.register_judge(judge)
 
-    def evaluate_action(self, action: Dict[str, Any]) -> Dict[str, Any]:
-        """Comprehensive evaluation of an action"""
+    def evaluate_action(self, action: dict[str, Any]) -> dict[str, Any]:
+        """Comprehensive evaluation of an action."""
         # 1. Charter evaluation
         charter_result = self.charter.evaluate_action(action)
 
@@ -796,9 +792,9 @@ class ComprehensiveGovernanceSystem:
         }
 
     async def request_privileged_operation(
-        self, operation: Dict[str, Any], expertise_required: List[str]
-    ) -> Dict[str, Any]:
-        """Request a privileged operation through Judex quorum"""
+        self, operation: dict[str, Any], expertise_required: list[str]
+    ) -> dict[str, Any]:
+        """Request a privileged operation through Judex quorum."""
         case_id = f"CASE-{uuid.uuid4().hex[:12].upper()}"
 
         # Submit to Judex
@@ -814,8 +810,8 @@ class ComprehensiveGovernanceSystem:
             "status": "pending_quorum" if not evaluation["approved"] else "approved",
         }
 
-    def get_system_status(self) -> Dict[str, Any]:
-        """Get comprehensive system status"""
+    def get_system_status(self) -> dict[str, Any]:
+        """Get comprehensive system status."""
         return {
             "charter": {
                 "clauses_active": len(
@@ -847,7 +843,7 @@ class ComprehensiveGovernanceSystem:
 
 
 async def demonstrate_governance():
-    """Demonstrate the comprehensive governance system"""
+    """Demonstrate the comprehensive governance system."""
     print("\n" + "=" * 80)
     print("🏛️ COMPREHENSIVE GOVERNANCE & ETHICS SYSTEM DEMONSTRATION")
     print("=" * 80)
@@ -922,14 +918,14 @@ if __name__ == "__main__":
 
 
 class ComplianceMonitor:
-    """Monitors system compliance with charter clauses"""
+    """Monitors system compliance with charter clauses."""
 
     def __init__(self, governance_system):
         self.gov = governance_system
-        self.compliance_history: List[Dict] = []
+        self.compliance_history: list[dict] = []
 
-    async def check_compliance(self, operation: Dict) -> Dict:
-        """Check if operation is compliant with all charter clauses"""
+    async def check_compliance(self, operation: dict) -> dict:
+        """Check if operation is compliant with all charter clauses."""
         results = {
             "operation_id": operation.get("id", str(uuid.uuid4())),
             "timestamp": datetime.now().isoformat(),
@@ -948,8 +944,8 @@ class ComplianceMonitor:
         self.compliance_history.append(results)
         return results
 
-    async def _check_clause(self, clause: CharterClause, operation: Dict) -> Dict:
-        """Check individual charter clause"""
+    async def _check_clause(self, clause: CharterClause, operation: dict) -> dict:
+        """Check individual charter clause."""
         # Simplified compliance check
         return {
             "compliant": True,
@@ -957,8 +953,8 @@ class ComplianceMonitor:
             "details": f"Clause {clause.value} satisfied",
         }
 
-    def get_compliance_report(self) -> Dict:
-        """Generate compliance report"""
+    def get_compliance_report(self) -> dict:
+        """Generate compliance report."""
         total = len(self.compliance_history)
         compliant = sum(1 for c in self.compliance_history if c["overall_compliant"])
         return {
@@ -970,14 +966,14 @@ class ComplianceMonitor:
 
 
 class AuditTrail:
-    """Immutable audit trail for all governance actions"""
+    """Immutable audit trail for all governance actions."""
 
     def __init__(self):
-        self.trail: List[Dict] = []
+        self.trail: list[dict] = []
         self.chain_hash = ""
 
-    def record(self, action: Dict):
-        """Record an action to the audit trail"""
+    def record(self, action: dict):
+        """Record an action to the audit trail."""
         entry = {
             "id": str(uuid.uuid4()),
             "timestamp": datetime.now().isoformat(),
@@ -988,13 +984,13 @@ class AuditTrail:
         self.chain_hash = entry["hash"]
         self.trail.append(entry)
 
-    def _compute_hash(self, entry: Dict) -> str:
-        """Compute hash for entry"""
+    def _compute_hash(self, entry: dict) -> str:
+        """Compute hash for entry."""
         data = json.dumps(entry, sort_keys=True)
         return hashlib.sha256(data.encode()).hexdigest()
 
     def verify(self) -> bool:
-        """Verify audit trail integrity"""
+        """Verify audit trail integrity."""
         prev_hash = ""
         for entry in self.trail:
             if entry["previous_hash"] != prev_hash:
@@ -1006,29 +1002,29 @@ class AuditTrail:
             prev_hash = entry["hash"]
         return True
 
-    def get_trail(self, limit: int = 100) -> List[Dict]:
-        """Get recent audit trail entries"""
+    def get_trail(self, limit: int = 100) -> list[dict]:
+        """Get recent audit trail entries."""
         return self.trail[-limit:]
 
 
 class PolicyEnforcer:
-    """Enforces governance policies across the system"""
+    """Enforces governance policies across the system."""
 
     def __init__(self, governance_system):
         self.gov = governance_system
-        self.policies: Dict[str, Dict] = {}
-        self.violations: List[Dict] = []
+        self.policies: dict[str, dict] = {}
+        self.violations: list[dict] = []
 
-    def register_policy(self, policy_id: str, policy: Dict):
-        """Register a new policy"""
+    def register_policy(self, policy_id: str, policy: dict):
+        """Register a new policy."""
         self.policies[policy_id] = {
             **policy,
             "registered_at": datetime.now().isoformat(),
             "violations": 0,
         }
 
-    async def enforce(self, context: Dict) -> Dict:
-        """Enforce all applicable policies"""
+    async def enforce(self, context: dict) -> dict:
+        """Enforce all applicable policies."""
         results = {
             "context": context,
             "policies_checked": 0,
@@ -1048,21 +1044,21 @@ class PolicyEnforcer:
         return results
 
     async def _check_policy(
-        self, policy_id: str, policy: Dict, context: Dict
-    ) -> Optional[Dict]:
-        """Check individual policy"""
+        self, policy_id: str, policy: dict, context: dict
+    ) -> dict | None:
+        """Check individual policy."""
         # Simplified policy check
         return None
 
-    def get_violation_report(self) -> Dict:
-        """Get policy violation report"""
+    def get_violation_report(self) -> dict:
+        """Get policy violation report."""
         return {
             "total_violations": len(self.violations),
             "by_policy": self._aggregate_violations(),
             "recent": self.violations[-10:],
         }
 
-    def _aggregate_violations(self) -> Dict:
+    def _aggregate_violations(self) -> dict:
         agg = {}
         for v in self.violations:
             pid = v.get("policy_id", "unknown")
@@ -1071,14 +1067,14 @@ class PolicyEnforcer:
 
 
 class GovernanceIntegration:
-    """Integrates governance with multi-agent systems"""
+    """Integrates governance with multi-agent systems."""
 
     def __init__(self, governance_system):
         self.gov = governance_system
-        self.agents: Dict[str, Dict] = {}
+        self.agents: dict[str, dict] = {}
 
-    def register_agent(self, agent_id: str, agent_config: Dict):
-        """Register an agent with governance"""
+    def register_agent(self, agent_id: str, agent_config: dict):
+        """Register an agent with governance."""
         self.agents[agent_id] = {
             "config": agent_config,
             "actions": [],
@@ -1086,8 +1082,8 @@ class GovernanceIntegration:
             "registered_at": datetime.now().isoformat(),
         }
 
-    async def agent_action(self, agent_id: str, action: Dict) -> Dict:
-        """Process agent action through governance"""
+    async def agent_action(self, agent_id: str, action: dict) -> dict:
+        """Process agent action through governance."""
         if agent_id not in self.agents:
             return {"error": "Unknown agent"}
 
@@ -1104,8 +1100,8 @@ class GovernanceIntegration:
             "governance_checks": compliance,
         }
 
-    def get_agent_metrics(self, agent_id: str) -> Dict:
-        """Get governance metrics for an agent"""
+    def get_agent_metrics(self, agent_id: str) -> dict:
+        """Get governance metrics for an agent."""
         if agent_id not in self.agents:
             return {"error": "Unknown agent"}
 

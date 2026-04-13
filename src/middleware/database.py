@@ -1,25 +1,30 @@
 #!/usr/bin/env python3
-"""
-SQLAlchemy ORM — Typed Database Models
+"""SQLAlchemy ORM — Typed Database Models
 Replaces raw SQL with typed, validated database models for all entities.
 """
 
-import os
-import time
 import json
+import os
 import uuid
-from datetime import datetime, timezone
-from typing import Optional, Dict, Any, List, Type
+from datetime import UTC, datetime
 from enum import Enum as PyEnum
+from typing import Any
 
 from sqlalchemy import (
-    create_engine, Column, String, Integer, Float, Boolean,
-    Text, DateTime, ForeignKey, Index, event, func
+    Boolean,
+    Column,
+    DateTime,
+    Float,
+    ForeignKey,
+    Index,
+    Integer,
+    String,
+    Text,
+    create_engine,
 )
 from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import sessionmaker, Session, relationship
+from sqlalchemy.orm import Session, relationship, sessionmaker
 from sqlalchemy.pool import StaticPool
-
 
 # ──────────────────────────────────────────────────────────────
 # Database Configuration
@@ -87,16 +92,16 @@ class User(Base):
     hashed_password = Column(String(255), nullable=False)
     role = Column(String(32), default="viewer", nullable=False)
     is_active = Column(Boolean, default=True)
-    created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))
-    updated_at = Column(DateTime, default=lambda: datetime.now(timezone.utc),
-                       onupdate=lambda: datetime.now(timezone.utc))
+    created_at = Column(DateTime, default=lambda: datetime.now(UTC))
+    updated_at = Column(DateTime, default=lambda: datetime.now(UTC),
+                       onupdate=lambda: datetime.now(UTC))
     metadata_json = Column(Text, default="{}")
 
     # Relationships
     agents = relationship("Agent", back_populates="owner", lazy="dynamic")
     api_keys = relationship("ApiKey", back_populates="user", lazy="dynamic")
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         return {
             "id": self.id,
             "username": self.username,
@@ -122,12 +127,12 @@ class ApiKey(Base):
     name = Column(String(128), nullable=False)
     is_active = Column(Boolean, default=True)
     last_used_at = Column(DateTime, nullable=True)
-    created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))
+    created_at = Column(DateTime, default=lambda: datetime.now(UTC))
     expires_at = Column(DateTime, nullable=True)
 
     user = relationship("User", back_populates="api_keys")
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         return {
             "id": self.id,
             "name": self.name,
@@ -155,9 +160,9 @@ class Agent(Base):
     state_json = Column(Text, default="{}")
     precision = Column(Float, default=0.5)
     free_energy = Column(Float, default=0.0)
-    created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))
-    updated_at = Column(DateTime, default=lambda: datetime.now(timezone.utc),
-                       onupdate=lambda: datetime.now(timezone.utc))
+    created_at = Column(DateTime, default=lambda: datetime.now(UTC))
+    updated_at = Column(DateTime, default=lambda: datetime.now(UTC),
+                       onupdate=lambda: datetime.now(UTC))
     started_at = Column(DateTime, nullable=True)
     completed_at = Column(DateTime, nullable=True)
     error_message = Column(Text, nullable=True)
@@ -167,7 +172,7 @@ class Agent(Base):
     metrics = relationship("AgentMetric", back_populates="agent", lazy="dynamic")
     events = relationship("AgentEvent", back_populates="agent", lazy="dynamic")
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         return {
             "id": self.id,
             "name": self.name,
@@ -193,7 +198,7 @@ class AgentMetric(Base):
 
     id = Column(String(36), primary_key=True, default=lambda: str(uuid.uuid4()))
     agent_id = Column(String(36), ForeignKey("agents.id"), nullable=False)
-    timestamp = Column(DateTime, default=lambda: datetime.now(timezone.utc), index=True)
+    timestamp = Column(DateTime, default=lambda: datetime.now(UTC), index=True)
     cpu_usage = Column(Float, default=0.0)
     memory_usage = Column(Float, default=0.0)
     response_time_ms = Column(Float, default=0.0)
@@ -205,7 +210,7 @@ class AgentMetric(Base):
 
     agent = relationship("Agent", back_populates="metrics")
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         return {
             "id": self.id,
             "agent_id": self.agent_id,
@@ -235,11 +240,11 @@ class AgentEvent(Base):
     severity = Column(String(16), default=LogLevel.INFO.value)
     message = Column(Text, nullable=False)
     data_json = Column(Text, default="{}")
-    timestamp = Column(DateTime, default=lambda: datetime.now(timezone.utc), index=True)
+    timestamp = Column(DateTime, default=lambda: datetime.now(UTC), index=True)
 
     agent = relationship("Agent", back_populates="events")
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         return {
             "id": self.id,
             "agent_id": self.agent_id,
@@ -266,11 +271,11 @@ class Plugin(Base):
     is_valid = Column(Boolean, default=True)
     validation_errors = Column(Text, default="[]")
     config_json = Column(Text, default="{}")
-    installed_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))
-    updated_at = Column(DateTime, default=lambda: datetime.now(timezone.utc),
-                       onupdate=lambda: datetime.now(timezone.utc))
+    installed_at = Column(DateTime, default=lambda: datetime.now(UTC))
+    updated_at = Column(DateTime, default=lambda: datetime.now(UTC),
+                       onupdate=lambda: datetime.now(UTC))
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         return {
             "id": self.id,
             "name": self.name,
@@ -332,14 +337,14 @@ def seed_db():
 class Repository:
     """Generic repository with common CRUD operations."""
 
-    def __init__(self, model: Type[Base], db: Session):
+    def __init__(self, model: type[Base], db: Session):
         self.model = model
         self.db = db
 
-    def get(self, id: str) -> Optional[Any]:
+    def get(self, id: str) -> Any | None:
         return self.db.query(self.model).filter(self.model.id == id).first()
 
-    def list(self, limit: int = 100, offset: int = 0) -> List[Any]:
+    def list(self, limit: int = 100, offset: int = 0) -> list[Any]:
         return self.db.query(self.model).order_by(
             self.model.created_at.desc()
         ).offset(offset).limit(limit).all()
@@ -351,13 +356,13 @@ class Repository:
         self.db.refresh(instance)
         return instance
 
-    def update(self, id: str, **kwargs) -> Optional[Any]:
+    def update(self, id: str, **kwargs) -> Any | None:
         instance = self.get(id)
         if instance:
             for key, value in kwargs.items():
                 if hasattr(instance, key):
                     setattr(instance, key, value)
-            instance.updated_at = datetime.now(timezone.utc)
+            instance.updated_at = datetime.now(UTC)
             self.db.commit()
             self.db.refresh(instance)
         return instance

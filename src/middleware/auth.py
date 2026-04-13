@@ -1,23 +1,21 @@
 #!/usr/bin/env python3
-"""
-JWT Authentication System — Real API Authentication
+"""JWT Authentication System — Real API Authentication
 Provides JWT token-based auth with refresh tokens, API keys, and role-based access control.
 """
 
-import os
-import time
 import hashlib
+import hmac
+import os
 import secrets
-from datetime import datetime, timedelta, timezone
-from typing import Optional, Dict, Any, List
-from enum import Enum
+import time
 from dataclasses import dataclass, field
+from datetime import UTC, datetime, timedelta
+from enum import Enum
+from typing import Any
 
 import jwt
-import hashlib
-from fastapi import Request, HTTPException, Depends, status
-from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
-
+from fastapi import Depends, HTTPException
+from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 
 # ──────────────────────────────────────────────────────────────
 # Configuration
@@ -29,20 +27,24 @@ JWT_ACCESS_EXPIRE_MINUTES = 30
 JWT_REFRESH_EXPIRE_DAYS = 7
 JWT_ISSUER = "linkglys-api"
 
+# Password hashing: PBKDF2-HMAC-SHA256 with 100k iterations
+# (replaces weak SHA-256 + salt)
+HASH_ALGORITHM = "pbkdf2:sha256:100000"
+
 
 def hash_password(password: str) -> str:
-    """Hash password with SHA-256 + salt."""
+    """Hash password with PBKDF2-HMAC-SHA256 (100k iterations)."""
     salt = secrets.token_hex(16)
-    hashed = hashlib.sha256(f"{salt}{password}".encode()).hexdigest()
-    return f"{salt}${hashed}"
+    dk = hashlib.pbkdf2_hmac("sha256", password.encode(), salt.encode(), 100_000)
+    return f"{salt}${dk.hex()}"
 
 
 def verify_password(password: str, hashed: str) -> bool:
-    """Verify password against hash."""
+    """Verify password against PBKDF2 hash."""
     try:
         salt, expected = hashed.split("$", 1)
-        actual = hashlib.sha256(f"{salt}{password}".encode()).hexdigest()
-        return actual == expected
+        dk = hashlib.pbkdf2_hmac("sha256", password.encode(), salt.encode(), 100_000)
+        return hmac.compare_digest(dk.hex(), expected)
     except (ValueError, AttributeError):
         return False
 
@@ -75,17 +77,17 @@ class User:
     hashed_password: str
     is_active: bool = True
     created_at: float = field(default_factory=time.time)
-    api_keys: List[str] = field(default_factory=list)
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    api_keys: list[str] = field(default_factory=list)
+    metadata: dict[str, Any] = field(default_factory=dict)
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         return {
             "user_id": self.user_id,
             "username": self.username,
             "email": self.email,
             "role": self.role.value,
             "is_active": self.is_active,
-            "created_at": datetime.fromtimestamp(self.created_at, tz=timezone.utc).isoformat(),
+            "created_at": datetime.fromtimestamp(self.created_at, tz=UTC).isoformat(),
             "api_key_count": len(self.api_keys),
         }
 
@@ -106,10 +108,10 @@ class UserStore:
     """In-memory user store with password hashing and API key management."""
 
     def __init__(self):
-        self._users: Dict[str, User] = {}
-        self._username_index: Dict[str, str] = {}
-        self._api_key_index: Dict[str, str] = {}
-        self._refresh_tokens: Dict[str, Dict[str, Any]] = {}
+        self._users: dict[str, User] = {}
+        self._username_index: dict[str, str] = {}
+        self._api_key_index: dict[str, str] = {}
+        self._refresh_tokens: dict[str, dict[str, Any]] = {}
 
     def create_user(
         self,
@@ -117,7 +119,7 @@ class UserStore:
         email: str,
         password: str,
         role: Role = Role.VIEWER,
-        user_id: Optional[str] = None,
+        user_id: str | None = None,
     ) -> User:
         if username in self._username_index:
             raise ValueError(f"Username '{username}' already exists")
@@ -134,7 +136,7 @@ class UserStore:
         self._username_index[username] = uid
         return user
 
-    def authenticate(self, username: str, password: str) -> Optional[User]:
+    def authenticate(self, username: str, password: str) -> User | None:
         uid = self._username_index.get(username)
         if not uid:
             return None
@@ -145,10 +147,10 @@ class UserStore:
             return None
         return user
 
-    def get_user(self, user_id: str) -> Optional[User]:
+    def get_user(self, user_id: str) -> User | None:
         return self._users.get(user_id)
 
-    def get_user_by_username(self, username: str) -> Optional[User]:
+    def get_user_by_username(self, username: str) -> User | None:
         uid = self._username_index.get(username)
         return self._users.get(uid) if uid else None
 
@@ -172,7 +174,7 @@ class UserStore:
             return True
         return False
 
-    def authenticate_api_key(self, key: str) -> Optional[User]:
+    def authenticate_api_key(self, key: str) -> User | None:
         key_hash = hashlib.sha256(key.encode()).hexdigest()
         uid = self._api_key_index.get(key_hash)
         return self._users.get(uid) if uid else None
@@ -186,7 +188,7 @@ class UserStore:
         }
         return token
 
-    def validate_refresh_token(self, token: str) -> Optional[str]:
+    def validate_refresh_token(self, token: str) -> str | None:
         data = self._refresh_tokens.get(token)
         if not data:
             return None
@@ -198,7 +200,7 @@ class UserStore:
     def revoke_refresh_token(self, token: str) -> bool:
         return self._refresh_tokens.pop(token, None) is not None
 
-    def list_users(self) -> List[Dict[str, Any]]:
+    def list_users(self) -> list[dict[str, Any]]:
         return [u.to_dict() for u in self._users.values()]
 
 
@@ -211,7 +213,7 @@ user_store = UserStore()
 # ──────────────────────────────────────────────────────────────
 
 def create_access_token(user: User) -> str:
-    now = datetime.now(timezone.utc)
+    now = datetime.now(UTC)
     payload = {
         "sub": user.user_id,
         "username": user.username,
@@ -229,7 +231,7 @@ def create_token_pair(user: User) -> TokenPair:
     return TokenPair(access_token=access, refresh_token=refresh)
 
 
-def decode_access_token(token: str) -> Dict[str, Any]:
+def decode_access_token(token: str) -> dict[str, Any]:
     try:
         payload = jwt.decode(token, JWT_SECRET, algorithms=[JWT_ALGORITHM], issuer=JWT_ISSUER)
         return payload
@@ -247,7 +249,7 @@ security = HTTPBearer(auto_error=False)
 
 
 async def get_current_user(
-    credentials: Optional[HTTPAuthorizationCredentials] = Depends(security),
+    credentials: HTTPAuthorizationCredentials | None = Depends(security),
 ) -> User:
     """Extract and validate the current user from JWT token or API key."""
     if credentials:

@@ -1,18 +1,15 @@
 #!/usr/bin/env python3
-"""
-Rate Limiter — Token Bucket Algorithm
+"""Rate Limiter — Token Bucket Algorithm
 Provides per-user and per-IP rate limiting with configurable buckets.
 """
 
 import time
-import asyncio
-from typing import Dict, Optional, Tuple, Any
-from dataclasses import dataclass, field
 from collections import defaultdict
+from dataclasses import dataclass, field
+from typing import Any
 
-from fastapi import Request, HTTPException, status
+from fastapi import HTTPException, Request, status
 from fastapi.responses import JSONResponse
-
 
 # ──────────────────────────────────────────────────────────────
 # Token Bucket Implementation
@@ -21,6 +18,7 @@ from fastapi.responses import JSONResponse
 @dataclass
 class TokenBucket:
     """Token bucket rate limiter."""
+
     capacity: int       # Maximum tokens
     refill_rate: float  # Tokens per second
     tokens: float = 0.0
@@ -37,7 +35,7 @@ class TokenBucket:
         self.tokens = min(self.capacity, self.tokens + new_tokens)
         self.last_refill = now
 
-    def consume(self, tokens: int = 1) -> Tuple[bool, float]:
+    def consume(self, tokens: int = 1) -> tuple[bool, float]:
         """Try to consume tokens. Returns (success, wait_time)."""
         self._refill()
         if self.tokens >= tokens:
@@ -81,9 +79,14 @@ class RateLimiter:
 
     def __init__(self, default_profile: str = "default"):
         self.default_profile = default_profile
-        self._buckets: Dict[str, TokenBucket] = {}
-        self._profile_overrides: Dict[str, str] = {}
-        self._stats: Dict[str, Dict[str, int]] = defaultdict(lambda: {"allowed": 0, "denied": 0})
+        self._buckets: dict[str, TokenBucket] = {}
+        self._profile_overrides: dict[str, str] = {}
+        self._stats: dict[str, dict[str, int]] = defaultdict(lambda: {"allowed": 0, "denied": 0})
+
+    @property
+    def available_profiles(self) -> list[str]:
+        """Return available rate limit profile names."""
+        return list(RATE_LIMIT_PROFILES.keys())
 
     def set_profile(self, key: str, profile: str) -> None:
         """Override the rate limit profile for a specific key."""
@@ -102,7 +105,7 @@ class RateLimiter:
             self._buckets[key] = TokenBucket(**config)
         return self._buckets[key]
 
-    def check(self, key: str, tokens: int = 1) -> Tuple[bool, Dict[str, Any]]:
+    def check(self, key: str, tokens: int = 1) -> tuple[bool, dict[str, Any]]:
         """Check rate limit for a key. Returns (allowed, info_dict)."""
         bucket = self._get_bucket(key)
         allowed, wait_time = bucket.consume(tokens)
@@ -116,14 +119,14 @@ class RateLimiter:
             "retry_after": round(wait_time, 2) if not allowed else None,
         }
 
-    def get_stats(self) -> Dict[str, Any]:
+    def get_stats(self) -> dict[str, Any]:
         return {
             "active_buckets": len(self._buckets),
             "profile_overrides": dict(self._profile_overrides),
             "request_stats": {k: dict(v) for k, v in self._stats.items()},
         }
 
-    def reset(self, key: Optional[str] = None) -> None:
+    def reset(self, key: str | None = None) -> None:
         if key:
             self._buckets.pop(key, None)
             self._stats.pop(key, None)
@@ -151,7 +154,7 @@ async def rate_limit_middleware(request: Request, call_next):
 
     # Identify client
     client_ip = request.client.host if request.client else "unknown"
-    api_key = request.headers.get("X-API-Key", "")
+    request.headers.get("X-API-Key", "")
     user_id = request.headers.get("X-User-ID", "")
 
     key = f"user:{user_id}" if user_id else f"ip:{client_ip}"
