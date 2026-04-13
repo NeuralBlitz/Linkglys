@@ -330,5 +330,6 @@
   "tests/test_neuralblitz_v50_deep.py::TestEmergentPurpose::test_module_loads": true,
   "tests/test_neuralblitz_v50_deep.py::TestMultiRealityNN::test_module_loads": true,
   "tests/test_neuralblitz_v50_deep.py::TestSelfImprovingCode::test_module_loads": true,
-  "tests/test_neuralblitz_v50_deep.py::TestBenchmarkSuite::test_module_loads": true
+  "tests/test_neuralblitz_v50_deep.py::TestBenchmarkSuite::test_module_loads": true,
+  "tests/test_simple_app.py::TestAnalyzeEndpoint::test_analyze_returns_cognitive_score": true
 }
