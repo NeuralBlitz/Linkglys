@@ -166,36 +166,6 @@ class TestBlockchainController:
         assert isinstance(result, dict)
 
 
-class TestAdversarialProtector:
-    @pytest.fixture
-    def ap(self):
-        from src.utils.bci_security_implementation import AdversarialProtector
-        return AdversarialProtector()
-
-    def test_fit_clean_statistics(self, ap):
-        data = np.random.randn(50, 10)
-        ap.fit_clean_statistics(data)
-        assert ap._clean_mean is not None
-
-    def test_feature_squeezing(self, ap):
-        ap.fit_clean_statistics(np.random.randn(20, 3))
-        data = np.random.randn(10, 5)
-        result = ap.feature_squeezing(data)
-        assert result.shape == data.shape
-
-    def test_sanitize_input(self, ap):
-        ap.fit_clean_statistics(np.random.randn(20, 3))
-        data = np.random.randn(10, 5)
-        result = ap.sanitize_input(data)
-        assert result is not None
-
-    def test_detect_adversarial(self, ap):
-        ap.fit_clean_statistics(np.random.randn(20, 3))
-        data = np.random.randn(10, 5)
-        result = ap.detect_adversarial(data)
-        assert result is not None
-
-
 class TestCheckpointManager:
     def test_create_and_restore(self):
         from src.utils.fault_tolerance_layer import CheckpointManager

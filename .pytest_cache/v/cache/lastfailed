@@ -439,5 +439,6 @@
   "tests/test_capabilities_deep_coverage.py::TestBlockchainController::test_did_resolve": true,
   "tests/test_capabilities_deep_coverage.py::TestAdversarialProtector::test_fit_clean_statistics": true,
   "tests/test_capabilities_deep_coverage.py::TestAdversarialProtector::test_feature_squeezing": true,
-  "tests/test_capabilities_deep_coverage.py::TestAdversarialProtector::test_sanitize_input": true
+  "tests/test_capabilities_deep_coverage.py::TestAdversarialProtector::test_sanitize_input": true,
+  "tests/test_capabilities_deep_coverage.py::TestAdversarialProtector": true
 }
