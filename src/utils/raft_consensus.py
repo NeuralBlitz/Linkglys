@@ -1,15 +1,18 @@
 """
 raft_consensus.py
 Raft-based Distributed Consensus for D-MLMAS
+
+Implements the Raft consensus algorithm with a shared message bus
+so nodes actually communicate with each other (not simulated RPCs).
 """
 
 import asyncio
 import random
 import time
 import logging
-from typing import Dict, List, Optional, Any, Set
+from typing import Dict, List, Optional, Any, Callable
 from dataclasses import dataclass, field
-from enum import Enum, auto
+from enum import Enum
 from collections import deque
 import hashlib
 import json
@@ -18,16 +21,12 @@ logger = logging.getLogger(__name__)
 
 
 class NodeRole(Enum):
-    """Raft node roles"""
-
     FOLLOWER = "follower"
     CANDIDATE = "candidate"
     LEADER = "leader"
 
 
 class LogEntryType(Enum):
-    """Types of log entries"""
-
     COMMAND = "command"
     CONFIG = "config"
     NO_OP = "no_op"
@@ -35,28 +34,15 @@ class LogEntryType(Enum):
 
 @dataclass
 class LogEntry:
-    """Single entry in the Raft log"""
-
     index: int
     term: int
     entry_type: LogEntryType
     command: Any
     timestamp: float = field(default_factory=time.time)
 
-    def to_dict(self) -> dict:
-        return {
-            "index": self.index,
-            "term": self.term,
-            "type": self.entry_type.value,
-            "command": self.command,
-            "timestamp": self.timestamp,
-        }
-
 
 @dataclass
 class RaftState:
-    """Persistent Raft state"""
-
     current_term: int = 0
     voted_for: Optional[str] = None
     log: List[LogEntry] = field(default_factory=list)
@@ -65,9 +51,7 @@ class RaftState:
         return len(self.log) - 1 if self.log else -1
 
     def get_last_log_term(self) -> int:
-        if not self.log:
-            return -1
-        return self.log[-1].term
+        return self.log[-1].term if self.log else -1
 
     def get_entry(self, index: int) -> Optional[LogEntry]:
         if 0 <= index < len(self.log):
@@ -75,75 +59,52 @@ class RaftState:
         return None
 
 
-@dataclass
-class VoteRequest:
-    """RequestVote RPC arguments"""
+# ─── Shared Message Bus (replaces simulated RPCs) ───
 
-    term: int
-    candidate_id: str
-    last_log_index: int
-    last_log_term: int
+class ClusterMessageBus:
+    """Shared message bus for inter-node communication in the same process.
+    In production, this would be replaced with actual network RPCs."""
 
+    def __init__(self):
+        self._handlers: Dict[str, Dict[str, Callable]] = {}  # node_id -> {method -> handler}
 
-@dataclass
-class VoteResponse:
-    """RequestVote RPC results"""
+    def register_node(self, node_id: str, handlers: Dict[str, Callable]):
+        """Register a node's RPC handlers"""
+        self._handlers[node_id] = handlers
 
-    term: int
-    vote_granted: bool
-    voter_id: str
-
-
-@dataclass
-class AppendEntriesRequest:
-    """AppendEntries RPC arguments"""
-
-    term: int
-    leader_id: str
-    prev_log_index: int
-    prev_log_term: int
-    entries: List[LogEntry]
-    leader_commit: int
+    async def send_rpc(self, target_id: str, method: str, params: dict) -> dict:
+        """Send RPC to target node via message bus"""
+        if target_id not in self._handlers:
+            return {"error": f"Node {target_id} not found"}
+        handler = self._handlers[target_id].get(method)
+        if not handler:
+            return {"error": f"Method {method} not found on {target_id}"}
+        return await handler(params)
 
 
-@dataclass
-class AppendEntriesResponse:
-    """AppendEntries RPC results"""
-
-    term: int
-    success: bool
-    follower_id: str
-    match_index: int = -1
-
+# ─── Raft Node ───
 
 class RaftNode:
-    """
-    Raft consensus node implementation.
+    """Raft consensus node with real inter-node communication via ClusterMessageBus."""
 
-    Implements the Raft consensus algorithm for leader election,
-    log replication, and state machine execution.
-    """
+    HEARTBEAT_INTERVAL = 0.05
+    MIN_ELECTION_TIMEOUT = 0.15
+    MAX_ELECTION_TIMEOUT = 0.30
 
-    # Timing constants (in seconds)
-    MIN_ELECTION_TIMEOUT = 0.15  # 150ms
-    MAX_ELECTION_TIMEOUT = 0.30  # 300ms
-    HEARTBEAT_INTERVAL = 0.05  # 50ms
-
-    def __init__(self, node_id: str, peers: List[str]):
+    def __init__(self, node_id: str, peer_ids: List[str], bus: ClusterMessageBus):
         self.node_id = node_id
-        self.peers = [p for p in peers if p != node_id]
-        self.cluster_size = len(peers) + 1
+        self.peer_ids = peer_ids
+        self.bus = bus
+        self.cluster_size = len(peer_ids) + 1
         self.majority = (self.cluster_size // 2) + 1
 
         # Raft state
         self.state = RaftState()
         self.role = NodeRole.FOLLOWER
-
-        # Volatile state
         self.commit_index = -1
         self.last_applied = -1
 
-        # Leader state (reinitialized on election)
+        # Leader state
         self.next_index: Dict[str, int] = {}
         self.match_index: Dict[str, int] = {}
 
@@ -151,296 +112,287 @@ class RaftNode:
         self.election_timeout = self._random_timeout()
         self.last_heartbeat = time.time()
 
-        # Channels for async communication
-        self.vote_requests: deque = deque()
-        self.append_requests: deque = deque()
-
         # State machine
         self.state_machine: Dict[str, Any] = {}
         self.pending_commands: Dict[str, asyncio.Future] = {}
 
-        # Snapshot
-        self.last_snapshot_index = -1
-        self.last_snapshot_term = -1
+        # RPC handlers (registered on bus)
+        self._rpc_handlers = {
+            "request_vote": self._handle_request_vote,
+            "append_entries": self._handle_append_entries,
+        }
 
         self._running = False
 
     def _random_timeout(self) -> float:
-        """Generate random election timeout"""
         return random.uniform(self.MIN_ELECTION_TIMEOUT, self.MAX_ELECTION_TIMEOUT)
 
     async def start(self):
-        """Start the Raft node"""
         self._running = True
+        self.bus.register_node(self.node_id, self._rpc_handlers)
         logger.info(f"Raft node {self.node_id} starting as {self.role.value}")
-
-        # Start main loop
         asyncio.create_task(self._main_loop())
         asyncio.create_task(self._election_timer())
 
     async def stop(self):
-        """Stop the Raft node"""
         self._running = False
         logger.info(f"Raft node {self.node_id} stopped")
 
     async def _main_loop(self):
-        """Main Raft event loop"""
         while self._running:
             if self.role == NodeRole.LEADER:
-                await self._leader_actions()
-            elif self.role == NodeRole.CANDIDATE:
-                await self._candidate_actions()
-            else:  # FOLLOWER
-                await self._follower_actions()
-
-            await asyncio.sleep(0.01)  # 10ms tick
-
-    async def _leader_actions(self):
-        """Leader periodic actions"""
-        current_time = time.time()
-
-        # Send heartbeats
-        if current_time - self.last_heartbeat > self.HEARTBEAT_INTERVAL:
-            await self._send_heartbeats()
-            self.last_heartbeat = current_time
-
-        # Check for commit advancement
-        await self._advance_commit_index()
-
-    async def _candidate_actions(self):
-        """Candidate periodic actions"""
-        # Candidate actions are mostly event-driven
-        pass
-
-    async def _follower_actions(self):
-        """Follower periodic actions"""
-        # Follower actions are mostly event-driven
-        pass
-
-    async def _election_timer(self):
-        """Election timeout timer"""
-        while self._running:
+                current_time = time.time()
+                if current_time - self.last_heartbeat > self.HEARTBEAT_INTERVAL:
+                    await self._send_heartbeats()
+                    self.last_heartbeat = current_time
+                await self._advance_commit_index()
             await asyncio.sleep(0.01)
 
+    async def _election_timer(self):
+        while self._running:
+            await asyncio.sleep(0.01)
             if self.role == NodeRole.LEADER:
                 continue
-
-            current_time = time.time()
-            if current_time - self.last_heartbeat > self.election_timeout:
+            if time.time() - self.last_heartbeat > self.election_timeout:
                 await self._start_election()
 
+    # ─── RPC Handlers (called by peers via message bus) ───
+
+    async def _handle_request_vote(self, params: dict) -> dict:
+        """Handle incoming vote request from a candidate peer."""
+        term = params["term"]
+        candidate_id = params["candidate_id"]
+        last_log_index = params["last_log_index"]
+        last_log_term = params["last_log_term"]
+
+        # If candidate's term is higher, step down and update term
+        if term > self.state.current_term:
+            self.state.current_term = term
+            self.role = NodeRole.FOLLOWER
+            self.state.voted_for = None
+
+        vote_granted = False
+        if term >= self.state.current_term:
+            last_log_ok = (
+                last_log_term > self.state.get_last_log_term()
+                or (last_log_term == self.state.get_last_log_term()
+                    and last_log_index >= self.state.get_last_log_index())
+            )
+            if (self.state.voted_for is None or self.state.voted_for == candidate_id) and last_log_ok:
+                vote_granted = True
+                self.state.voted_for = candidate_id
+                self.last_heartbeat = time.time()
+                self.election_timeout = self._random_timeout()
+
+        logger.debug(
+            f"Node {self.node_id} voted for {candidate_id} in term {term}: {vote_granted}"
+        )
+        return {"term": self.state.current_term, "vote_granted": vote_granted}
+
+    async def _handle_append_entries(self, params: dict) -> dict:
+        """Handle incoming AppendEntries (heartbeat/log replication) from leader."""
+        term = params["term"]
+        leader_id = params["leader_id"]
+        prev_log_index = params["prev_log_index"]
+        prev_log_term = params["prev_log_term"]
+        entries = params.get("entries", [])
+        leader_commit = params.get("leader_commit", -1)
+
+        # Term check
+        if term < self.state.current_term:
+            return {"term": self.state.current_term, "success": False}
+
+        # Step down if we see a higher term leader
+        if term > self.state.current_term:
+            self.state.current_term = term
+            self.state.voted_for = None
+        self.role = NodeRole.FOLLOWER
+        self.state.voted_for = None  # Don't vote in this term (leader exists)
+        self.last_heartbeat = time.time()
+        self.election_timeout = self._random_timeout()
+
+        # Log consistency check
+        if prev_log_index >= 0:
+            prev_entry = self.state.get_entry(prev_log_index)
+            if not prev_entry or prev_entry.term != prev_log_term:
+                return {"term": self.state.current_term, "success": False}
+
+        # Delete conflicting entries
+        if entries:
+            first_new_index = entries[0]["index"]
+            while self.state.get_last_log_index() >= first_new_index:
+                self.state.log.pop()
+
+            # Append new entries
+            for e in entries:
+                self.state.log.append(LogEntry(
+                    index=e["index"],
+                    term=e["term"],
+                    entry_type=LogEntryType(e["type"]),
+                    command=e["command"],
+                    timestamp=e.get("timestamp", time.time()),
+                ))
+
+        # Update commit index
+        if leader_commit > self.commit_index:
+            self.commit_index = min(leader_commit, self.state.get_last_log_index())
+            await self._apply_committed_entries()
+
+        return {
+            "term": self.state.current_term,
+            "success": True,
+            "match_index": self.state.get_last_log_index(),
+        }
+
+    # ─── Leader Election ───
+
     async def _start_election(self):
-        """Start leader election"""
         self.role = NodeRole.CANDIDATE
         self.state.current_term += 1
         self.state.voted_for = self.node_id
         self.election_timeout = self._random_timeout()
         self.last_heartbeat = time.time()
 
-        logger.info(
-            f"Node {self.node_id} starting election for term {self.state.current_term}"
-        )
+        logger.info(f"Node {self.node_id} starting election for term {self.state.current_term}")
 
-        # Request votes from all peers
+        vote_request = {
+            "term": self.state.current_term,
+            "candidate_id": self.node_id,
+            "last_log_index": self.state.get_last_log_index(),
+            "last_log_term": self.state.get_last_log_term(),
+        }
+
         votes_received = 1  # Vote for self
-        vote_request = VoteRequest(
-            term=self.state.current_term,
-            candidate_id=self.node_id,
-            last_log_index=self.state.get_last_log_index(),
-            last_log_term=self.state.get_last_log_term(),
-        )
+        vote_tasks = [
+            self.bus.send_rpc(peer, "request_vote", vote_request)
+            for peer in self.peer_ids
+        ]
 
-        # Send vote requests (async)
-        vote_tasks = []
-        for peer in self.peers:
-            task = asyncio.create_task(self._request_vote(peer, vote_request))
-            vote_tasks.append(task)
-
-        # Wait for votes with timeout
         try:
             responses = await asyncio.wait_for(
                 asyncio.gather(*vote_tasks, return_exceptions=True),
                 timeout=self.election_timeout,
             )
-
-            for response in responses:
-                if isinstance(response, Exception):
+            for resp in responses:
+                if isinstance(resp, Exception):
                     continue
-                if response.vote_granted:
+                if isinstance(resp, dict) and resp.get("vote_granted"):
                     votes_received += 1
         except asyncio.TimeoutError:
             pass
 
-        # Check if we won
         if votes_received >= self.majority:
             await self._become_leader()
         else:
-            logger.info(
-                f"Node {self.node_id} lost election, received {votes_received} votes"
-            )
-
-    async def _request_vote(self, peer: str, request: VoteRequest) -> VoteResponse:
-        """Request vote from a peer (simulated)"""
-        # In real implementation, this would be an RPC call
-        # For demo, simulate response
-        await asyncio.sleep(random.uniform(0.01, 0.05))
-
-        # Simulate grant/deny (90% grant for demo)
-        granted = random.random() < 0.9
-
-        return VoteResponse(term=request.term, vote_granted=granted, voter_id=peer)
+            # Reset for next election
+            self.role = NodeRole.FOLLOWER
+            logger.debug(f"Node {self.node_id} lost election ({votes_received}/{self.majority} votes)")
 
     async def _become_leader(self):
-        """Transition to leader role"""
         self.role = NodeRole.LEADER
-        logger.info(
-            f"Node {self.node_id} became leader for term {self.state.current_term}"
-        )
+        logger.info(f"Node {self.node_id} became leader for term {self.state.current_term}")
 
-        # Initialize leader state
-        for peer in self.peers:
+        for peer in self.peer_ids:
             self.next_index[peer] = self.state.get_last_log_index() + 1
             self.match_index[peer] = -1
 
-        # Send immediate heartbeat
         await self._send_heartbeats()
         self.last_heartbeat = time.time()
 
+    # ─── Heartbeats & Log Replication ───
+
     async def _send_heartbeats(self):
-        """Send heartbeat AppendEntries to all peers"""
-        for peer in self.peers:
+        for peer in self.peer_ids:
             asyncio.create_task(self._send_append_entries(peer))
 
-    async def _send_append_entries(
-        self, peer: str, entries: Optional[List[LogEntry]] = None
-    ):
-        """Send AppendEntries RPC to a peer"""
+    async def _send_append_entries(self, peer: str, entries: Optional[List[LogEntry]] = None):
         next_idx = self.next_index.get(peer, 0)
         prev_log_index = next_idx - 1
-        prev_log_term = -1
+        prev_log_term = self.state.get_entry(prev_log_index).term if prev_log_index >= 0 and self.state.get_entry(prev_log_index) else -1
 
-        if prev_log_index >= 0:
-            entry = self.state.get_entry(prev_log_index)
-            if entry:
-                prev_log_term = entry.term
+        serialized_entries = [
+            {"index": e.index, "term": e.term, "type": e.entry_type.value, "command": e.command, "timestamp": e.timestamp}
+            for e in (entries or [])
+        ]
 
-        request = AppendEntriesRequest(
-            term=self.state.current_term,
-            leader_id=self.node_id,
-            prev_log_index=prev_log_index,
-            prev_log_term=prev_log_term,
-            entries=entries or [],
-            leader_commit=self.commit_index,
-        )
+        params = {
+            "term": self.state.current_term,
+            "leader_id": self.node_id,
+            "prev_log_index": prev_log_index,
+            "prev_log_term": prev_log_term,
+            "entries": serialized_entries,
+            "leader_commit": self.commit_index,
+        }
 
-        # Send RPC (simulated)
-        response = await self._send_rpc(peer, request)
+        response = await self.bus.send_rpc(peer, "append_entries", params)
 
-        if response.term > self.state.current_term:
-            # Step down
-            self.state.current_term = response.term
+        if response.get("error"):
+            return
+
+        if response["term"] > self.state.current_term:
+            self.state.current_term = response["term"]
             self.role = NodeRole.FOLLOWER
             self.state.voted_for = None
             return
 
-        if response.success:
+        if response.get("success"):
             if entries:
-                # Update next_index and match_index
-                self.match_index[peer] = request.prev_log_index + len(entries)
+                self.match_index[peer] = response.get("match_index", -1)
                 self.next_index[peer] = self.match_index[peer] + 1
         else:
-            # Decrement next_index and retry
             self.next_index[peer] = max(0, self.next_index[peer] - 1)
 
-    async def _send_rpc(self, peer: str, request: Any) -> Any:
-        """Send RPC to peer (simulated)"""
-        await asyncio.sleep(random.uniform(0.01, 0.03))
-
-        # Simulate successful response
-        if isinstance(request, AppendEntriesRequest):
-            return AppendEntriesResponse(
-                term=request.term,
-                success=True,
-                follower_id=peer,
-                match_index=request.prev_log_index + len(request.entries),
-            )
-
-        return None
+    # ─── Commit & Apply ───
 
     async def _advance_commit_index(self):
-        """Advance commit_index based on match_index from followers"""
         for n in range(self.commit_index + 1, self.state.get_last_log_index() + 1):
-            # Count replicas
             match_count = 1  # Leader
-            for peer in self.peers:
+            for peer in self.peer_ids:
                 if self.match_index.get(peer, -1) >= n:
                     match_count += 1
-
-            # Check if majority and from current term
             if match_count >= self.majority:
                 entry = self.state.get_entry(n)
                 if entry and entry.term == self.state.current_term:
                     self.commit_index = n
-                    logger.debug(f"Advanced commit_index to {n}")
-
-                    # Apply to state machine
                     await self._apply_committed_entries()
 
     async def _apply_committed_entries(self):
-        """Apply committed entries to state machine"""
         while self.last_applied < self.commit_index:
             self.last_applied += 1
             entry = self.state.get_entry(self.last_applied)
-
             if entry:
                 await self._apply_entry(entry)
 
     async def _apply_entry(self, entry: LogEntry):
-        """Apply single log entry to state machine"""
         if entry.entry_type == LogEntryType.COMMAND:
-            # Apply command
             command_id = entry.command.get("id")
             result = self._execute_command(entry.command)
-
-            # Notify pending command
             if command_id in self.pending_commands:
                 future = self.pending_commands.pop(command_id)
                 if not future.done():
                     future.set_result(result)
 
-            logger.debug(f"Applied command at index {entry.index}")
-
     def _execute_command(self, command: Any) -> Any:
-        """Execute a state machine command"""
         op = command.get("op")
         key = command.get("key")
         value = command.get("value")
-
         if op == "set":
             self.state_machine[key] = value
             return {"status": "ok", "value": value}
         elif op == "get":
             return {"status": "ok", "value": self.state_machine.get(key)}
         elif op == "delete":
-            if key in self.state_machine:
-                del self.state_machine[key]
+            self.state_machine.pop(key, None)
             return {"status": "ok"}
-
         return {"status": "error", "message": "unknown operation"}
 
+    # ─── Public API ───
+
     async def propose_command(self, command: Any, timeout: float = 5.0) -> Any:
-        """
-        Propose a command to be replicated.
-        Only succeeds if this node is the leader.
-        """
         if self.role != NodeRole.LEADER:
             return {"status": "error", "message": "not leader"}
 
-        # Create log entry
-        command_id = hashlib.sha256(
-            json.dumps(command, sort_keys=True).encode()
-        ).hexdigest()[:16]
-
+        command_id = hashlib.sha256(json.dumps(command, sort_keys=True).encode()).hexdigest()[:16]
         command["id"] = command_id
 
         entry = LogEntry(
@@ -449,28 +401,21 @@ class RaftNode:
             entry_type=LogEntryType.COMMAND,
             command=command,
         )
-
-        # Append to local log
         self.state.log.append(entry)
 
-        # Create future for result
         future = asyncio.Future()
         self.pending_commands[command_id] = future
 
-        # Replicate to followers
-        for peer in self.peers:
+        for peer in self.peer_ids:
             asyncio.create_task(self._send_append_entries(peer, [entry]))
 
-        # Wait for commit with timeout
         try:
-            result = await asyncio.wait_for(future, timeout=timeout)
-            return result
+            return await asyncio.wait_for(future, timeout=timeout)
         except asyncio.TimeoutError:
             self.pending_commands.pop(command_id, None)
             return {"status": "error", "message": "timeout waiting for commit"}
 
     def get_status(self) -> dict:
-        """Get node status"""
         return {
             "node_id": self.node_id,
             "role": self.role.value,
@@ -483,59 +428,53 @@ class RaftNode:
         }
 
 
-class RaftCluster:
-    """Manages a cluster of Raft nodes"""
+# ─── Cluster Manager ───
 
+class RaftCluster:
     def __init__(self, node_ids: List[str]):
         self.node_ids = node_ids
         self.nodes: Dict[str, RaftNode] = {}
+        self.bus = ClusterMessageBus()
 
     async def start(self):
-        """Start all nodes in the cluster"""
         for node_id in self.node_ids:
-            node = RaftNode(node_id, self.node_ids)
+            peer_ids = [n for n in self.node_ids if n != node_id]
+            node = RaftNode(node_id, peer_ids, self.bus)
             self.nodes[node_id] = node
             await node.start()
-
         logger.info(f"Raft cluster started with {len(self.nodes)} nodes")
 
     async def stop(self):
-        """Stop all nodes"""
         for node in self.nodes.values():
             await node.stop()
 
     def get_leader(self) -> Optional[RaftNode]:
-        """Get current leader"""
         for node in self.nodes.values():
             if node.role == NodeRole.LEADER:
                 return node
         return None
 
     async def submit_command(self, command: Any) -> Any:
-        """Submit command to leader"""
         leader = self.get_leader()
         if leader:
             return await leader.propose_command(command)
         return {"status": "error", "message": "no leader"}
 
 
-# Usage Example
+# ─── Demo ───
+
 async def demo_raft_consensus():
-    """Demonstrate Raft consensus"""
     print("\n" + "=" * 80)
     print("⚖️  RAFT CONSENSUS LAYER - DEMO")
     print("=" * 80)
 
-    # Create cluster
     node_ids = ["node_0", "node_1", "node_2", "node_3", "node_4"]
     cluster = RaftCluster(node_ids)
 
-    # Start cluster
     print("\n🚀 Starting Raft cluster...")
     await cluster.start()
-    await asyncio.sleep(0.5)  # Wait for leader election
+    await asyncio.sleep(0.5)
 
-    # Check leader
     leader = cluster.get_leader()
     if leader:
         print(f"  ✓ Leader elected: {leader.node_id}")
@@ -544,7 +483,6 @@ async def demo_raft_consensus():
         await asyncio.sleep(1.0)
         leader = cluster.get_leader()
 
-    # Submit commands
     print("\n📤 Submitting commands to cluster...")
     commands = [
         {"op": "set", "key": "config", "value": {"nodes": 5}},
@@ -558,22 +496,19 @@ async def demo_raft_consensus():
         print(f"  {status} Command {i + 1}: {cmd['op']} {cmd['key']}")
         await asyncio.sleep(0.1)
 
-    # Check replication
     print("\n📊 Checking state replication...")
     await asyncio.sleep(0.3)
 
     for node_id, node in cluster.nodes.items():
-        status = node.get_status()
+        s = node.get_status()
         print(f"  {node_id}:")
-        print(f"    Role: {status['role']}")
-        print(f"    Log size: {status['log_size']}")
-        print(f"    Commit index: {status['commit_index']}")
-        print(f"    State machine keys: {status['state_machine_size']}")
+        print(f"    Role: {s['role']}")
+        print(f"    Log size: {s['log_size']}")
+        print(f"    Commit index: {s['commit_index']}")
+        print(f"    State machine keys: {s['state_machine_size']}")
 
-    # Stop cluster
     print("\n🛑 Stopping cluster...")
     await cluster.stop()
-
     return cluster
 
 

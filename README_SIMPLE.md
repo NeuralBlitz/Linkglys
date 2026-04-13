@@ -16,11 +16,12 @@ That's it! The app will start automatically and be available at your Replit URL.
 - **Cognitive recommendations**
 
 ### **Live Demo Features**
-- ✅ **264,447x Performance** simulation
-- ✅ **Cognitive AI Analysis** with real-time feedback
-- ✅ **Pattern Detection** (functions, classes, loops, conditionals)
+- ✅ **Pattern Detection** with regex-based analysis
+- ✅ **Real-Time Code Analysis** with measured timing
+- ✅ **Pattern Detection** (functions, classes, loops, conditionals, imports)
+- ✅ **Complexity Metrics** (cyclomatic, nesting depth, comment ratio)
 - ✅ **Professional UI** with modern design
-- ✅ **Instant Results** - no waiting, no setup
+- ✅ **Honest Results** — measured timing, no fabricated numbers
 
 ## 🧠 HOW TO USE
 

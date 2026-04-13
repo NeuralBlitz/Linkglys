@@ -194,7 +194,8 @@ class TranscendentalCharter:
     def evaluate_action(self, action: Dict[str, Any]) -> Dict[str, Any]:
         """Evaluate an action against all charter clauses"""
         results = {}
-        overall_score = 1.0
+        total_weighted_score = 0.0
+        total_weight = 0.0
         violations = []
 
         for clause, constraint in self.clauses.items():
@@ -209,11 +210,14 @@ class TranscendentalCharter:
                 "weight": constraint.weight,
             }
 
-            weighted_score = clause_score * constraint.weight
-            overall_score *= weighted_score
+            total_weighted_score += clause_score * constraint.weight
+            total_weight += constraint.weight
 
             if clause_score < constraint.threshold:
                 violations.append(clause.value)
+
+        # Use weighted average instead of product (product decays exponentially with 15 clauses)
+        overall_score = total_weighted_score / total_weight if total_weight > 0 else 0.0
 
         return {
             "overall_score": overall_score,
@@ -224,9 +228,38 @@ class TranscendentalCharter:
         }
 
     def _evaluate_clause(self, clause: CharterClause, action: Dict[str, Any]) -> float:
-        """Evaluate a specific charter clause (simplified)"""
-        # In real implementation, this would use formal verification
-        return random.uniform(0.85, 1.0)
+        """Evaluate a specific charter clause based on action properties."""
+        risk = action.get("risk", "medium").lower()
+        action_type = action.get("type", "").lower()
+
+        # Risk-based baseline scoring
+        risk_scores = {"low": 0.95, "medium": 0.80, "high": 0.60, "critical": 0.40}
+        base_score = risk_scores.get(risk, 0.75)
+
+        # Specific clause adjustments based on action type
+        clause_id = clause.value
+
+        # Non-maleficence (phi_4) — check for harm keywords
+        if clause_id == "PHI_4_NON_MALEFICENCE":
+            if any(w in action.get("description", "") for w in ["harm", "damage", "destroy"]):
+                return 0.3
+            return base_score
+
+        # Justice (phi_7) — check for fairness
+        if clause_id == "PHI_7_JUSTICE":
+            if "exclusive" in action.get("description", ""):
+                return 0.5
+            return base_score
+
+        # Sustainability (phi_8) — check for resource usage
+        if clause_id == "PHI_8_SUSTAINABILITY":
+            if risk == "critical":
+                return 0.5
+            return base_score
+
+        # Default: return risk-adjusted score with small variance
+        import random
+        return min(1.0, base_score + random.uniform(-0.05, 0.05))
 
 
 # ============================================================================
@@ -562,11 +595,13 @@ class SentiaGuard:
 class GoldenDAGLedger:
     """Immutable causal chain record for all operations"""
 
-    def __init__(self):
+    def __init__(self, block_size: int = 10):
         self.chain = []
-        self.block_size = 100
+        self.block_size = block_size
         self.current_block = []
         self.genesis_block = self._create_genesis()
+        # Seal genesis immediately
+        self.chain.append(self.genesis_block)
 
     def _create_genesis(self) -> Dict[str, Any]:
         """Create genesis block"""
@@ -607,6 +642,9 @@ class GoldenDAGLedger:
 
     def _seal_current_block(self):
         """Seal the current block and add to chain"""
+        if not self.current_block:
+            return  # Nothing to seal
+
         previous_hash = self.chain[-1]["seal"] if self.chain else "0" * 64
 
         block = {
@@ -620,17 +658,41 @@ class GoldenDAGLedger:
         self.chain.append(block)
         self.current_block = []
 
+    def force_seal(self):
+        """Force seal current block even if not full"""
+        if self.current_block:
+            self._seal_current_block()
+
+    def get_pending_operations(self) -> int:
+        """Get count of operations waiting to be sealed"""
+        return len(self.current_block)
+
     def verify_chain(self) -> Dict[str, Any]:
         """Verify the integrity of the chain"""
         if not self.chain:
             return {"valid": False, "reason": "Chain is empty"}
 
-        # Verify genesis
-        if self.chain[0]["block_id"] != "BLOCK-0":
+        # First block should be genesis (block_id starts with GENESIS or BLOCK-0)
+        first = self.chain[0]
+        if not (first["block_id"] == "GENESIS" or first["block_id"] == "BLOCK-0"):
             return {"valid": False, "reason": "Genesis block missing"}
 
-        # Verify each block
-        for i, block in enumerate(self.chain):
+        # If genesis is the only block, check it has operations
+        if len(self.chain) == 1 and first["block_id"] == "GENESIS" and not first["operations"]:
+            return {
+                "valid": True,
+                "blocks": 1,
+                "operations": 0,
+                "note": "Genesis block present, no sealed data blocks yet",
+            }
+
+        # Verify each data block (skip genesis if it's separate)
+        start_idx = 0
+        if first["block_id"] == "GENESIS" and len(self.chain) > 1:
+            start_idx = 1  # Skip genesis, verify from BLOCK-0
+
+        for i in range(start_idx, len(self.chain)):
+            block = self.chain[i]
             expected_seal = self._seal_block(
                 {
                     "block_id": block["block_id"],
@@ -643,8 +705,11 @@ class GoldenDAGLedger:
             if block["seal"] != expected_seal:
                 return {"valid": False, "reason": f"Tampered block at {i}"}
 
-            if i > 0 and block["previous_hash"] != self.chain[i - 1]["seal"]:
-                return {"valid": False, "reason": f"Broken chain at {i}"}
+            # Chain link verification (genesis previous_hash is "0"*64)
+            if i > start_idx:
+                expected_prev = self.chain[i - 1]["seal"]
+                if block["previous_hash"] != expected_prev:
+                    return {"valid": False, "reason": f"Broken chain link at {i}"}
 
         return {
             "valid": True,
@@ -934,7 +999,9 @@ class AuditTrail:
         for entry in self.trail:
             if entry["previous_hash"] != prev_hash:
                 return False
-            if entry["hash"] != self._compute_hash(entry):
+            # Compute hash WITHOUT the hash field (matches how it was created)
+            entry_copy = {k: v for k, v in entry.items() if k != "hash"}
+            if entry["hash"] != self._compute_hash(entry_copy):
                 return False
             prev_hash = entry["hash"]
         return True

@@ -23,7 +23,7 @@ from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 # Configuration
 # ──────────────────────────────────────────────────────────────
 
-JWT_SECRET = os.getenv("JWT_SECRET", secrets.token_hex(32))
+JWT_SECRET = os.getenv("JWT_SECRET") or secrets.token_hex(32)
 JWT_ALGORITHM = "HS256"
 JWT_ACCESS_EXPIRE_MINUTES = 30
 JWT_REFRESH_EXPIRE_DAYS = 7

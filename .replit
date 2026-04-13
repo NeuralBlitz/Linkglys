@@ -7,7 +7,7 @@ requiredFiles = [".replit", "replit.nix", "package.json", "package-lock.json"]
 
 [nix]
 channel = "stable-24_11"
-packages = ["libxcrypt", "bottom"]
+packages = ["bottom", "cargo", "libiconv", "libxcrypt", "openssl", "pkg-config", "rustc"]
 
 [deployment]
 run = ["node", "index.js"]
@@ -19,8 +19,8 @@ expertMode = true
 
 [[ports]]
 localPort = 8000
-externalPort = 8000
+externalPort = 80
 
 [[ports]]
 localPort = 8765
-externalPort = 80
+externalPort = 8000
