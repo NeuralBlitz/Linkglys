@@ -24,6 +24,6 @@
     "@qwen-code/qwen-code": "^0.15.6",
     "axios": "^1.15.2",
     "ollama": "^0.6.3",
-    "opencode-ai": "^1.4.0"
+    "opencode-ai": "^1.14.39"
   }
 }
