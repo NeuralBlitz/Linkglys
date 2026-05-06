@@ -16,13 +16,13 @@
   },
   "dependencies": {
     "@charmland/crush": "^0.55.1",
-    "@gitlawb/openclaude": "^0.1.8",
-    "@google/gemini-cli": "^0.36.0",
+    "@gitlawb/openclaude": "^0.5.1",
+    "@google/gemini-cli": "^0.39.1",
     "@kilocode/cli": "^7.2.0",
     "@mariozechner/pi-coding-agent": "^0.65.2",
     "@openai/codex": "^0.118.0",
     "@qwen-code/qwen-code": "^0.14.1",
-    "axios": "^1.14.0",
+    "axios": "^1.15.2",
     "ollama": "^0.6.3",
     "opencode-ai": "^1.4.0"
   }
