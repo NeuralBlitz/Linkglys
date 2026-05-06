@@ -17,7 +17,7 @@
   "dependencies": {
     "@charmland/crush": "^0.55.1",
     "@gitlawb/openclaude": "^0.5.1",
-    "@google/gemini-cli": "^0.39.1",
+    "@google/gemini-cli": "^0.41.1",
     "@kilocode/cli": "^7.2.0",
     "@mariozechner/pi-coding-agent": "^0.73.0",
     "@openai/codex": "^0.118.0",
