@@ -20,7 +20,7 @@
     "@google/gemini-cli": "^0.41.1",
     "@kilocode/cli": "^7.2.0",
     "@mariozechner/pi-coding-agent": "^0.73.0",
-    "@openai/codex": "^0.118.0",
+    "@openai/codex": "^0.128.0",
     "@qwen-code/qwen-code": "^0.15.6",
     "axios": "^1.15.2",
     "ollama": "^0.6.3",
